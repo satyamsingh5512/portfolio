@@ -44,45 +44,6 @@ export interface Experience {
 export const experiences: Experience[] = [
   {
     isCurrent: false,
-    company: 'Indian Institute of Technology (IIT) Mandi',
-    position: 'Research Intern',
-    location: 'Mandi, HP',
-    image: '/company/iit-mandi.png',
-    description: [
-      'Spearheaded research on computer vision for small object detection in remote sensing using FFCA-YOLO model.',
-      'Deployed GPU-accelerated solutions with PyTorch and CUDA for real-time inference on aerial images.',
-      'Implemented advanced deep learning architectures for improving detection accuracy on challenging remote sensing datasets.',
-      'Collaborated with faculty on cutting-edge research in computer vision and published findings.',
-    ],
-    startDate: 'May 2025',
-    endDate: 'August 2025',
-    technologies: [
-      {
-        name: 'PyTorch',
-        href: 'https://pytorch.org/',
-        icon: <MongoDB />,
-      },
-      {
-        name: 'Python',
-        href: 'https://python.org/',
-        icon: <JavaScript />,
-      },
-      {
-        name: 'CUDA',
-        href: 'https://developer.nvidia.com/cuda-toolkit',
-        icon: <AWS />,
-      },
-      {
-        name: 'OpenCV',
-        href: 'https://opencv.org/',
-        icon: <TypeScript />,
-      },
-    ],
-    website: 'https://iitmandi.ac.in',
-    linkedin: 'https://www.linkedin.com/school/indian-institute-of-technology-mandi/',
-  },
-  {
-    isCurrent: false,
     company: 'Upsurge Labs',
     position: 'Backend Developer Intern',
     location: 'Bangalore, India (On-Site)',
@@ -129,10 +90,10 @@ export const experiences: Experience[] = [
     location: 'Freelance',
     image: '/company/prepeasy.png',
     description: [
-      'Independently architected and developed end-to-end full-stack solutions for core product features, resulting in 95% cost reduction in AI interview services.',
-      'Single-handedly engineered and deployed a scalable AI Interview Platform, implementing real-time leaderboard analytics and automated personalized interview feedback system, reducing per-session costs from *$7* to *$0.30*.',
-      'Designed and developed comprehensive AI Resume Builder with automated optimization features, increasing user engagement by generating tailored resume recommendations and industry-specific summaries.',
-      'Built and integrated an AI-powered Cover Letter Generator with customizable templates, improving user application success rates through personalized content generation.',
+      'Independently architected and developed end-to-end full-stack solutions for core product features, resulting in 95% cost reduction in platform services.',
+      'Single-handedly engineered and deployed a scalable Interview Platform, implementing real-time leaderboard analytics and automated feedback system, reducing per-session costs from *$7* to *$0.30*.',
+      'Designed and developed comprehensive Resume Builder with optimization features, increasing user engagement by generating tailored recommendations and industry-specific summaries.',
+      'Built and integrated a Cover Letter Generator with customizable templates, improving user application success rates through personalized content generation.',
       'Engineered a complete Learning Management System (LMS) with an integrated Quiz Platform, featuring progress tracking and performance analytics.',
     ],
     startDate: 'April 2025',

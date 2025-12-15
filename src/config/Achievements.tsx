@@ -7,22 +7,10 @@ export const certificates = [
     date: '2025-09-15',
   },
   {
-    file: '/certificates/iit-kharagpur-kshitij.png',
-    title: 'Rank 76 - IIT Kharagpur Data Science Hackathon 2025',
-    issuer: 'IIT Kharagpur - Kshitij 2025',
-    date: '2025-08-20',
-  },
-  {
     file: '/certificates/research-paper-prize.png',
     title: '1st Prize - College Research Paper Competition',
     issuer: 'NIST University - Paper: "Fault-Tolerant Task Scheduling for Cloud Computing"',
     date: '2024-11-10',
-  },
-  {
-    file: '/certificates/iot-research-paper.png',
-    title: 'Research Paper (Under Review) - IoT for Sustainable Resource Management',
-    issuer: 'Academic Journal',
-    date: '2025-05-01',
   },
   {
     file: '/certificates/ssoc-piyush.png',

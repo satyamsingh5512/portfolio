@@ -54,7 +54,7 @@ export const skillComponents = {
 export const heroConfig = {
   // Personal Information
   name: 'Satyam Singh',
-  title: 'Full Stack Developer & AI/ML Researcher',
+  title: 'Full Stack Developer',
   avatar: '/assets/satyam-avatar.png',
 
   // Skills Configuration
@@ -70,8 +70,8 @@ export const heroConfig = {
       component: 'NextJs',
     },
     {
-      name: 'Spring Boot',
-      href: 'https://spring.io/projects/spring-boot',
+      name: 'Node.js',
+      href: 'https://nodejs.org/',
       component: 'NodeJs',
     },
     {
@@ -80,8 +80,8 @@ export const heroConfig = {
       component: 'PostgreSQL',
     },
     {
-      name: 'PyTorch',
-      href: 'https://pytorch.org/',
+      name: 'MongoDB',
+      href: 'https://www.mongodb.com/',
       component: 'MongoDB',
     },
   ],
@@ -89,7 +89,7 @@ export const heroConfig = {
   // Description Configuration
   description: {
     template:
-      'I build scalable production systems using {skills:0}, {skills:1}, {skills:2}, and {skills:3}. Specializing in <b>Backend Architecture</b>, <b>Computer Vision</b>, and <b>Deep Learning</b>. Currently researching at <b>IIT Mandi</b> on small object detection using FFCA-YOLO.',
+      'I build scalable web applications using {skills:0}, {skills:1}, {skills:2}, and {skills:3}. Specializing in <b>Full Stack Development</b>, <b>Backend Architecture</b>, and <b>Database Design</b>. Passionate about creating efficient, user-friendly applications with modern technologies.',
   },
 
   // Buttons Configuration

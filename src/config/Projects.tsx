@@ -1,11 +1,9 @@
 import Appwrite from '@/components/technologies/Appwrite';
 import Bun from '@/components/technologies/Bun';
 import ExpressJs from '@/components/technologies/ExpressJs';
-import Github from '@/components/technologies/Github';
 import MDXIcon from '@/components/technologies/MDXIcon';
 import MongoDB from '@/components/technologies/MongoDB';
 import Motion from '@/components/technologies/Motion';
-import Netlify from '@/components/technologies/Netlify';
 import NextJs from '@/components/technologies/NextJs';
 import NodeJs from '@/components/technologies/NodeJs';
 import PostgreSQL from '@/components/technologies/PostgreSQL';
@@ -39,25 +37,7 @@ export const projects: Project[] = [
     projectDetailsPageSlug: '/projects/ride-hailing-backend',
     isWorking: true,
   },
-  {
-    title: 'StudyBuddy',
-    description:
-      'AI-powered learning intelligence platform with adaptive task allocation, goal decomposition, behavior analytics, drag-and-drop widgets, and real-time WebSocket sync',
-    image: '/project/studybuddy.png',
-    link: 'https://studybuddy.live',
-    technologies: [
-      { name: 'React.js', icon: <ReactIcon key="react" /> },
-      { name: 'Next.js', icon: <NextJs key="nextjs" /> },
-      { name: 'Node.js', icon: <NodeJs key="nodejs" /> },
-      { name: 'PostgreSQL', icon: <PostgreSQL key="postgresql" /> },
-      { name: 'Prisma', icon: <Prisma key="prisma" /> },
-      { name: 'WebSocket', icon: <SocketIo key="websocket" /> },
-    ],
-    live: 'https://studybuddy.live',
-    details: true,
-    projectDetailsPageSlug: '/projects/studybuddy-ai',
-    isWorking: true,
-  },
+
   {
     title: 'Quizo',
     description:
@@ -202,26 +182,7 @@ export const projects: Project[] = [
     projectDetailsPageSlug: '/projects/fest-x',
     isWorking: true,
   },
-  {
-    title: "I'm a chill guy",
-    description:
-      'AI-powered GitHub profile roaster with intelligent analysis, witty commentary, and social sharing features',
-    image: '/project/chillguy.png',
-    link: 'https://chillguy.ramx.in',
-    technologies: [
-      { name: 'React', icon: <ReactIcon key="react" /> },
-      { name: 'Express.js', icon: <ExpressJs key="expressjs" /> },
-      { name: 'Vercel', icon: <Vercel key="vercel" /> },
-      { name: 'Tailwind CSS', icon: <TailwindCss key="tailwindcss" /> },
-      { name: 'Netlify', icon: <Netlify key="netlify" /> },
-      { name: 'GitHub', icon: <Github key="github" /> },
-    ],
-    github: 'https://github.com/ramxcodes/chill-guy',
-    live: 'https://chillguy.ramx.in',
-    details: true,
-    projectDetailsPageSlug: '/projects/chill-guy',
-    isWorking: true,
-  },
+
   {
     title: "Ram's Space",
     description:
