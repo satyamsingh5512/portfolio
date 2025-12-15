@@ -1,153 +1,94 @@
 import { type Experience } from '@/config/Experience';
-import { cn } from '@/lib/utils';
-import { Link } from 'next-view-transitions';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { ExternalLink, MapPin } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
-
-import Skill from '../common/Skill';
-import Github from '../svgs/Github';
-import LinkedIn from '../svgs/LinkedIn';
-import Website from '../svgs/Website';
-import X from '../svgs/X';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 interface ExperienceCardProps {
   experience: Experience;
 }
 
-const parseDescription = (text: string): string => {
-  return text.replace(/\*(.*?)\*/g, '<b>$1</b>');
-};
-
 export function ExperienceCard({ experience }: ExperienceCardProps) {
   return (
-    <div className="flex flex-col gap-4">
-      {/* Company Header */}
-      <div className="flex flex-col gap-2 md:flex-row md:justify-between">
-        {/* Left Side */}
-        <div className="flex items-center gap-4">
-          <Image
-            src={experience.image}
-            alt={experience.company}
-            width={100}
-            height={100}
-            className="size-12 rounded-md"
-          />
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <h3
-                className={cn(
-                  'text-lg font-bold',
-                  experience.isBlur ? 'blur-[5px]' : 'blur-none',
+    <Card className="group hover:shadow-lg transition-all duration-300 border-border/50 hover:border-border">
+      <CardHeader className="pb-4">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-4">
+            {experience.logo && (
+              <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                <Image
+                  src={experience.logo}
+                  alt={`${experience.company} logo`}
+                  fill
+                  className="object-contain p-1"
+                />
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                  {experience.position}
+                </h3>
+                {experience.isCurrent && (
+                  <Badge variant="secondary" className="text-xs">
+                    Current
+                  </Badge>
                 )}
-              >
-                {experience.company}
-              </h3>
-              {experience.website && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={experience.website}
-                      target="_blank"
-                      className="size-4 text-neutral-500"
-                    >
-                      <Website />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>Visit Website</TooltipContent>
-                </Tooltip>
-              )}
-              {experience.x && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={experience.x}
-                      target="_blank"
-                      className="size-4 text-neutral-500"
-                    >
-                      <X />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>Follow on X</TooltipContent>
-                </Tooltip>
-              )}
-              {experience.linkedin && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={experience.linkedin}
-                      target="_blank"
-                      className="size-4 text-neutral-500"
-                    >
-                      <LinkedIn />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>Connect on LinkedIn</TooltipContent>
-                </Tooltip>
-              )}
-              {experience.github && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={experience.github}
-                      target="_blank"
-                      className="size-4 text-neutral-500"
-                    >
-                      <Github />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>View GitHub</TooltipContent>
-                </Tooltip>
-              )}
-              {experience.isCurrent && (
-                <div className="flex items-center gap-1 rounded-md border-green-300 bg-green-500/10 px-2 py-1 text-xs">
-                  <div className="size-2 rounded-full bg-green-500 animate-pulse"></div>
-                  Working
-                </div>
-              )}
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                {experience.companyUrl ? (
+                  <Link
+                    href={experience.companyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+                  >
+                    {experience.company}
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                ) : (
+                  <span className="text-muted-foreground">{experience.company}</span>
+                )}
+              </div>
             </div>
-            <p>{experience.position}</p>
+          </div>
+          <div className="text-right text-sm text-muted-foreground flex-shrink-0">
+            <div>{experience.startDate} - {experience.endDate}</div>
+            {experience.location && (
+              <div className="flex items-center gap-1 mt-1 justify-end">
+                <MapPin className="w-3 h-3" />
+                <span className="text-xs">{experience.location}</span>
+              </div>
+            )}
           </div>
         </div>
-        {/* Right Side */}
-        <div className="text-secondary flex flex-col md:text-right">
-          <p>
-            {experience.startDate} -{' '}
-            {experience.isCurrent ? 'Present' : experience.endDate}
-          </p>
-          <p>{experience.location}</p>
+      </CardHeader>
+      
+      <CardContent className="pt-0">
+        <div className="space-y-4">
+          <div className="prose prose-sm max-w-none">
+            <ul className="space-y-2 text-muted-foreground">
+              {experience.description.map((item, index) => (
+                <li key={index} className="leading-relaxed">
+                  <span dangerouslySetInnerHTML={{ __html: item }} />
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          {experience.technologies && experience.technologies.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {experience.technologies.map((tech) => (
+                <Badge key={tech} variant="outline" className="text-xs">
+                  {tech}
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
-      </div>
-
-      {/* Technologies */}
-      <div>
-        <h4 className="text-md mt-4 mb-2 font-semibold">Technologies</h4>
-        <div className="flex flex-wrap gap-2">
-          {experience.technologies.map((technology, techIndex: number) => (
-            <Skill
-              key={techIndex}
-              name={technology.name}
-              href={technology.href}
-            >
-              {technology.icon}
-            </Skill>
-          ))}
-        </div>
-      </div>
-
-      {/* Description */}
-      <div className="text-secondary flex flex-col">
-        {experience.description.map(
-          (description: string, descIndex: number) => (
-            <p
-              key={descIndex}
-              dangerouslySetInnerHTML={{
-                __html: `• ${parseDescription(description)}`,
-              }}
-            />
-          ),
-        )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

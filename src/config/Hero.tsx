@@ -53,7 +53,7 @@ export const skillComponents = {
 
 export const heroConfig = {
   // Personal Information
-  name: 'Satyam Singh',
+  name: 'Satyam',
   title: 'Full Stack Developer',
   avatar: '/assets/satyam-avatar.png',
 

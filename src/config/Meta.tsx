@@ -13,7 +13,7 @@ export interface PageMeta {
 export const siteConfig = {
   name: heroConfig.name,
   title: 'Sleek Portfolio',
-  description: 'Full Stack Developer - Satyam Singh Portfolio | NIST University | Web Development Expert',
+  description: 'Full Stack Developer - Satyam Portfolio | NIST University | Web Development Expert',
   url: process.env.NEXT_PUBLIC_URL || 'http://localhost:3000',
   ogImage: '/meta/opengraph-image.png',
   author: {
@@ -69,15 +69,18 @@ export const pageMetadata: Record<string, PageMeta> = {
 
   // Work Experience page
   '/work-experience': {
-    title: 'Work Experience - Professional Journey',
+    title: 'Work Experience - Research & Development',
     description:
-      'Explore my professional work experience across different companies and roles in software development.',
+      'Explore my research experience in Machine Learning and Computer Vision at IIT Mandi, focusing on deep learning and remote sensing applications.',
     keywords: [
       'work experience',
-      'career',
-      'professional',
-      'software developer',
-      'employment history',
+      'research',
+      'machine learning',
+      'computer vision',
+      'IIT Mandi',
+      'deep learning',
+      'PyTorch',
+      'YOLO',
     ],
     ogImage: '/meta/work.png',
     twitterCard: 'summary_large_image',
@@ -207,13 +210,6 @@ export function generateMetadata(pathname: string) {
     robots: {
       index: true,
       follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
     },
     alternates: {
       canonical: `${siteConfig.url}${pathname}`,
