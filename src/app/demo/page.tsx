@@ -55,7 +55,7 @@ export default function DemoPage() {
             <CardHeader>
               <CardTitle>Settings Modal</CardTitle>
               <CardDescription>
-                Comprehensive settings interface
+                Comprehensive settings interface with keyboard shortcuts
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -65,9 +65,10 @@ export default function DemoPage() {
                 <li>Theme switching integration</li>
                 <li>Privacy and security settings</li>
                 <li>Auto-save functionality</li>
+                <li><strong>Keyboard shortcuts:</strong> Press <kbd className="px-1 py-0.5 text-xs font-mono bg-muted border rounded">Enter</kbd> to save, <kbd className="px-1 py-0.5 text-xs font-mono bg-muted border rounded">Esc</kbd> to close</li>
               </ul>
               <p className="text-xs text-muted-foreground">
-                Click on your avatar in the navbar and select "Settings" to open the modal.
+                Click on your avatar in the navbar and select "Settings" to open the modal. Try using Enter key to save!
               </p>
             </CardContent>
           </Card>

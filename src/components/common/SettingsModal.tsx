@@ -59,16 +59,32 @@ export function SettingsModal({ isOpen, onClose, user, onSave }: SettingsModalPr
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
+  // Handle keyboard shortcuts
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+      // Ctrl+Enter or Cmd+Enter to save
+      event.preventDefault();
+      handleSave();
+    } else if (event.key === 'Escape') {
+      // Escape to close
+      event.preventDefault();
+      onClose();
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto">
+      <DialogContent 
+        className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto"
+        onKeyDown={handleKeyDown}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
             Settings
           </DialogTitle>
           <DialogDescription>
-            Manage your account settings and preferences.
+            Manage your account settings and preferences. Press <kbd className="px-1 py-0.5 text-xs font-mono bg-muted border rounded">Enter</kbd> to save or <kbd className="px-1 py-0.5 text-xs font-mono bg-muted border rounded">Esc</kbd> to close.
           </DialogDescription>
         </DialogHeader>
 
@@ -114,6 +130,12 @@ export function SettingsModal({ isOpen, onClose, user, onSave }: SettingsModalPr
                   id="name"
                   value={settings.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSave();
+                    }
+                  }}
                   placeholder="Enter your name"
                 />
               </div>
@@ -125,6 +147,12 @@ export function SettingsModal({ isOpen, onClose, user, onSave }: SettingsModalPr
                   type="email"
                   value={settings.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSave();
+                    }
+                  }}
                   placeholder="Enter your email"
                 />
               </div>
@@ -218,9 +246,12 @@ export function SettingsModal({ isOpen, onClose, user, onSave }: SettingsModalPr
             <X className="w-4 h-4 mr-2" />
             Cancel
           </Button>
-          <Button onClick={handleSave}>
+          <Button onClick={handleSave} className="relative">
             <Save className="w-4 h-4 mr-2" />
             Save Changes
+            <kbd className="ml-2 px-1.5 py-0.5 text-xs font-mono bg-muted border border-border rounded opacity-60">
+              Enter
+            </kbd>
           </Button>
         </DialogFooter>
       </DialogContent>
