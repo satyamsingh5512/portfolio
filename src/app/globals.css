@@ -57,6 +57,9 @@
 :root {
   --radius: 0.625rem;
   --blog-font-size: 16px;
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -133,6 +136,12 @@
   }
 }
 
+@layer utilities {
+  .transform-gpu {
+    transform: translateZ(0);
+  }
+}
+
 .text-secondary {
   @apply text-[#909092] dark:text-[#909092];
 }
@@ -173,7 +182,122 @@
   filter: blur(3px);
 }
 
-/* Removed global View Transition API overrides to allow Skiper toggle styles to apply */
+/* Optimized theme transitions for 60fps performance */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Smooth theme transitions with hardware acceleration */
+html {
+  color-scheme: light dark;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+/* Enhanced View Transition API for theme switching */
+::view-transition-group(root) {
+  animation-duration: 0.3s;
+  animation-timing-function: var(--ease-out-quart);
+}
+
+::view-transition-new(root) {
+  animation-name: theme-fade-in;
+}
+
+::view-transition-old(root) {
+  animation-name: theme-fade-out;
+}
+
+@keyframes theme-fade-in {
+  0% {
+    opacity: 0;
+    transform: scale3d(1.02, 1.02, 1);
+    filter: blur(0.5px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale3d(1.01, 1.01, 1);
+    filter: blur(0.25px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+    filter: blur(0);
+  }
+}
+
+@keyframes theme-fade-out {
+  0% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+    filter: blur(0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale3d(0.99, 0.99, 1);
+    filter: blur(0.25px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale3d(0.98, 0.98, 1);
+    filter: blur(0.5px);
+  }
+}
+
+/* Force hardware acceleration for better performance */
+body, 
+.dark body,
+[data-theme="light"],
+[data-theme="dark"] {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: background-color, color;
+}
+
+/* Optimize common interactive elements */
+button, 
+a, 
+[role="button"],
+.cursor-pointer {
+  will-change: transform, opacity;
+}
+
+/* Smooth scrolling with 60fps */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Optimize for 60fps animations */
+  * {
+    animation-fill-mode: both;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  ::view-transition-group(root) {
+    animation: none !important;
+  }
+}
 
 /* Custom button inner shadow */
 .btn-inner-shadow {
