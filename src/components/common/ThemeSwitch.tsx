@@ -12,12 +12,10 @@ export const useThemeToggle = ({
   variant = 'circle',
   start = 'center',
   blur = false,
-  gifUrl = '',
 }: {
   variant?: AnimationVariant;
   start?: AnimationStart;
   blur?: boolean;
-  gifUrl?: string;
 } = {}) => {
   const { theme, setTheme, resolvedTheme } = useTheme();
 
@@ -84,19 +82,16 @@ export const ThemeToggleButton = ({
   variant = 'circle',
   start = 'center',
   blur = false,
-  gifUrl = '',
 }: {
   className?: string;
   variant?: AnimationVariant;
   start?: AnimationStart;
   blur?: boolean;
-  gifUrl?: string;
 }) => {
   const { isDark, toggleTheme } = useThemeToggle({
     variant,
     start,
     blur,
-    gifUrl,
   });
 
   return (
