@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   ],
 };
 
+// Academic portfolio page for Satyam Singh
 export default function SatyamPage() {
   return <AcademicPortfolio />;
 }
