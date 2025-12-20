@@ -2,18 +2,21 @@ import { Metadata } from 'next';
 import AcademicPortfolio from '@/components/academic/AcademicPortfolio';
 
 export const metadata: Metadata = {
-  title: 'Satyam Singh - Computer Science Researcher',
-  description: 'Computer Science Student & Researcher at NIST University | Machine Learning & Computer Vision Research | IIT Mandi Research Intern',
+  title: 'Satyam Singh - ML Engineer & Researcher',
+  description: 'Machine Learning Engineer & Computer Vision Researcher | Neural Networks, Deep Learning & AI Systems | IIT Mandi Research Intern',
   keywords: [
-    'computer science',
-    'researcher',
-    'machine learning',
+    'machine learning engineer',
     'computer vision',
     'deep learning',
+    'neural networks',
+    'artificial intelligence',
     'pytorch',
-    'academic research',
-    'NIST university',
+    'tensorflow',
+    'research',
+    'YOLO',
+    'object detection',
     'IIT Mandi',
+    'NIST university',
   ],
 };
 
