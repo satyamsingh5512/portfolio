@@ -97,7 +97,7 @@ export const heroConfig = {
     {
       variant: 'outline',
       text: 'Resume / CV',
-      href: '/resume',
+      href: '/assets/Resume.pdf',
       icon: 'CV',
     },
     {

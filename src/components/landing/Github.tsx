@@ -76,21 +76,29 @@ function ContributionCalendar({
 
   // Create a grid of contributions for the past year
   const today = new Date();
+  // Set to end of today in UTC to handle timezone issues
+  const todayUTC = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
   
-  // Find the actual date range from the contributions data
-  const contributionDates = contributions.map(c => new Date(c.date));
+  // Filter contributions to only include dates up to today
+  const validContributions = contributions.filter(contrib => {
+    const contribDate = new Date(contrib.date + 'T00:00:00.000Z'); // Parse as UTC
+    return contribDate <= todayUTC;
+  });
+
+  // Find the actual date range from the valid contributions data
+  const contributionDates = validContributions.map(c => new Date(c.date + 'T00:00:00.000Z'));
   const minDate = contributionDates.length > 0 ? new Date(Math.min(...contributionDates.map(d => d.getTime()))) : new Date();
   const maxDate = contributionDates.length > 0 ? new Date(Math.max(...contributionDates.map(d => d.getTime()))) : new Date();
 
   // Create a map of contributions by date
   const contributionMap = new Map<string, ContributionItem>();
-  contributions.forEach(contrib => {
+  validContributions.forEach(contrib => {
     contributionMap.set(contrib.date, contrib);
   });
 
-  // Use the actual data range, but limit to past dates only
+  // Use the actual data range, but limit to valid dates only
   const startDate = new Date(minDate);
-  const endDate = new Date(Math.min(today.getTime(), maxDate.getTime()));
+  const endDate = new Date(Math.min(todayUTC.getTime(), maxDate.getTime()));
   
   // Adjust start date to the beginning of the week (Sunday)
   const dayOfWeek = startDate.getDay();
@@ -294,16 +302,17 @@ export default function Github() {
               level: levelMap[item.contributionLevel] || 0,
             }));
 
-          // Filter to only past contributions for total count
+          // Filter to only valid contributions for total count (up to today)
           const today = new Date();
-          const pastContributions = validContributions.filter(contrib => {
-            const contribDate = new Date(contrib.date);
-            return contribDate <= today;
+          const todayUTC = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+          const validContributionsForTotal = validContributions.filter(contrib => {
+            const contribDate = new Date(contrib.date + 'T00:00:00.000Z');
+            return contribDate <= todayUTC;
           });
 
           setContributions(validContributions);
           setTotalContributions(
-            pastContributions.reduce((sum, item) => sum + item.count, 0),
+            validContributionsForTotal.reduce((sum, item) => sum + item.count, 0),
           );
         } else {
           throw new Error('Invalid response format');
