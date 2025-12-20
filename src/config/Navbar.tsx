@@ -12,20 +12,16 @@ export const navbarConfig = {
   },
   navItems: [
     {
-      label: 'Work',
+      label: 'Projects',
+      href: '/projects',
+    },
+    {
+      label: 'Experience',
       href: '/work-experience',
     },
     {
-      label: 'Academic',
-      href: '/satyam',
-    },
-    {
-      label: 'Blogs',
-      href: '/blog',
-    },
-    {
-      label: 'Projects',
-      href: '/projects',
+      label: 'Contact',
+      href: '/contact',
     },
   ] as NavItem[],
 };

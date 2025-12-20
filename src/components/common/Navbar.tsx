@@ -6,7 +6,6 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 
 import Container from './Container';
-import { ThemeToggleButton } from './ThemeSwitch';
 import { UserMenu } from './UserMenu';
 import { SettingsModal } from './SettingsModal';
 
@@ -69,12 +68,6 @@ export default function Navbar() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <ThemeToggleButton 
-              variant="circle" 
-              start="top-right" 
-              blur 
-              className="transform-gpu"
-            />
             <UserMenu 
               user={user}
               onSignOut={handleSignOut}
