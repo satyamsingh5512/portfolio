@@ -12,7 +12,8 @@ import { Button } from '../ui/button';
 type GitHubContributionResponse = {
   date: string;
   contributionCount: number;
-  contributionLevel: number;
+  contributionLevel: string;
+  color: string;
 };
 
 type ContributionItem = {
@@ -40,7 +41,7 @@ type GitHubResponse = {
       };
     };
   };
-  contributions?: unknown[];
+  contributions?: GitHubContributionResponse[][];
 };
 
 // Contribution Calendar Component
@@ -75,8 +76,11 @@ function ContributionCalendar({
 
   // Create a grid of contributions for the past year
   const today = new Date();
-  const oneYearAgo = new Date(today);
-  oneYearAgo.setFullYear(today.getFullYear() - 1);
+  
+  // Find the actual date range from the contributions data
+  const contributionDates = contributions.map(c => new Date(c.date));
+  const minDate = contributionDates.length > 0 ? new Date(Math.min(...contributionDates.map(d => d.getTime()))) : new Date();
+  const maxDate = contributionDates.length > 0 ? new Date(Math.max(...contributionDates.map(d => d.getTime()))) : new Date();
 
   // Create a map of contributions by date
   const contributionMap = new Map<string, ContributionItem>();
@@ -84,18 +88,20 @@ function ContributionCalendar({
     contributionMap.set(contrib.date, contrib);
   });
 
-  // Create weeks array
-  const weeks: ContributionItem[][] = [];
-  let currentWeek: ContributionItem[] = [];
-
-  // Start from the first Sunday
-  const startDate = new Date(oneYearAgo);
+  // Use the actual data range, but limit to past dates only
+  const startDate = new Date(minDate);
+  const endDate = new Date(Math.min(today.getTime(), maxDate.getTime()));
+  
+  // Adjust start date to the beginning of the week (Sunday)
   const dayOfWeek = startDate.getDay();
   if (dayOfWeek !== 0) {
     startDate.setDate(startDate.getDate() - dayOfWeek);
   }
 
-  const endDate = new Date(today);
+  // Create weeks array
+  const weeks: ContributionItem[][] = [];
+  let currentWeek: ContributionItem[] = [];
+
   const currentDatePointer = new Date(startDate);
 
   while (currentDatePointer <= endDate) {
@@ -234,9 +240,15 @@ export default function Github() {
     const fetchContributions = async () => {
       try {
         setIsLoading(true);
+        
         const response = await fetch(
           `${githubConfig.apiUrl}/${githubConfig.username}.json`,
         );
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data: GitHubResponse = await response.json();
 
         if (data.data?.user?.contributionsCollection?.contributionCalendar) {
@@ -255,8 +267,17 @@ export default function Github() {
           setContributions(flattenedContributions);
           setTotalContributions(calendar.totalContributions || 0);
         } else if (data.contributions && Array.isArray(data.contributions)) {
-          // Handle alternative API response format
+          // Handle alternative API response format (array of arrays)
           const flattenedContributions = data.contributions.flat();
+          
+          // Convert contribution level strings to numbers
+          const levelMap: Record<string, number> = {
+            'NONE': 0,
+            'FIRST_QUARTILE': 1,
+            'SECOND_QUARTILE': 2,
+            'THIRD_QUARTILE': 3,
+            'FOURTH_QUARTILE': 4,
+          };
           
           const validContributions = flattenedContributions
             .filter(
@@ -270,12 +291,19 @@ export default function Github() {
             .map((item: GitHubContributionResponse) => ({
               date: String(item.date),
               count: Number(item.contributionCount || 0),
-              level: Number(item.contributionLevel || 0),
+              level: levelMap[item.contributionLevel] || 0,
             }));
+
+          // Filter to only past contributions for total count
+          const today = new Date();
+          const pastContributions = validContributions.filter(contrib => {
+            const contribDate = new Date(contrib.date);
+            return contribDate <= today;
+          });
 
           setContributions(validContributions);
           setTotalContributions(
-            validContributions.reduce((sum, item) => sum + item.count, 0),
+            pastContributions.reduce((sum, item) => sum + item.count, 0),
           );
         } else {
           throw new Error('Invalid response format');
