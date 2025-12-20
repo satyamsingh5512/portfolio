@@ -22,7 +22,7 @@ export const experiences: Experience[] = [
     isCurrent: false,
     location: 'Mandi, Himachal Pradesh',
     companyUrl: 'https://www.iitmandi.ac.in/',
-    logo: '/company/iit-mandi.png',
+    logo: '/company/iit-mandi.svg',
     technologies: [
       'PyTorch',
       'Computer Vision',
