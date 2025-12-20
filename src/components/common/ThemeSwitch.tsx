@@ -46,7 +46,7 @@ export const useThemeToggle = ({
   const toggleTheme = useCallback(() => {
     setIsDark(!isDark);
 
-    const animation = createAnimation(variant, start, blur, gifUrl);
+    const animation = createAnimation(variant, start, blur);
 
     updateStyles(animation.css);
 
@@ -68,7 +68,6 @@ export const useThemeToggle = ({
     variant,
     start,
     blur,
-    gifUrl,
     updateStyles,
     isDark,
     setIsDark,
@@ -146,7 +145,6 @@ export const createAnimation = (
   variant: AnimationVariant,
   start: AnimationStart = 'center',
   blur = false,
-  url?: string,
 ): Animation => {
   if (variant === 'circle' && start === 'center') {
     return {
