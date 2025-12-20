@@ -1,3 +1,5 @@
+'use client';
+
 import { navbarConfig } from '@/config/Navbar';
 import { Link } from 'next-view-transitions';
 import Image from 'next/image';
@@ -28,7 +30,14 @@ export default function Navbar() {
     setIsSettingsOpen(true);
   };
 
-  const handleSaveSettings = (settings: any) => {
+  const handleSaveSettings = (settings: {
+    name: string;
+    email: string;
+    notifications: boolean;
+    emailNotifications: boolean;
+    darkMode: boolean;
+    autoSave: boolean;
+  }) => {
     // Implement your settings save logic here
     console.log('Saving settings:', settings);
   };

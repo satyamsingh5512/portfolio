@@ -22,7 +22,7 @@ export function PointsNotification({ className }: PointsNotificationProps) {
 
   useEffect(() => {
     const handlePointsUpdate = (event: CustomEvent<PointsUpdate>) => {
-      const { newPoints, addedAmount, subtractedAmount } = event.detail;
+      const { newPoints } = event.detail;
       
       setPoints(newPoints);
       setLastUpdate(event.detail);

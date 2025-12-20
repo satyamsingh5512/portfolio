@@ -37,7 +37,14 @@ interface SettingsModalProps {
     avatar?: string;
     points: number;
   };
-  onSave?: (settings: any) => void;
+  onSave?: (settings: {
+    name: string;
+    email: string;
+    notifications: boolean;
+    emailNotifications: boolean;
+    darkMode: boolean;
+    autoSave: boolean;
+  }) => void;
 }
 
 export function SettingsModal({ isOpen, onClose, user, onSave }: SettingsModalProps) {

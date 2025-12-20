@@ -26,15 +26,14 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ user, onSignOut, onSettings }: UserMenuProps) {
-  const [points, setPoints] = useState(user?.points || 0);
-
   // Simulate real-time points update
   useEffect(() => {
     if (!user) return;
     
     // Listen for points updates (you can replace this with your actual points update logic)
     const handlePointsUpdate = (event: CustomEvent) => {
-      setPoints(event.detail.newPoints);
+      // Points are handled by the PointsNotification component
+      console.log('Points updated:', event.detail.newPoints);
     };
 
     window.addEventListener('pointsUpdated', handlePointsUpdate as EventListener);
@@ -43,15 +42,6 @@ export function UserMenu({ user, onSignOut, onSettings }: UserMenuProps) {
       window.removeEventListener('pointsUpdated', handlePointsUpdate as EventListener);
     };
   }, [user]);
-
-  // Function to update points (call this when points are credited)
-  const updatePoints = (newPoints: number) => {
-    setPoints(newPoints);
-    // Dispatch custom event for real-time updates
-    window.dispatchEvent(new CustomEvent('pointsUpdated', { 
-      detail: { newPoints } 
-    }));
-  };
 
   if (!user) {
     return (

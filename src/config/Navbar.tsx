@@ -16,6 +16,10 @@ export const navbarConfig = {
       href: '/work-experience',
     },
     {
+      label: 'Academic',
+      href: '/satyam',
+    },
+    {
       label: 'Blogs',
       href: '/blog',
     },
