@@ -10,7 +10,6 @@ import Skill from '../common/Skill';
 import CV from '../svgs/CV';
 import Chat from '../svgs/Chat';
 import { Button } from '../ui/button';
-import { PixelatedCanvas } from '../ui/pixelated-canvas';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const buttonIcons = {
@@ -53,29 +52,18 @@ export default function Hero() {
   return (
     <Container className="mx-auto max-w-5xl">
       <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12">
-        {/* Professional Image with Pixelated Effect */}
-        <div className="flex-shrink-0">
-          <PixelatedCanvas
-            src="/assets/satyam-avatar.png"
-            width={300}
-            height={300}
-            cellSize={4}
-            dotScale={0.8}
-            shape="square"
-            backgroundColor="transparent"
-            dropoutStrength={0.3}
-            interactive
-            distortionStrength={5}
-            distortionRadius={100}
-            distortionMode="swirl"
-            followSpeed={0.15}
-            jitterStrength={3}
-            jitterSpeed={2}
-            sampleAverage
-            tintColor="#3b82f6"
-            tintStrength={0.1}
-            className="rounded-2xl border border-border/50 shadow-2xl hover:shadow-3xl transition-shadow duration-300"
-          />
+        {/* Professional Image - Simple version for better performance */}
+        <div className="flex-shrink-0 hidden lg:block">
+          <div className="relative w-[300px] h-[300px] rounded-2xl overflow-hidden border border-border/50 shadow-2xl">
+            <Image
+              src={avatar}
+              alt={name}
+              fill
+              className="object-cover"
+              priority
+              quality={90}
+            />
+          </div>
         </div>
 
         {/* Content Area */}
