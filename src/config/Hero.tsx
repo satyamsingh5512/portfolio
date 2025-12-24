@@ -26,7 +26,6 @@
 import Github from '@/components/svgs/Github';
 import LinkedIn from '@/components/svgs/LinkedIn';
 import Mail from '@/components/svgs/Mail';
-import X from '@/components/svgs/X';
 import Bun from '@/components/technologies/Bun';
 import JavaScript from '@/components/technologies/JavaScript';
 import MongoDB from '@/components/technologies/MongoDB';
@@ -113,22 +112,17 @@ export const heroConfig = {
 export const socialLinks = [
   {
     name: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/satyam-singh-px/',
+    href: 'https://www.linkedin.com/in/satym5512/',
     icon: <LinkedIn />,
   },
   {
     name: 'Github',
-    href: 'https://github.com/satyamsinghpx',
+    href: 'https://github.com/satyamsingh5512',
     icon: <Github />,
   },
   {
     name: 'Email',
-    href: 'mailto:satyamsinghpx@gmail.com',
+    href: 'mailto:satyamssinghpx@gmail.com',
     icon: <Mail />,
-  },
-  {
-    name: 'X',
-    href: 'https://x.com/satyamsinghpx',
-    icon: <X />,
   },
 ];
