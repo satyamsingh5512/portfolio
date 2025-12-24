@@ -22,7 +22,7 @@ export const projects: Project[] = [
       { name: 'Spotify API', icon: <NodeJs key="spotify" /> },
       { name: 'Vercel', icon: <Vercel key="vercel" /> },
     ],
-    github: 'https://github.com/satyamsingh5512/spotify-now-playing',
+    github: 'https://github.com/satyamsingh5512/spotify-now-client',
     live: 'https://spotify-now-client.vercel.app/',
     details: true,
     projectDetailsPageSlug: '/projects/spotify-now-playing',
