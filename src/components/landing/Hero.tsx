@@ -56,9 +56,9 @@ export default function Hero() {
         {/* Professional Image with Pixelated Effect */}
         <div className="flex-shrink-0">
           <PixelatedCanvas
-            src="/assets/satyam-professional.jpg"
+            src="/assets/satyam-avatar.png"
             width={300}
-            height={400}
+            height={300}
             cellSize={4}
             dotScale={0.8}
             shape="square"
