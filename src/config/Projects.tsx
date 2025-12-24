@@ -1,12 +1,32 @@
 import ExpressJs from '@/components/technologies/ExpressJs';
 import MongoDB from '@/components/technologies/MongoDB';
+import NextJs from '@/components/technologies/NextJs';
 import NodeJs from '@/components/technologies/NodeJs';
 import PostgreSQL from '@/components/technologies/PostgreSQL';
 import ReactIcon from '@/components/technologies/ReactIcon';
+import TypeScript from '@/components/technologies/TypeScript';
 import Vercel from '@/components/technologies/Vercel';
 import { Project } from '@/types/project';
 
 export const projects: Project[] = [
+  {
+    title: 'Spotify Now Playing',
+    description:
+      'A real-time Spotify "Now Playing" pill widget implemented with Next.js App Router and TypeScript. Integrates Spotify Web API with secure token handling, SWR-based polling, Framer Motion animations, and a responsive glassmorphic UI',
+    image: '/project/spotify-client.png',
+    link: 'https://github.com/satyamsingh5512/spotify-now-playing',
+    technologies: [
+      { name: 'Next.js', icon: <NextJs key="nextjs" /> },
+      { name: 'TypeScript', icon: <TypeScript key="typescript" /> },
+      { name: 'React', icon: <ReactIcon key="react" /> },
+      { name: 'Spotify API', icon: <NodeJs key="spotify" /> },
+      { name: 'Vercel', icon: <Vercel key="vercel" /> },
+    ],
+    github: 'https://github.com/satyamsingh5512/spotify-now-playing',
+    details: true,
+    projectDetailsPageSlug: '/projects/spotify-now-playing',
+    isWorking: true,
+  },
   {
     title: 'Ride-Hailing Backend',
     description:
