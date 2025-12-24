@@ -10,6 +10,23 @@ import { Project } from '@/types/project';
 
 export const projects: Project[] = [
   {
+    title: 'VardaX',
+    description:
+      'An ML-powered Web Application Firewall that detects and blocks malicious traffic in real time using behavioral analysis, anomaly detection, and lightweight cloud-ready architecture',
+    image: '/project/VardaX.png',
+    link: '#',
+    technologies: [
+      { name: 'Node.js', icon: <NodeJs key="nodejs" /> },
+      { name: 'Express.js', icon: <ExpressJs key="expressjs" /> },
+      { name: 'Next.js', icon: <NextJs key="nextjs" /> },
+      { name: 'Python', icon: <TypeScript key="python" /> },
+      { name: 'MongoDB', icon: <MongoDB key="mongodb" /> },
+    ],
+    details: true,
+    projectDetailsPageSlug: '/projects/vardax',
+    isWorking: false,
+  },
+  {
     title: 'RetroPaste',
     description:
       'A modern code-sharing platform inspired by classic Pastebin, reimagined with authentic retro terminal aesthetics. RetroPaste combines CRT visual effects, AI-powered code analysis, ephemeral pastes, and collaborative editing using a fast, scalable Next.js architecture',
