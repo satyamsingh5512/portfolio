@@ -14,7 +14,7 @@ export const projects: Project[] = [
     description:
       'A real-time Spotify "Now Playing" pill widget implemented with Next.js App Router and TypeScript. Integrates Spotify Web API with secure token handling, SWR-based polling, Framer Motion animations, and a responsive glassmorphic UI',
     image: '/project/spotify-client.png',
-    link: 'https://github.com/satyamsingh5512/spotify-now-playing',
+    link: 'https://spotify-now-client.vercel.app/',
     technologies: [
       { name: 'Next.js', icon: <NextJs key="nextjs" /> },
       { name: 'TypeScript', icon: <TypeScript key="typescript" /> },
@@ -23,6 +23,7 @@ export const projects: Project[] = [
       { name: 'Vercel', icon: <Vercel key="vercel" /> },
     ],
     github: 'https://github.com/satyamsingh5512/spotify-now-playing',
+    live: 'https://spotify-now-client.vercel.app/',
     details: true,
     projectDetailsPageSlug: '/projects/spotify-now-playing',
     isWorking: true,
