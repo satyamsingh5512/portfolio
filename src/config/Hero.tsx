@@ -88,7 +88,7 @@ export const heroConfig = {
   // Description Configuration
   description: {
     template:
-      'I build scalable web applications using {skills:0}, {skills:1}, {skills:2}, and {skills:3}. Specializing in <b>Full Stack Development</b>, <b>Backend Architecture</b>, and <b>Database Design</b>. Passionate about creating efficient, user-friendly applications with modern technologies.',
+      'I am a <b>Full Stack Software Engineer</b> focused on designing and building scalable, production-ready systems that perform reliably under real-world constraints. My core strength lies in architecting backend services with {skills:2} and Express, crafting high-performance web applications using {skills:0} and {skills:1}, and designing resilient data models with {skills:3} and {skills:4}.',
   },
 
   // Buttons Configuration
