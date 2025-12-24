@@ -27,6 +27,23 @@ export const projects: Project[] = [
     isWorking: false,
   },
   {
+    title: 'Ubuntu Clipboard Manager',
+    description:
+      'Built a native Ubuntu clipboard manager replicating Windows-style clipboard history using Python, GTK, and system-level Linux APIs, focusing on performance, privacy, and seamless desktop integration',
+    image: '/project/Paste-bin.png',
+    link: '#',
+    technologies: [
+      { name: 'Python', icon: <TypeScript key="python" /> },
+      { name: 'GTK', icon: <ReactIcon key="gtk" /> },
+      { name: 'D-Bus', icon: <NodeJs key="dbus" /> },
+      { name: 'SQLite', icon: <MongoDB key="sqlite" /> },
+      { name: 'Linux', icon: <Vercel key="linux" /> },
+    ],
+    details: true,
+    projectDetailsPageSlug: '/projects/ubuntu-clipboard-manager',
+    isWorking: false,
+  },
+  {
     title: 'RetroPaste',
     description:
       'A modern code-sharing platform inspired by classic Pastebin, reimagined with authentic retro terminal aesthetics. RetroPaste combines CRT visual effects, AI-powered code analysis, ephemeral pastes, and collaborative editing using a fast, scalable Next.js architecture',
