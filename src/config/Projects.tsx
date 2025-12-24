@@ -11,7 +11,7 @@ export const projects: Project[] = [
     title: 'Ride-Hailing Backend',
     description:
       'Production-ready scalable ride-hailing backend with geospatial driver matching, dynamic surge pricing, event-driven architecture using Kafka, and secure JWT authentication',
-    image: '/project/ride-hailing.png',
+    image: '/project/ride-Handlin-Back.png',
     link: 'https://github.com/satyamsinghpx/ride-hailing-backend',
     technologies: [
       { name: 'Spring Boot', icon: <NodeJs key="springboot" /> },
