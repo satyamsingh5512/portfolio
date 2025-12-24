@@ -48,6 +48,25 @@ export const projects: Project[] = [
     isWorking: true,
   },
   {
+    title: 'CroxShare',
+    description:
+      'A production-ready peer-to-peer file sharing platform built with Next.js, TypeScript, and WebRTC, featuring intelligent compression, clipboard-based uploads, real-time analytics, and a premium, Apple-inspired UI',
+    image: '/project/crosx-share.png',
+    link: 'https://croxshare.vercel.app/',
+    technologies: [
+      { name: 'Next.js', icon: <NextJs key="nextjs" /> },
+      { name: 'TypeScript', icon: <TypeScript key="typescript" /> },
+      { name: 'React', icon: <ReactIcon key="react" /> },
+      { name: 'WebRTC', icon: <NodeJs key="webrtc" /> },
+      { name: 'Vercel', icon: <Vercel key="vercel" /> },
+    ],
+    github: 'https://github.com/satyamsingh5512/croxshare',
+    live: 'https://croxshare.vercel.app/',
+    details: true,
+    projectDetailsPageSlug: '/projects/croxshare',
+    isWorking: true,
+  },
+  {
     title: 'Spotify Now Playing',
     description:
       'A real-time Spotify "Now Playing" pill widget implemented with Next.js App Router and TypeScript. Integrates Spotify Web API with secure token handling, SWR-based polling, Framer Motion animations, and a responsive glassmorphic UI',
