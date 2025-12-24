@@ -29,6 +29,25 @@ export const projects: Project[] = [
     isWorking: true,
   },
   {
+    title: 'StudyBuddy',
+    description:
+      'AI-powered study companion for competitive exam preparation. Features smart task management, Pomodoro timer, study analytics, real-time chat, and friend system to enhance productivity and collaborative learning',
+    image: '/project/study-buddy.png',
+    link: 'https://studybuddyone.vercel.app/',
+    technologies: [
+      { name: 'React', icon: <ReactIcon key="react" /> },
+      { name: 'TypeScript', icon: <TypeScript key="typescript" /> },
+      { name: 'Express.js', icon: <ExpressJs key="expressjs" /> },
+      { name: 'PostgreSQL', icon: <PostgreSQL key="postgresql" /> },
+      { name: 'Vercel', icon: <Vercel key="vercel" /> },
+    ],
+    github: 'https://github.com/satyamsingh5512/studybuddy',
+    live: 'https://studybuddyone.vercel.app/',
+    details: true,
+    projectDetailsPageSlug: '/projects/studybuddy',
+    isWorking: true,
+  },
+  {
     title: 'Spotify Now Playing',
     description:
       'A real-time Spotify "Now Playing" pill widget implemented with Next.js App Router and TypeScript. Integrates Spotify Web API with secure token handling, SWR-based polling, Framer Motion animations, and a responsive glassmorphic UI',
