@@ -10,6 +10,25 @@ import { Project } from '@/types/project';
 
 export const projects: Project[] = [
   {
+    title: 'RetroPaste',
+    description:
+      'A modern code-sharing platform inspired by classic Pastebin, reimagined with authentic retro terminal aesthetics. RetroPaste combines CRT visual effects, AI-powered code analysis, ephemeral pastes, and collaborative editing using a fast, scalable Next.js architecture',
+    image: '/project/retro-paste.png',
+    link: 'https://retropaste.vercel.app/',
+    technologies: [
+      { name: 'Next.js', icon: <NextJs key="nextjs" /> },
+      { name: 'TypeScript', icon: <TypeScript key="typescript" /> },
+      { name: 'React', icon: <ReactIcon key="react" /> },
+      { name: 'MongoDB', icon: <MongoDB key="mongodb" /> },
+      { name: 'Vercel', icon: <Vercel key="vercel" /> },
+    ],
+    github: 'https://github.com/satyamsingh5512/retropaste',
+    live: 'https://retropaste.vercel.app/',
+    details: true,
+    projectDetailsPageSlug: '/projects/retropaste',
+    isWorking: true,
+  },
+  {
     title: 'Spotify Now Playing',
     description:
       'A real-time Spotify "Now Playing" pill widget implemented with Next.js App Router and TypeScript. Integrates Spotify Web API with secure token handling, SWR-based polling, Framer Motion animations, and a responsive glassmorphic UI',
