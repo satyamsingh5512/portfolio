@@ -27,6 +27,7 @@ import Github from '@/components/svgs/Github';
 import LinkedIn from '@/components/svgs/LinkedIn';
 import Mail from '@/components/svgs/Mail';
 import Bun from '@/components/technologies/Bun';
+import ExpressJs from '@/components/technologies/ExpressJs';
 import JavaScript from '@/components/technologies/JavaScript';
 import MongoDB from '@/components/technologies/MongoDB';
 import NextJs from '@/components/technologies/NextJs';
@@ -48,13 +49,14 @@ export const skillComponents = {
   MongoDB: MongoDB,
   Prisma: Prisma,
   JavaScript: JavaScript,
+  ExpressJs: ExpressJs,
 };
 
 export const heroConfig = {
   // Personal Information
   name: 'Satyam',
   title: 'Full Stack Developer',
-  avatar: '/assets/professional-image.png',
+  avatar: '/assets/profesional-image.png',
 
   // Skills Configuration
   skills: [
@@ -74,6 +76,11 @@ export const heroConfig = {
       component: 'NodeJs',
     },
     {
+      name: 'Express',
+      href: 'https://expressjs.com/',
+      component: 'ExpressJs',
+    },
+    {
       name: 'PostgreSQL',
       href: 'https://www.postgresql.org/',
       component: 'PostgreSQL',
@@ -88,7 +95,7 @@ export const heroConfig = {
   // Description Configuration
   description: {
     template:
-      'I am a <b>Full Stack Software Engineer</b> focused on designing and building scalable, production-ready systems that perform reliably under real-world constraints. My core strength lies in architecting backend services with {skills:2} and Express, crafting high-performance web applications using {skills:0} and {skills:1}, and designing resilient data models with {skills:3} and {skills:4}.',
+      'I am a <b>Full Stack Software Engineer</b> focused on designing and building scalable, production-ready systems that perform reliably under real-world constraints. My core strength lies in architecting backend services with {skills:2} and {skills:3}, crafting high-performance web applications using {skills:0} and {skills:1}, and designing resilient data models with {skills:4} and {skills:5}.',
   },
 
   // Buttons Configuration
