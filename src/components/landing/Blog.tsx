@@ -11,15 +11,15 @@ export default function Blog() {
   const posts = getPublishedBlogPosts();
 
   return (
-    <Container className="mt-20">
+    <Container className="mt-12 sm:mt-20">
       <SectionHeading subHeading="Featured" heading="Blogs" />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 sm:mt-8">
         {posts.slice(0, 2).map((post) => (
           <BlogCard key={post.slug} post={post} />
         ))}
       </div>
-      <div className="mt-8 flex justify-center">
-        <Button variant="outline">
+      <div className="mt-6 sm:mt-8 flex justify-center">
+        <Button variant="outline" className="text-sm">
           <Link href="/blog">Show all blogs</Link>
         </Button>
       </div>

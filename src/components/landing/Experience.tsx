@@ -9,16 +9,16 @@ import { Button } from '../ui/button';
 
 export default function Experience() {
   return (
-    <Container className="mt-20">
+    <Container className="mt-12 sm:mt-20">
       <SectionHeading subHeading="Featured" heading="Experience" />
-      <div className="mt-4 flex flex-col gap-8">
+      <div className="mt-4 flex flex-col gap-4 sm:gap-8">
         {experiences.slice(0, 2).map((experience: Experience) => (
           <ExperienceCard key={experience.id} experience={experience} />
         ))}
       </div>
       {experiences.length > 2 && (
-        <div className="mt-8 flex justify-center">
-          <Button variant="outline">
+        <div className="mt-6 sm:mt-8 flex justify-center">
+          <Button variant="outline" className="text-sm">
             <Link href="/work-experience">Show all work experiences</Link>
           </Button>
         </div>

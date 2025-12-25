@@ -61,14 +61,14 @@ export default function CTA({
 
   return (
     <>
-      <Container className="mt-20 border border-dashed dark:border-white/10 border-black/20 py-8 rounded-md ">
-        <div className="sm:px-12 px-6 mt-6 pb-8 sm:flex sm:justify-between sm:items-center w-full flex-col">
-          <p className="opacity-50 text-base md:text-xl mb-4 sm:mb-3 text-center">
+      <Container className="mt-12 sm:mt-20 border border-dashed dark:border-white/10 border-black/20 py-6 sm:py-8 rounded-md ">
+        <div className="px-4 sm:px-12 mt-4 sm:mt-6 pb-6 sm:pb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center w-full">
+          <p className="opacity-50 text-sm sm:text-base md:text-xl mb-4 sm:mb-3 text-center sm:text-left">
             {preText}
           </p>
-          <div className="w-full sm:w-auto mt-4 sm:mt-0 flex justify-center sm:justify-end">
+          <div className="w-full sm:w-auto mt-3 sm:mt-0 flex justify-center sm:justify-end">
             <div
-              className="inline-flex items-center text-sm bg-black/5 dark:bg-white/15 border border-dashed dark:border-white/30 border-black/20 py-1 px-2 rounded-md shadow-[0_0_5px_rgba(0,0,0,0.1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.1)] self-end text-black dark:text-white cursor-pointer transition-all group"
+              className="inline-flex items-center text-xs sm:text-sm bg-black/5 dark:bg-white/15 border border-dashed dark:border-white/30 border-black/20 py-1 px-2 rounded-md shadow-[0_0_5px_rgba(0,0,0,0.1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.1)] self-end text-black dark:text-white cursor-pointer transition-all group"
               onClick={handleButtonClick}
             >
               <div className="flex items-center gap-2 group-hover:gap-8 transition-all duration-300 relative z-20">

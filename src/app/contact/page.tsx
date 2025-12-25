@@ -23,14 +23,14 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <Container className="py-16">
-      <div className="space-y-8">
+    <Container className="py-10 sm:py-16">
+      <div className="space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="space-y-4 text-center">
-          <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">
+        <div className="space-y-3 sm:space-y-4 text-center">
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight lg:text-5xl">
             {contactConfig.title}
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto max-w-2xl text-sm sm:text-lg text-muted-foreground">
             {contactConfig.description}
           </p>
         </div>

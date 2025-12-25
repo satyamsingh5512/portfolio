@@ -35,42 +35,42 @@ export function BlogCard({ post }: BlogCardProps) {
           </Link>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
+      <CardContent className="px-4 sm:px-6">
+        <div className="space-y-2 sm:space-y-3">
           <Link href={`/blog/${slug}`}>
-            <h3 className="line-clamp-2 text-xl font-semibold leading-tight group-hover:text-primary">
+            <h3 className="line-clamp-2 text-base sm:text-xl font-semibold leading-tight group-hover:text-primary">
               {title}
             </h3>
           </Link>
-          <p className="line-clamp-3 text-secondary mt-4">{description}</p>
+          <p className="line-clamp-3 text-secondary text-sm sm:text-base mt-3 sm:mt-4">{description}</p>
         </div>
       </CardContent>
-      <CardFooter className="p-6 pt-0">
-        <div className="flex w-full flex-col space-y-3">
-          <div className="flex flex-wrap gap-2">
+      <CardFooter className="p-4 sm:p-6 pt-0">
+        <div className="flex w-full flex-col space-y-2 sm:space-y-3">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
+              <Badge key={tag} variant="secondary" className="text-[10px] sm:text-xs">
                 {tag}
               </Badge>
             ))}
             {tags.length > 3 && (
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline" className="text-[10px] sm:text-xs">
                 +{tags.length - 3} more
               </Badge>
             )}
           </div>
-          <div className="flex items-center gap-2 justify-between mt-4">
+          <div className="flex items-center gap-2 justify-between mt-3 sm:mt-4">
             <time
-              className="text-sm text-secondary flex items-center gap-2"
+              className="text-xs sm:text-sm text-secondary flex items-center gap-1 sm:gap-2"
               dateTime={date}
             >
-              <Calender className="size-4" /> {formattedDate}
+              <Calender className="size-3 sm:size-4" /> {formattedDate}
             </time>
             <Link
               href={`/blog/${slug}`}
-              className="flex items-center justify-end gap-2 hover:underline underline-offset-4 text-secondary"
+              className="flex items-center justify-end gap-1 sm:gap-2 hover:underline underline-offset-4 text-secondary text-xs sm:text-sm"
             >
-              Read More <ArrowRight className="size-4" />
+              Read More <ArrowRight className="size-3 sm:size-4" />
             </Link>
           </div>
         </div>

@@ -10,14 +10,14 @@ interface ExperienceListProps {
 export function ExperienceList({ experiences }: ExperienceListProps) {
   if (experiences.length === 0) {
     return (
-      <div className="text-center py-8">
-        <p className="text-muted-foreground">No work experiences found.</p>
+      <div className="text-center py-6 sm:py-8">
+        <p className="text-muted-foreground text-sm sm:text-base">No work experiences found.</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-4 sm:gap-8">
       {experiences.map((experience: Experience) => (
         <ExperienceCard key={experience.id} experience={experience} />
       ))}

@@ -10,12 +10,12 @@ export const metadata: Metadata = generateMetadata('/work-experience');
 
 export default function WorkExperiencePage() {
   return (
-    <Container className="min-h-screen py-16">
+    <Container className="min-h-screen py-10 sm:py-16">
       <SectionHeading 
         subHeading="Professional Journey" 
         heading="Work Experience" 
       />
-      <div className="mt-8">
+      <div className="mt-6 sm:mt-8">
         <ExperienceList experiences={experiences} />
       </div>
     </Container>

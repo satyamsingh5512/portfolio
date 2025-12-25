@@ -353,13 +353,13 @@ export default function Github() {
   }
 
   return (
-    <Container className="py-16">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold mb-2">{githubConfig.title}</h2>
-        <p className="text-muted-foreground">{githubConfig.subtitle}</p>
+    <Container className="py-10 sm:py-16">
+      <div className="text-center mb-6 sm:mb-8">
+        <h2 className="text-xl sm:text-2xl font-bold mb-2">{githubConfig.title}</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">{githubConfig.subtitle}</p>
       </div>
 
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto overflow-x-auto">
         <ContributionCalendar
           contributions={contributions}
           isLoading={isLoading}
@@ -367,11 +367,11 @@ export default function Github() {
         />
         
         {!isLoading && totalContributions > 0 && (
-          <div className="text-center mt-6">
-            <p className="text-sm text-muted-foreground">
+          <div className="text-center mt-4 sm:mt-6">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               {githubConfig.totalCountLabel.replace('{{count}}', totalContributions.toString())}
             </p>
-            <Button asChild variant="outline" className="mt-4">
+            <Button asChild variant="outline" className="mt-3 sm:mt-4 text-sm">
               <Link
                 href={`https://github.com/${githubConfig.username}`}
                 target="_blank"

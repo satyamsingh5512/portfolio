@@ -76,14 +76,14 @@ export function BlogPageClient({
   };
 
   return (
-    <Container className="py-16">
-      <div className="space-y-8">
+    <Container className="py-10 sm:py-16">
+      <div className="space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="space-y-4 text-center">
-          <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">
+        <div className="space-y-3 sm:space-y-4 text-center">
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight lg:text-5xl">
             Blogs
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto max-w-2xl text-sm sm:text-lg text-muted-foreground">
             Thoughts, tutorials, and insights on engineering, and programming.
           </p>
         </div>
@@ -92,19 +92,19 @@ export function BlogPageClient({
 
         {/* Tags */}
         {initialTags.length > 0 && (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Popular Tags</h2>
+              <h2 className="text-base sm:text-lg font-semibold">Popular Tags</h2>
               {selectedTag && (
                 <button
                   onClick={() => handleTagClick(selectedTag)}
-                  className="text-sm text-muted-foreground hover:text-foreground underline"
+                  className="text-xs sm:text-sm text-muted-foreground hover:text-foreground underline"
                 >
                   Clear filter
                 </button>
               )}
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {initialTags.map((tag) => {
                 const postCount = getTagPostCount(tag);
                 const isSelected = selectedTag === tag;
@@ -116,7 +116,7 @@ export function BlogPageClient({
                   >
                     <Badge
                       variant={isSelected ? 'default' : 'outline'}
-                      className="capitalize cursor-pointer hover:bg-accent hover:text-accent-foreground tag-inner-shadow"
+                      className="capitalize cursor-pointer hover:bg-accent hover:text-accent-foreground tag-inner-shadow text-[10px] sm:text-xs"
                     >
                       {tag} ({postCount})
                     </Badge>
@@ -128,12 +128,12 @@ export function BlogPageClient({
         )}
 
         {/* Blog Posts */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">
+            <h2 className="text-xl sm:text-2xl font-semibold">
               {selectedTag ? `Posts tagged "${selectedTag}"` : 'Latest Posts'}
               {filteredPosts.length > 0 && (
-                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                <span className="ml-2 text-xs sm:text-sm font-normal text-muted-foreground">
                   ({filteredPosts.length}{' '}
                   {filteredPosts.length === 1 ? 'post' : 'posts'})
                 </span>
