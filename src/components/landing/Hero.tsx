@@ -51,88 +51,66 @@ export default function Hero() {
 
   return (
     <Container className="mx-auto max-w-5xl">
-      <div className="flex flex-col lg:flex-row items-center lg:items-start gap-12">
-        {/* Professional Image - Simple version for better performance */}
-        <div className="flex-shrink-0 hidden lg:block">
-          <div className="relative w-[300px] h-[300px] rounded-2xl overflow-hidden border border-border/50 shadow-2xl">
-            <Image
-              src={avatar}
-              alt={name}
-              fill
-              className="object-cover"
-              priority
-              quality={90}
-            />
-          </div>
+      {/* Avatar Image */}
+      <Image
+        src={avatar}
+        alt="hero"
+        width={100}
+        height={100}
+        className="size-24 rounded-full dark:bg-yellow-300 bg-blue-300"
+        priority
+      />
+
+      {/* Text Area */}
+      <div className="mt-8 flex flex-col gap-2">
+        <h1 className="text-4xl font-bold">
+          Hi, I&apos;m {name} — <span className="text-secondary">{title}</span>
+        </h1>
+
+        <div className="mt-4 flex flex-wrap items-center gap-x-1.5 gap-y-2 text-base md:text-lg text-neutral-500 whitespace-pre-wrap">
+          {renderDescription()}
         </div>
+      </div>
 
-        {/* Content Area */}
-        <div className="flex-1 text-center lg:text-left">
-          {/* Small Avatar for Mobile */}
-          <div className="lg:hidden mb-6">
-            <Image
-              src={avatar}
-              alt="hero"
-              width={80}
-              height={80}
-              className="size-20 rounded-full mx-auto dark:bg-yellow-300 bg-blue-300"
-            />
-          </div>
+      {/* Buttons */}
+      <div className="mt-8 flex gap-4">
+        {buttons.map((button, index) => {
+          const IconComponent =
+            buttonIcons[button.icon as keyof typeof buttonIcons];
+          return (
+            <Button
+              key={index}
+              variant={button.variant as 'outline' | 'default'}
+              className={cn(
+                button.variant === 'outline' && 'inset-shadow-indigo-500',
+                button.variant === 'default' && 'inset-shadow-indigo-500',
+              )}
+            >
+              {IconComponent && <IconComponent />}
+              <Link href={button.href}>{button.text}</Link>
+            </Button>
+          );
+        })}
+      </div>
 
-          {/* Text Area */}
-          <div className="flex flex-col gap-2">
-            <h1 className="text-3xl lg:text-4xl font-bold">
-              Hi, I&apos;m {name} — <span className="text-secondary">{title}</span>
-            </h1>
-
-            <div className="mt-4 flex flex-wrap items-center gap-x-1.5 gap-y-2 text-base md:text-lg text-neutral-500 whitespace-pre-wrap">
-              {renderDescription()}
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="mt-8 flex gap-4 justify-center lg:justify-start">
-            {buttons.map((button, index) => {
-              const IconComponent =
-                buttonIcons[button.icon as keyof typeof buttonIcons];
-              return (
-                <Button
-                  key={index}
-                  variant={button.variant as 'outline' | 'default'}
-                  className={cn(
-                    button.variant === 'outline' &&
-                      'inset-shadow-indigo-500',
-                    button.variant === 'default' &&
-                      'inset-shadow-indigo-500',
-                  )}
-                >
-                  {IconComponent && <IconComponent />}
-                  <Link href={button.href}>{button.text}</Link>
-                </Button>
-              );
-            })}
-          </div>
-
-          {/* Social Links */}
-          <div className="mt-8 flex gap-2 justify-center lg:justify-start">
-            {socialLinks.map((link) => (
-              <Tooltip key={link.name} delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <Link
-                    href={link.href}
-                    key={link.name}
-                    className="text-secondary flex items-center gap-2"
-                  >
-                    <span className="size-6">{link.icon}</span>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{link.name}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
-          </div>
-        </div>
+      {/* Social Links */}
+      <div className="mt-8 flex gap-2">
+        {socialLinks.map((link) => (
+          <Tooltip key={link.name} delayDuration={0}>
+            <TooltipTrigger asChild>
+              <Link
+                href={link.href}
+                key={link.name}
+                className="text-secondary flex items-center gap-2"
+              >
+                <span className="size-6">{link.icon}</span>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{link.name}</p>
+            </TooltipContent>
+          </Tooltip>
+        ))}
       </div>
     </Container>
   );
