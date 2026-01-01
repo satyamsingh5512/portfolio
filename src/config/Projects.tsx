@@ -12,7 +12,7 @@ export const projects: Project[] = [
   {
     title: 'VardaX',
     description:
-      'An ML-powered Web Application Firewall that detects and blocks malicious traffic in real time using behavioral analysis, anomaly detection, and lightweight cloud-ready architecture',
+      'ML-powered Web Application Firewall with real-time threat detection using behavioral analysis and anomaly detection. Features lightweight cloud-ready architecture with Python/Scikit-learn for ML models, Redis for caching, and Docker for deployment',
     image: '/project/VardaX.png',
     link: '#',
     technologies: [
@@ -29,7 +29,7 @@ export const projects: Project[] = [
   {
     title: 'Ubuntu Clipboard Manager',
     description:
-      'Built a native Ubuntu clipboard manager replicating Windows-style clipboard history using Python, GTK, and system-level Linux APIs, focusing on performance, privacy, and seamless desktop integration',
+      'Native Ubuntu clipboard manager with Windows-style clipboard history. Built with Python and GTK/libadwaita for native desktop UI, D-Bus for system-level clipboard integration, SQLite for local storage, and Systemd for background service management',
     image: '/project/Paste-bin.png',
     link: '#',
     technologies: [
@@ -46,7 +46,7 @@ export const projects: Project[] = [
   {
     title: 'RetroPaste',
     description:
-      'A modern code-sharing platform inspired by classic Pastebin, reimagined with authentic retro terminal aesthetics. RetroPaste combines CRT visual effects, AI-powered code analysis, ephemeral pastes, and collaborative editing using a fast, scalable Next.js architecture',
+      'Terminal-themed pastebin with CRT effects, phosphor glow, and 8-bit sounds. Features AI-powered code analysis for security vulnerabilities and best practices, ephemeral pastes with view limits, auto language detection, and JWT authentication',
     image: '/project/retro-paste.png',
     link: 'https://retropaste.vercel.app/',
     technologies: [
@@ -65,7 +65,7 @@ export const projects: Project[] = [
   {
     title: 'StudyBuddy',
     description:
-      'AI-powered study companion for competitive exam preparation. Features smart task management, Pomodoro timer, study analytics, real-time chat, and friend system to enhance productivity and collaborative learning',
+      'Full-stack study companion with smart task management, Pomodoro timer with session tracking, study analytics dashboard, real-time chat, and friend system. Deployed with Docker, PostgreSQL via Supabase, and CI/CD workflows',
     image: '/project/study-buddy.png',
     link: 'https://studybuddyone.vercel.app/',
     technologies: [
@@ -84,7 +84,7 @@ export const projects: Project[] = [
   {
     title: 'CroxShare',
     description:
-      'A production-ready peer-to-peer file sharing platform built with Next.js, TypeScript, and WebRTC, featuring intelligent compression, clipboard-based uploads, real-time analytics, and a premium, Apple-inspired UI',
+      'P2P file sharing with WebRTC direct transfers, browser-native compression (85% savings on JSON), clipboard paste support, and real-time transfer analytics. Features pause/resume, sound effects, and Apple-inspired glassmorphic UI',
     image: '/project/crosx-share.png',
     link: 'https://croxshare.vercel.app/',
     technologies: [
@@ -103,7 +103,7 @@ export const projects: Project[] = [
   {
     title: 'Spotify Now Playing',
     description:
-      'A real-time Spotify "Now Playing" pill widget implemented with Next.js App Router and TypeScript. Integrates Spotify Web API with secure token handling, SWR-based polling, Framer Motion animations, and a responsive glassmorphic UI',
+      'Glassmorphic Spotify widget with real-time "Now Playing" display. Features SWR-based polling, Framer Motion animations, rotating album art, and macOS-inspired design. Integrates Spotify Web API with secure OAuth token handling',
     image: '/project/spotify-client.png',
     link: 'https://spotify-now-client.vercel.app/',
     technologies: [
@@ -122,7 +122,7 @@ export const projects: Project[] = [
   {
     title: 'Ride-Hailing Backend',
     description:
-      'Production-ready scalable ride-hailing backend with geospatial driver matching, dynamic surge pricing, event-driven architecture using Kafka, and secure JWT authentication',
+      'Scalable ride-hailing microservices with geospatial driver matching using PostGIS, dynamic surge pricing algorithm, event-driven architecture with Kafka for real-time updates, Redis caching, and JWT authentication',
     image: '/project/ride-Handlin-Back.png',
     link: 'https://github.com/satyamsinghpx/ride-hailing-backend',
     technologies: [
@@ -140,7 +140,7 @@ export const projects: Project[] = [
   {
     title: 'Quizo',
     description:
-      'Advanced quiz platform with anti-cheat mechanisms, live score tracking, and session management serving 150+ users',
+      'Real-time quiz platform with anti-cheat mechanisms including tab-switch detection and copy-paste blocking. Features live leaderboards, timed sessions, admin dashboard for quiz management, and WebSocket-based score updates serving 150+ concurrent users',
     image: '/project/quizo.png',
     link: 'https://quizo.live',
     technologies: [
