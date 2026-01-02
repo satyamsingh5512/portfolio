@@ -3,7 +3,7 @@
 import { githubConfig } from '@/config/Github';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import Container from '../common/Container';
 import GithubIcon from '../svgs/Github';
@@ -74,71 +74,76 @@ function ContributionCalendar({
     );
   }
 
-  // Create a grid of contributions for the past year
-  const today = new Date();
-  // Set to end of today in UTC to handle timezone issues
-  const todayUTC = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
-  
-  // Filter contributions to only include dates up to today
-  const validContributions = contributions.filter(contrib => {
-    const contribDate = new Date(contrib.date + 'T00:00:00.000Z'); // Parse as UTC
-    return contribDate <= todayUTC;
-  });
+  // Memoize the entire grid calculation to prevent recalculation on every render
+  const { weeks, getColor } = useMemo(() => {
+    // Create a grid of contributions for the past year
+    const today = new Date();
+    // Set to end of today in UTC to handle timezone issues
+    const todayUTC = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+    
+    // Filter contributions to only include dates up to today
+    const validContributions = contributions.filter(contrib => {
+      const contribDate = new Date(contrib.date + 'T00:00:00.000Z'); // Parse as UTC
+      return contribDate <= todayUTC;
+    });
 
-  // Find the actual date range from the valid contributions data
-  const contributionDates = validContributions.map(c => new Date(c.date + 'T00:00:00.000Z'));
-  const minDate = contributionDates.length > 0 ? new Date(Math.min(...contributionDates.map(d => d.getTime()))) : new Date();
-  const maxDate = contributionDates.length > 0 ? new Date(Math.max(...contributionDates.map(d => d.getTime()))) : new Date();
+    // Find the actual date range from the valid contributions data
+    const contributionDates = validContributions.map(c => new Date(c.date + 'T00:00:00.000Z'));
+    const minDate = contributionDates.length > 0 ? new Date(Math.min(...contributionDates.map(d => d.getTime()))) : new Date();
+    const maxDate = contributionDates.length > 0 ? new Date(Math.max(...contributionDates.map(d => d.getTime()))) : new Date();
 
-  // Create a map of contributions by date
-  const contributionMap = new Map<string, ContributionItem>();
-  validContributions.forEach(contrib => {
-    contributionMap.set(contrib.date, contrib);
-  });
+    // Create a map of contributions by date
+    const contributionMap = new Map<string, ContributionItem>();
+    validContributions.forEach(contrib => {
+      contributionMap.set(contrib.date, contrib);
+    });
 
-  // Use the actual data range, but limit to valid dates only
-  const startDate = new Date(minDate);
-  const endDate = new Date(Math.min(todayUTC.getTime(), maxDate.getTime()));
-  
-  // Adjust start date to the beginning of the week (Sunday)
-  const dayOfWeek = startDate.getDay();
-  if (dayOfWeek !== 0) {
-    startDate.setDate(startDate.getDate() - dayOfWeek);
-  }
-
-  // Create weeks array
-  const weeks: ContributionItem[][] = [];
-  let currentWeek: ContributionItem[] = [];
-
-  const currentDatePointer = new Date(startDate);
-
-  while (currentDatePointer <= endDate) {
-    const dateString = currentDatePointer.toISOString().split('T')[0];
-    const contribution = contributionMap.get(dateString) || {
-      date: dateString,
-      count: 0,
-      level: 0,
-    };
-
-    currentWeek.push(contribution);
-
-    if (currentWeek.length === 7) {
-      weeks.push([...currentWeek]);
-      currentWeek = [];
+    // Use the actual data range, but limit to valid dates only
+    const startDate = new Date(minDate);
+    const endDate = new Date(Math.min(todayUTC.getTime(), maxDate.getTime()));
+    
+    // Adjust start date to the beginning of the week (Sunday)
+    const dayOfWeek = startDate.getDay();
+    if (dayOfWeek !== 0) {
+      startDate.setDate(startDate.getDate() - dayOfWeek);
     }
 
-    currentDatePointer.setDate(currentDatePointer.getDate() + 1);
-  }
+    // Create weeks array
+    const weeksArray: ContributionItem[][] = [];
+    let currentWeek: ContributionItem[] = [];
 
-  // Add remaining days if any
-  if (currentWeek.length > 0) {
-    weeks.push(currentWeek);
-  }
+    const currentDatePointer = new Date(startDate);
 
-  const getColor = (level: number) => {
-    const index = Math.min(level, theme.length - 1);
-    return theme[index] || theme[0];
-  };
+    while (currentDatePointer <= endDate) {
+      const dateString = currentDatePointer.toISOString().split('T')[0];
+      const contribution = contributionMap.get(dateString) || {
+        date: dateString,
+        count: 0,
+        level: 0,
+      };
+
+      currentWeek.push(contribution);
+
+      if (currentWeek.length === 7) {
+        weeksArray.push([...currentWeek]);
+        currentWeek = [];
+      }
+
+      currentDatePointer.setDate(currentDatePointer.getDate() + 1);
+    }
+
+    // Add remaining days if any
+    if (currentWeek.length > 0) {
+      weeksArray.push(currentWeek);
+    }
+
+    const getColorFn = (level: number) => {
+      const index = Math.min(level, theme.length - 1);
+      return theme[index] || theme[0];
+    };
+
+    return { weeks: weeksArray, getColor: getColorFn };
+  }, [contributions, theme]);
 
   const getTooltipText = (contribution: ContributionItem) => {
     const date = new Date(contribution.date);
