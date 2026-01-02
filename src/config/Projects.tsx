@@ -14,7 +14,7 @@ export const projects: Project[] = [
     description:
       'Google Forms–style form builder with a minimal black-and-white design. Features drag-and-drop form creation, quiz builder, response analytics with Recharts, NextAuth.js authentication, and Prisma ORM with MongoDB for scalable data storage',
     image: '/project/formlytics.png',
-    link: '#',
+    link: 'https://formlyticx.vercel.app/',
     technologies: [
       { name: 'Next.js', icon: <NextJs key="nextjs" /> },
       { name: 'TypeScript', icon: <TypeScript key="typescript" /> },
@@ -22,6 +22,7 @@ export const projects: Project[] = [
       { name: 'React', icon: <ReactIcon key="react" /> },
       { name: 'Vercel', icon: <Vercel key="vercel" /> },
     ],
+    live: 'https://formlyticx.vercel.app/',
     details: true,
     projectDetailsPageSlug: '/projects/formlytics',
     isWorking: true,
