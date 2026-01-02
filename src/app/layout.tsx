@@ -30,7 +30,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothTouch: false }}>
+              <ReactLenis root options={{ lerp: 0.1, duration: 1.5, syncTouch: false }}>
                 <Navbar />
                 {children}
                 <OnekoCat />
