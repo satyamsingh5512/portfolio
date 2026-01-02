@@ -5,6 +5,7 @@ import Navbar from '@/components/common/Navbar';
 import OnekoCat from '@/components/common/OnekoCat';
 import { Quote } from '@/components/common/Quote';
 import { ThemeProvider } from '@/components/common/ThemeProviders';
+import { SessionProvider } from '@/components/providers/SessionProvider';
 import { generateMetadata as getMetadata } from '@/config/Meta';
 import ReactLenis from 'lenis/react';
 import { ViewTransitions } from 'next-view-transitions';
@@ -22,22 +23,24 @@ export default function RootLayout({
     <ViewTransitions>
       <html lang="en" suppressHydrationWarning>
         <body className={`font-hanken-grotesk antialiased`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ReactLenis root>
-              <Navbar />
-              {children}
-              <OnekoCat />
-              <Quote />
-              <Footer />
-              <ChatBubble />
-              <UmamiAnalytics />
-            </ReactLenis>
-          </ThemeProvider>
+          <SessionProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <ReactLenis root>
+                <Navbar />
+                {children}
+                <OnekoCat />
+                <Quote />
+                <Footer />
+                <ChatBubble />
+                <UmamiAnalytics />
+              </ReactLenis>
+            </ThemeProvider>
+          </SessionProvider>
         </body>
       </html>
     </ViewTransitions>
