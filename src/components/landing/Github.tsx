@@ -54,28 +54,13 @@ function ContributionCalendar({
   isLoading: boolean;
   theme: string[];
 }) {
-  if (isLoading) {
-    return (
-      <div className="flex h-32 items-center justify-center">
-        <div className="text-sm text-muted-foreground">
-          {githubConfig.loadingState.title}
-        </div>
-      </div>
-    );
-  }
-
-  if (contributions.length === 0) {
-    return (
-      <div className="flex h-32 items-center justify-center">
-        <div className="text-sm text-muted-foreground">
-          No contribution data available
-        </div>
-      </div>
-    );
-  }
-
   // Memoize the entire grid calculation to prevent recalculation on every render
+  // Must be called before any early returns to satisfy React hooks rules
   const { weeks, getColor } = useMemo(() => {
+    if (contributions.length === 0) {
+      return { weeks: [], getColor: () => theme[0] || '#ebedf0' };
+    }
+
     // Create a grid of contributions for the past year
     const today = new Date();
     // Set to end of today in UTC to handle timezone issues
@@ -144,6 +129,26 @@ function ContributionCalendar({
 
     return { weeks: weeksArray, getColor: getColorFn };
   }, [contributions, theme]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-32 items-center justify-center">
+        <div className="text-sm text-muted-foreground">
+          {githubConfig.loadingState.title}
+        </div>
+      </div>
+    );
+  }
+
+  if (contributions.length === 0) {
+    return (
+      <div className="flex h-32 items-center justify-center">
+        <div className="text-sm text-muted-foreground">
+          No contribution data available
+        </div>
+      </div>
+    );
+  }
 
   const getTooltipText = (contribution: ContributionItem) => {
     const date = new Date(contribution.date);
