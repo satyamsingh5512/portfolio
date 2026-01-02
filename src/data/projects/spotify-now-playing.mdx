@@ -1,0 +1,123 @@
+---
+title: "Spotify Now Playing"
+description: "Glassmorphic Spotify widget with real-time Now Playing display. Features SWR-based polling, Framer Motion animations, rotating album art, and macOS-inspired design"
+image: "/project/spotify-client.png"
+technologies:
+  - "Next.js"
+  - "TypeScript"
+  - "Tailwind CSS"
+  - "SWR"
+  - "Framer Motion"
+  - "Spotify API"
+github: "https://github.com/satyamsingh5512/spotify-now-client"
+live: "https://spotify-now-client.vercel.app/"
+timeline: "2024"
+role: "Full Stack Developer"
+status: "completed"
+featured: true
+isPublished: true
+---
+
+## Overview
+
+A beautiful, glassmorphic Spotify widget that displays your currently playing song in real-time. Features smooth animations, hover effects, and a sleek macOS-inspired design.
+
+## Features
+
+### Visual Design
+- **Glassmorphic Design** - Frosted glass effect with backdrop blur
+- **Rotating Album Art** - Smooth 8-second rotation animation
+- **Animated Waveform** - Green audio bars that pulse in real-time
+- **Smart Truncation** - Long song/artist names elegantly truncated
+
+### Interactivity
+- **Interactive Hover** - Scales up with green glow on hover
+- **Clickable** - Opens the song directly in Spotify
+- **Offline Mode** - Shows subtle "Offline" indicator when not playing
+
+### Technical
+- **Real-time Updates** - Polls Spotify API every 5 seconds
+- **Responsive** - Works on desktop and mobile
+
+## Demo
+
+```
+When music is playing:
+╭─────────────────────────────────────╮
+│  (●)  Shape of You         |||      │  ← Glassmorphic pill
+│       Ed Sheeran           |||      │     (bottom-right corner)
+╰─────────────────────────────────────╯
+   ↑      ↑                    ↑
+rotating  song info     animated bars
+album                   (green)
+
+When offline: Small gray pill with Spotify icon + "Offline" text
+```
+
+## Design Specifications
+
+### Colors
+| Element | Value |
+|---------|-------|
+| Background | `bg-neutral-900/75` (75% opacity) |
+| Border | `border-white/10` (10% opacity) |
+| Title Text | `text-white` |
+| Artist Text | `text-gray-400` |
+| Accent | `bg-green-500` (waveform) |
+
+### Dimensions
+| Property | Value |
+|----------|-------|
+| Height | 56px (fixed) |
+| Width | 200px - 280px (responsive) |
+| Border Radius | 9999px (pill shape) |
+| Position | fixed bottom-6 right-6 |
+
+### Animations
+| Element | Animation |
+|---------|-----------|
+| Album art | spin 8s linear infinite |
+| Waveform bars | Oscillate between 8-16px height |
+| Hover | scale(1.03) with green shadow |
+| Entrance/Exit | Fade + slide + scale |
+
+## Tech Stack
+
+- **Framework**: Next.js 14+ (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Data Fetching**: SWR (with 5s polling)
+- **Animations**: Framer Motion
+- **Icons**: React Icons (Simple Icons)
+- **API**: Spotify Web API
+
+## Configuration
+
+### Polling Interval
+```typescript
+const { data } = useSWR('/api/spotify', fetcher, {
+  refreshInterval: 5000, // Change to 3000 for 3 seconds
+});
+```
+
+### Widget Position
+```typescript
+className="fixed bottom-6 right-6 ..."
+//             ↑        ↑
+//          position  position
+```
+
+## Browser Support
+
+- ✅ Chrome/Edge (latest)
+- ✅ Firefox (latest)
+- ✅ Safari (latest)
+- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
+
+## Notes
+
+- Only displays music tracks (filters out podcasts/audiobooks)
+- Works with both Free and Premium Spotify accounts
+- Refresh tokens typically last years before expiring
+- Widget uses fixed positioning - won't interfere with page scroll
+- Album images are cached by the browser
