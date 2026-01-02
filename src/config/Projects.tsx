@@ -10,6 +10,23 @@ import { Project } from '@/types/project';
 
 export const projects: Project[] = [
   {
+    title: 'Formlytics',
+    description:
+      'Google Forms–style form builder with a minimal black-and-white design. Features drag-and-drop form creation, quiz builder, response analytics with Recharts, NextAuth.js authentication, and Prisma ORM with MongoDB for scalable data storage',
+    image: '/project/formlytics.png',
+    link: '#',
+    technologies: [
+      { name: 'Next.js', icon: <NextJs key="nextjs" /> },
+      { name: 'TypeScript', icon: <TypeScript key="typescript" /> },
+      { name: 'MongoDB', icon: <MongoDB key="mongodb" /> },
+      { name: 'React', icon: <ReactIcon key="react" /> },
+      { name: 'Vercel', icon: <Vercel key="vercel" /> },
+    ],
+    details: true,
+    projectDetailsPageSlug: '/projects/formlytics',
+    isWorking: true,
+  },
+  {
     title: 'VardaX',
     description:
       'ML-powered Web Application Firewall with real-time threat detection using behavioral analysis and anomaly detection. Features lightweight cloud-ready architecture with Python/Scikit-learn for ML models, Redis for caching, and Docker for deployment',
