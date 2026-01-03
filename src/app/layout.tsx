@@ -7,7 +7,6 @@ import { Quote } from '@/components/common/Quote';
 import { ThemeProvider } from '@/components/common/ThemeProviders';
 import { SessionProvider } from '@/components/providers/SessionProvider';
 import { generateMetadata as getMetadata } from '@/config/Meta';
-import ReactLenis from 'lenis/react';
 import { ViewTransitions } from 'next-view-transitions';
 
 import './globals.css';
@@ -30,15 +29,13 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <ReactLenis root options={{ lerp: 0.1, duration: 1.5, syncTouch: false }}>
-                <Navbar />
-                {children}
-                <OnekoCat />
-                <Quote />
-                <Footer />
-                <ChatBubble />
-                <UmamiAnalytics />
-              </ReactLenis>
+              <Navbar />
+              {children}
+              <OnekoCat />
+              <Quote />
+              <Footer />
+              <ChatBubble />
+              <UmamiAnalytics />
             </ThemeProvider>
           </SessionProvider>
         </body>

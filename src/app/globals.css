@@ -133,6 +133,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -171,6 +172,7 @@
     opacity: 0.2;
     filter: blur(5px);
   }
+
   100% {
     opacity: 1;
     filter: blur(0px);
@@ -184,89 +186,19 @@
   filter: blur(3px);
 }
 
-/* Optimized theme transitions for 60fps performance */
-* {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+/* Optimized interactive elements only */
+button,
+a,
+[role="button"],
+.cursor-pointer {
+  transition-property: color, background-color, border-color, opacity, transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 200ms;
 }
 
-/* Smooth theme transitions with hardware acceleration */
+/* Optimize specific distinct changes, avoid universal will-change */
 html {
   color-scheme: light dark;
-}
-
-html.dark {
-  color-scheme: dark;
-}
-
-/* Enhanced View Transition API for theme switching */
-::view-transition-group(root) {
-  animation-duration: 0.3s;
-  animation-timing-function: var(--ease-out-quart);
-}
-
-::view-transition-new(root) {
-  animation-name: theme-fade-in;
-}
-
-::view-transition-old(root) {
-  animation-name: theme-fade-out;
-}
-
-@keyframes theme-fade-in {
-  0% {
-    opacity: 0;
-    transform: scale3d(1.02, 1.02, 1);
-    filter: blur(0.5px);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale3d(1.01, 1.01, 1);
-    filter: blur(0.25px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale3d(1, 1, 1);
-    filter: blur(0);
-  }
-}
-
-@keyframes theme-fade-out {
-  0% {
-    opacity: 1;
-    transform: scale3d(1, 1, 1);
-    filter: blur(0);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale3d(0.99, 0.99, 1);
-    filter: blur(0.25px);
-  }
-  100% {
-    opacity: 0;
-    transform: scale3d(0.98, 0.98, 1);
-    filter: blur(0.5px);
-  }
-}
-
-/* Force hardware acceleration for better performance */
-body, 
-.dark body,
-[data-theme="light"],
-[data-theme="dark"] {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
-  will-change: background-color, color;
-}
-
-/* Optimize common interactive elements */
-button, 
-a, 
-[role="button"],
-.cursor-pointer {
-  will-change: transform, opacity;
 }
 
 /* Smooth scrolling with 60fps */
@@ -278,7 +210,7 @@ html {
   html {
     scroll-behavior: smooth;
   }
-  
+
   /* Optimize for 60fps animations */
   * {
     animation-fill-mode: both;
@@ -287,6 +219,7 @@ html {
 
 /* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -295,7 +228,7 @@ html {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   ::view-transition-group(root) {
     animation: none !important;
   }
