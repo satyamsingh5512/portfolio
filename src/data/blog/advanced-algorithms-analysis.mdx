@@ -1,0 +1,343 @@
+---
+title: "Advanced Algorithm Analysis: Time Complexity and Big O Notation"
+description: "Deep dive into algorithm analysis, time complexity, and mathematical proofs with practical examples and LaTeX formulas."
+image: "/blog/javascript-part-1.png"
+tags: ["algorithms", "computer science", "mathematics", "data structures"]
+date: "2024-01-12T10:00:00.000Z"
+isPublished: true
+isFeatured: true
+readingTime: 12
+author:
+  name: "Admin"
+  email: "admin@example.com"
+  bio: "Computer Science educator and algorithm enthusiast"
+  social:
+    github: "yourusername"
+    twitter: "@yourusername"
+---
+
+# Advanced Algorithm Analysis: Time Complexity and Big O Notation
+
+Understanding algorithm complexity is crucial for writing efficient code. In this comprehensive guide, we'll explore time complexity analysis using mathematical notation and practical examples.
+
+## What is Time Complexity?
+
+Time complexity describes how the runtime of an algorithm grows as the input size increases. We express this using **Big O notation**.
+
+### Mathematical Definition
+
+For a function $f(n)$ and $g(n)$, we say:
+
+$$
+f(n) = O(g(n))
+$$
+
+if there exist positive constants $c$ and $n_0$ such that:
+
+$$
+0 \leq f(n) \leq c \cdot g(n) \text{ for all } n \geq n_0
+$$
+
+## Common Time Complexities
+
+### 1. Constant Time - O(1)
+
+Operations that take the same time regardless of input size.
+
+```javascript
+function getFirstElement(arr) {
+  return arr[0]; // Always one operation
+}
+
+// Time Complexity: O(1)
+```
+
+### 2. Logarithmic Time - O(log n)
+
+Algorithms that divide the problem in half each iteration.
+
+```javascript
+function binarySearch(arr, target) {
+  let left = 0;
+  let right = arr.length - 1;
+  
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    
+    if (arr[mid] === target) {
+      return mid;
+    } else if (arr[mid] < target) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+  
+  return -1;
+}
+
+// Time Complexity: O(log n)
+```
+
+**Mathematical Analysis:**
+
+At each step, we reduce the search space by half:
+
+$$
+n \rightarrow \frac{n}{2} \rightarrow \frac{n}{4} \rightarrow \cdots \rightarrow 1
+$$
+
+Number of steps: $k$ where $\frac{n}{2^k} = 1$
+
+Solving: $k = \log_2 n$
+
+### 3. Linear Time - O(n)
+
+Algorithms that process each element once.
+
+```javascript
+function findMax(arr) {
+  let max = arr[0];
+  
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] > max) {
+      max = arr[i];
+    }
+  }
+  
+  return max;
+}
+
+// Time Complexity: O(n)
+```
+
+### 4. Linearithmic Time - O(n log n)
+
+Common in efficient sorting algorithms.
+
+```javascript
+function mergeSort(arr) {
+  if (arr.length <= 1) return arr;
+  
+  const mid = Math.floor(arr.length / 2);
+  const left = mergeSort(arr.slice(0, mid));
+  const right = mergeSort(arr.slice(mid));
+  
+  return merge(left, right);
+}
+
+function merge(left, right) {
+  const result = [];
+  let i = 0, j = 0;
+  
+  while (i < left.length && j < right.length) {
+    if (left[i] < right[j]) {
+      result.push(left[i++]);
+    } else {
+      result.push(right[j++]);
+    }
+  }
+  
+  return result.concat(left.slice(i)).concat(right.slice(j));
+}
+
+// Time Complexity: O(n log n)
+```
+
+**Recurrence Relation:**
+
+$$
+T(n) = 2T\left(\frac{n}{2}\right) + O(n)
+$$
+
+Using the Master Theorem: $T(n) = O(n \log n)$
+
+### 5. Quadratic Time - O(n²)
+
+Nested loops over the input.
+
+```javascript
+function bubbleSort(arr) {
+  const n = arr.length;
+  
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n - i - 1; j++) {
+      if (arr[j] > arr[j + 1]) {
+        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+      }
+    }
+  }
+  
+  return arr;
+}
+
+// Time Complexity: O(n²)
+```
+
+**Mathematical Analysis:**
+
+Total comparisons:
+
+$$
+\sum_{i=1}^{n-1} i = \frac{n(n-1)}{2} = O(n^2)
+$$
+
+## Space Complexity
+
+Space complexity measures memory usage.
+
+### Example: Fibonacci with Memoization
+
+```javascript
+function fibonacci(n, memo = {}) {
+  if (n <= 1) return n;
+  if (memo[n]) return memo[n];
+  
+  memo[n] = fibonacci(n - 1, memo) + fibonacci(n - 2, memo);
+  return memo[n];
+}
+
+// Time Complexity: O(n)
+// Space Complexity: O(n) for memoization
+```
+
+**Recurrence without memoization:**
+
+$$
+T(n) = T(n-1) + T(n-2) + O(1)
+$$
+
+This gives $T(n) = O(2^n)$ - exponential!
+
+With memoization: $T(n) = O(n)$ - linear!
+
+## Master Theorem
+
+For recurrences of the form:
+
+$$
+T(n) = aT\left(\frac{n}{b}\right) + f(n)
+$$
+
+where $a \geq 1$, $b > 1$:
+
+**Case 1:** If $f(n) = O(n^{\log_b a - \epsilon})$ for some $\epsilon > 0$:
+
+$$
+T(n) = \Theta(n^{\log_b a})
+$$
+
+**Case 2:** If $f(n) = \Theta(n^{\log_b a})$:
+
+$$
+T(n) = \Theta(n^{\log_b a} \log n)
+$$
+
+**Case 3:** If $f(n) = \Omega(n^{\log_b a + \epsilon})$ for some $\epsilon > 0$:
+
+$$
+T(n) = \Theta(f(n))
+$$
+
+## Practical Example: Dynamic Programming
+
+### Longest Common Subsequence
+
+```python
+def lcs(X, Y):
+    m, n = len(X), len(Y)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if X[i-1] == Y[j-1]:
+                dp[i][j] = dp[i-1][j-1] + 1
+            else:
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+    
+    return dp[m][n]
+
+# Time Complexity: O(m × n)
+# Space Complexity: O(m × n)
+```
+
+**DP Recurrence:**
+
+$$
+\text{LCS}(i, j) = \begin{cases}
+0 & \text{if } i = 0 \text{ or } j = 0 \\
+\text{LCS}(i-1, j-1) + 1 & \text{if } X[i] = Y[j] \\
+\max(\text{LCS}(i-1, j), \text{LCS}(i, j-1)) & \text{otherwise}
+\end{cases}
+$$
+
+## Amortized Analysis
+
+Some operations have varying costs, but average out over time.
+
+### Dynamic Array Resizing
+
+```javascript
+class DynamicArray {
+  constructor() {
+    this.array = new Array(1);
+    this.size = 0;
+    this.capacity = 1;
+  }
+  
+  push(value) {
+    if (this.size === this.capacity) {
+      this.resize();
+    }
+    this.array[this.size++] = value;
+  }
+  
+  resize() {
+    this.capacity *= 2;
+    const newArray = new Array(this.capacity);
+    for (let i = 0; i < this.size; i++) {
+      newArray[i] = this.array[i];
+    }
+    this.array = newArray;
+  }
+}
+
+// Amortized Time Complexity: O(1) per push
+```
+
+**Cost Analysis:**
+
+Total cost for $n$ insertions:
+
+$$
+\text{Cost} = n + \sum_{i=0}^{\log n} 2^i = n + (2n - 1) = O(n)
+$$
+
+Amortized cost per operation: $\frac{O(n)}{n} = O(1)$
+
+## Conclusion
+
+Understanding algorithm complexity is essential for:
+
+- **Choosing the right algorithm** for your problem
+- **Optimizing performance** in production systems
+- **Scaling applications** efficiently
+- **Technical interviews** and problem-solving
+
+### Key Takeaways
+
+1. **Big O** describes upper bounds on growth rates
+2. **Logarithmic algorithms** are highly efficient
+3. **Dynamic Programming** trades space for time
+4. **Amortized analysis** considers average cost over time
+
+Keep practicing algorithm analysis, and you'll develop an intuition for writing efficient code!
+
+## Further Reading
+
+- Introduction to Algorithms (CLRS)
+- The Algorithm Design Manual (Skiena)
+- Competitive Programming resources
+- LeetCode and HackerRank practice
+
+Happy coding! 🚀
