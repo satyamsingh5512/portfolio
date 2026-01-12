@@ -2,8 +2,11 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { BlogFrontmatter } from '@/types/blog';
 import rehypeHighlight from '@shikijs/rehype';
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import Image from 'next/image';
+import 'katex/dist/katex.min.css';
 
 import Calender from '../svgs/Calender';
 import { BlogComponents } from './BlogComponents';
@@ -162,6 +165,7 @@ export function BlogContent({ frontmatter, content }: BlogContentProps) {
           components={BlogComponents}
           options={{
             mdxOptions: {
+              remarkPlugins: [remarkMath],
               rehypePlugins: [
                 [
                   rehypeHighlight,
@@ -169,6 +173,7 @@ export function BlogContent({ frontmatter, content }: BlogContentProps) {
                     theme: 'github-dark',
                   },
                 ],
+                rehypeKatex,
               ],
             },
           }}
