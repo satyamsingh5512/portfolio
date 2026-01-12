@@ -65,6 +65,12 @@ export function AdminDashboard({ posts, user }: AdminDashboardProps) {
                 New Post
               </Link>
             </Button>
+            <Button asChild variant="outline">
+              <Link href="/admin/blog/advanced">
+                <FileText className="mr-2 h-4 w-4" />
+                Advanced Editor
+              </Link>
+            </Button>
             <Button
               variant="outline"
               onClick={() => signOut({ callbackUrl: '/' })}
