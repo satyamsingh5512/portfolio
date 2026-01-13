@@ -10,8 +10,9 @@ import { Edit, Eye, FileText, LogOut, Plus, Trash2 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { Link } from 'next-view-transitions';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
+import React from 'react';
 
 interface AdminDashboardProps {
   posts: BlogPostPreview[];
@@ -21,14 +22,90 @@ interface AdminDashboardProps {
   };
 }
 
+const PostCard = React.memo(({ 
+  post, 
+  onDelete, 
+  isDeleting 
+}: { 
+  post: BlogPostPreview; 
+  onDelete: (slug: string) => void; 
+  isDeleting: boolean;
+}) => {
+  const handleDelete = useCallback(() => onDelete(post.slug), [onDelete, post.slug]);
+  
+  return (
+    <Card>
+      <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-medium truncate">
+              {post.frontmatter.title}
+            </h3>
+            <Badge
+              variant={
+                post.frontmatter.isPublished
+                  ? 'default'
+                  : 'secondary'
+              }
+            >
+              {post.frontmatter.isPublished ? 'Published' : 'Draft'}
+            </Badge>
+            {post.frontmatter.isFeatured && (
+              <Badge variant="outline">Featured</Badge>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground truncate">
+            {post.frontmatter.description}
+          </p>
+          <div className="flex gap-2 mt-2">
+            {post.frontmatter.tags.slice(0, 3).map((tag) => (
+              <Badge
+                key={tag}
+                variant="outline"
+                className="text-xs"
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        </div>
+        <div className="flex gap-2 shrink-0">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href={`/blog/${post.slug}`} target="_blank">
+              <Eye className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild>
+            <Link href={`/admin/blog/edit/${post.slug}`}>
+              <Edit className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleDelete}
+            disabled={isDeleting}
+          >
+            <Trash2 className="h-4 w-4 text-destructive" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+});
+
+PostCard.displayName = 'PostCard';
+
 export function AdminDashboard({ posts, user }: AdminDashboardProps) {
   const router = useRouter();
   const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
 
-  const publishedPosts = posts.filter((p) => p.frontmatter.isPublished);
-  const draftPosts = posts.filter((p) => !p.frontmatter.isPublished);
+  const { publishedPosts, draftPosts } = useMemo(() => ({
+    publishedPosts: posts.filter((p) => p.frontmatter.isPublished),
+    draftPosts: posts.filter((p) => !p.frontmatter.isPublished),
+  }), [posts]);
 
-  const handleDelete = async (slug: string) => {
+  const handleDelete = useCallback(async (slug: string) => {
     if (!confirm('Are you sure you want to delete this post?')) return;
 
     setDeletingSlug(slug);
@@ -45,7 +122,7 @@ export function AdminDashboard({ posts, user }: AdminDashboardProps) {
     } finally {
       setDeletingSlug(null);
     }
-  };
+  }, [router]);
 
   return (
     <Container className="py-10 sm:py-16">
@@ -125,63 +202,12 @@ export function AdminDashboard({ posts, user }: AdminDashboardProps) {
           ) : (
             <div className="space-y-3">
               {posts.map((post) => (
-                <Card key={post.slug}>
-                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-medium truncate">
-                          {post.frontmatter.title}
-                        </h3>
-                        <Badge
-                          variant={
-                            post.frontmatter.isPublished
-                              ? 'default'
-                              : 'secondary'
-                          }
-                        >
-                          {post.frontmatter.isPublished ? 'Published' : 'Draft'}
-                        </Badge>
-                        {post.frontmatter.isFeatured && (
-                          <Badge variant="outline">Featured</Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground truncate">
-                        {post.frontmatter.description}
-                      </p>
-                      <div className="flex gap-2 mt-2">
-                        {post.frontmatter.tags.slice(0, 3).map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="outline"
-                            className="text-xs"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex gap-2 shrink-0">
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/blog/${post.slug}`} target="_blank">
-                          <Eye className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/admin/blog/edit/${post.slug}`}>
-                          <Edit className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(post.slug)}
-                        disabled={deletingSlug === post.slug}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <PostCard 
+                  key={post.slug} 
+                  post={post} 
+                  onDelete={handleDelete}
+                  isDeleting={deletingSlug === post.slug}
+                />
               ))}
             </div>
           )}
