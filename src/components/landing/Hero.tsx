@@ -3,7 +3,7 @@ import { parseTemplate } from '@/lib/hero';
 import { cn } from '@/lib/utils';
 import { Link } from 'next-view-transitions';
 import Image from 'next/image';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import Container from '../common/Container';
 import Skill from '../common/Skill';
@@ -20,7 +20,7 @@ const buttonIcons = {
 export default function Hero() {
   const { name, title, avatar, skills, description, buttons } = heroConfig;
 
-  const renderDescription = () => {
+  const renderedDescription = useMemo(() => {
     const parts = parseTemplate(description.template, skills);
 
     return parts.map((part) => {
@@ -47,7 +47,7 @@ export default function Hero() {
       }
       return null;
     });
-  };
+  }, [description.template, skills]);
 
   return (
     <Container className="mx-auto max-w-5xl px-4 sm:px-6">
@@ -68,7 +68,7 @@ export default function Hero() {
         </h1>
 
         <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-x-1 sm:gap-x-1.5 gap-y-2 text-sm sm:text-base md:text-lg text-neutral-500 whitespace-pre-wrap">
-          {renderDescription()}
+          {renderedDescription}
         </div>
       </div>
 
