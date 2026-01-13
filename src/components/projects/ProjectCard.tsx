@@ -15,7 +15,7 @@ import {
 import { type Project } from '@/types/project';
 import { Link } from 'next-view-transitions';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import ArrowRight from '../svgs/ArrowRight';
 import Github from '../svgs/Github';
@@ -27,8 +27,12 @@ interface ProjectCardProps {
   project: Project;
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
+function ProjectCardComponent({ project }: ProjectCardProps) {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  
+  const handleDialogChange = useCallback((open: boolean) => {
+    setDialogOpen(open);
+  }, []);
 
   return (
     <Card className="group h-full w-full overflow-hidden transition-all p-0 border-gray-100 dark:border-gray-800 shadow-none">
@@ -40,9 +44,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
             alt={project.title}
             width={1920}
             height={1080}
+            loading="lazy"
           />
           {project.video && (
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Dialog open={dialogOpen} onOpenChange={handleDialogChange}>
               <DialogTrigger asChild>
                 <div className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:backdrop-blur-xs">
                   <button className="flex size-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors duration-200 group-hover:cursor-pointer hover:bg-white/30">
@@ -176,3 +181,5 @@ export function ProjectCard({ project }: ProjectCardProps) {
     </Card>
   );
 }
+
+export const ProjectCard = React.memo(ProjectCardComponent);
