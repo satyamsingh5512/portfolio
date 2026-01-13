@@ -107,8 +107,11 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
   const pointerInsideRef = React.useRef<boolean>(false);
   const activityRef = React.useRef<number>(0);
   const activityTargetRef = React.useRef<number>(0);
+  const isVisibleRef = React.useRef<boolean>(true);
+  
   React.useEffect(() => {
     let isCancelled = false;
+    let observer: IntersectionObserver | null = null;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -403,6 +406,12 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
       canvasEl.addEventListener("pointerleave", onPointerLeave);
 
       const animate = () => {
+        // Check if canvas is visible before animating
+        if (!isVisibleRef.current) {
+          rafRef.current = null;
+          return;
+        }
+        
         const now = performance.now();
         const minDelta = 1000 / Math.max(1, maxFps);
         if (now - lastFrameRef.current < minDelta) {
@@ -509,12 +518,30 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
       };
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(animate);
+      
+      // Add Intersection Observer to pause animation when off-screen
+      if (typeof IntersectionObserver !== 'undefined') {
+        observer = new IntersectionObserver(
+          (entries) => {
+            isVisibleRef.current = entries[0].isIntersecting;
+            if (!isVisibleRef.current && rafRef.current) {
+              cancelAnimationFrame(rafRef.current);
+              rafRef.current = null;
+            } else if (isVisibleRef.current && !rafRef.current && samplesRef.current.length > 0) {
+              rafRef.current = requestAnimationFrame(animate);
+            }
+          },
+          { threshold: 0.01 }
+        );
+        observer.observe(canvasEl);
+      }
 
       const cleanup = () => {
         canvasEl.removeEventListener("pointermove", onPointerMove);
         canvasEl.removeEventListener("pointerenter", onPointerEnter);
         canvasEl.removeEventListener("pointerleave", onPointerLeave);
         if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        if (observer) observer.disconnect();
       };
 
       (img as HTMLImageElement & { _cleanup?: () => void })._cleanup = cleanup;
@@ -543,11 +570,14 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
 
     return () => {
       isCancelled = true;
+      if (observer) observer.disconnect();
       const imgWithCleanup = img as HTMLImageElement & { _cleanup?: () => void };
       if (imgWithCleanup._cleanup) {
         imgWithCleanup._cleanup();
       }
     };
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     src,
     width,
