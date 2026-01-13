@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { BlogFormData, BlogPost } from '@/types/blog';
@@ -86,15 +86,15 @@ export function AdvancedBlogEditor({ post, mode }: AdvancedBlogEditorProps) {
   const [codeSnippets, setCodeSnippets] = useState<CodeSnippet[]>([]);
   const [latexCode, setLatexCode] = useState('');
 
-  // Handle form changes
-  const handleChange = (
+  // Handle form changes with useCallback to prevent re-renders
+  const handleChange = useCallback((
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  const handleAuthorChange = (
+  const handleAuthorChange = useCallback((
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
@@ -102,9 +102,9 @@ export function AdvancedBlogEditor({ post, mode }: AdvancedBlogEditorProps) {
       ...prev,
       author: { ...prev.author, [name]: value },
     }));
-  };
+  }, []);
 
-  const handleSocialChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSocialChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -113,10 +113,10 @@ export function AdvancedBlogEditor({ post, mode }: AdvancedBlogEditorProps) {
         social: { ...prev.author.social, [name]: value },
       },
     }));
-  };
+  }, []);
 
-  // Tag management
-  const handleAddTag = () => {
+  // Tag management with useCallback
+  const handleAddTag = useCallback(() => {
     if (newTag && !formData.tags.includes(newTag.toLowerCase())) {
       setFormData((prev) => ({
         ...prev,
@@ -124,17 +124,17 @@ export function AdvancedBlogEditor({ post, mode }: AdvancedBlogEditorProps) {
       }));
       setNewTag('');
     }
-  };
+  }, [newTag, formData.tags]);
 
-  const handleRemoveTag = (tag: string) => {
+  const handleRemoveTag = useCallback((tag: string) => {
     setFormData((prev) => ({
       ...prev,
       tags: prev.tags.filter((t) => t !== tag),
     }));
-  };
+  }, []);
 
-  // Code snippet management
-  const addCodeSnippet = () => {
+  // Code snippet management with useCallback
+  const addCodeSnippet = useCallback(() => {
     const newSnippet: CodeSnippet = {
       id: Date.now().toString(),
       language: 'javascript',
@@ -142,22 +142,22 @@ export function AdvancedBlogEditor({ post, mode }: AdvancedBlogEditorProps) {
       title: 'Code Snippet',
       description: '',
     };
-    setCodeSnippets([...codeSnippets, newSnippet]);
-  };
+    setCodeSnippets((prev) => [...prev, newSnippet]);
+  }, []);
 
-  const updateCodeSnippet = (id: string, field: keyof CodeSnippet, value: string) => {
-    setCodeSnippets(
-      codeSnippets.map((snippet) =>
+  const updateCodeSnippet = useCallback((id: string, field: keyof CodeSnippet, value: string) => {
+    setCodeSnippets((prev) =>
+      prev.map((snippet) =>
         snippet.id === id ? { ...snippet, [field]: value } : snippet
       )
     );
-  };
+  }, []);
 
-  const removeCodeSnippet = (id: string) => {
-    setCodeSnippets(codeSnippets.filter((snippet) => snippet.id !== id));
-  };
+  const removeCodeSnippet = useCallback((id: string) => {
+    setCodeSnippets((prev) => prev.filter((snippet) => snippet.id !== id));
+  }, []);
 
-  const insertCodeSnippetIntoContent = (snippet: CodeSnippet) => {
+  const insertCodeSnippetIntoContent = useCallback((snippet: CodeSnippet) => {
     const snippetMDX = `
 ## ${snippet.title}
 
@@ -171,10 +171,10 @@ ${snippet.code}
       content: prev.content + '\n' + snippetMDX,
     }));
     toast.success('Code snippet inserted into content');
-  };
+  }, []);
 
-  // LaTeX insertion
-  const insertLatex = () => {
+  // LaTeX insertion with useCallback
+  const insertLatex = useCallback(() => {
     if (!latexCode.trim()) {
       toast.error('Please enter LaTeX code');
       return;
@@ -186,10 +186,10 @@ ${snippet.code}
     }));
     toast.success('LaTeX formula inserted');
     setLatexCode('');
-  };
+  }, [latexCode]);
 
-  // Image upload
-  const handleImageUpload = async (
+  // Image upload with useCallback
+  const handleImageUpload = useCallback(async (
     e: React.ChangeEvent<HTMLInputElement>,
     type: 'image' | 'metaImage'
   ) => {
@@ -222,10 +222,10 @@ ${snippet.code}
     } finally {
       setIsUploading(false);
     }
-  };
+  }, []);
 
-  // Submit form
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Submit form with useCallback
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.title || !formData.description || !formData.content) {
@@ -268,7 +268,7 @@ ${snippet.code}
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [formData, mode, post?.slug, router]);
 
   return (
     <Container className="py-10 sm:py-16">
