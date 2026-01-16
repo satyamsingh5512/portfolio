@@ -11,12 +11,17 @@ def run_command(command):
         return None
 
 def main():
-    # Unstage all files first to ensure we start clean
+    # Stage all files first to ensure we catch everything individually
+    print("Staging all files to identify them...")
+    run_command("git add .")
+    
+    # Get status of files
+    # This will show 'A  file', 'M  file', 'D  file' etc. for everything including new files in subdirs
+    status_output = run_command("git status --porcelain")
+    
+    # Unstage all files so we can commit them one by one
     print("Unstaging all files...")
     run_command("git reset")
-
-    # Get status of files
-    status_output = run_command("git status --porcelain")
     
     if not status_output:
         print("No changes to commit.")
@@ -29,9 +34,6 @@ def main():
         if not line:
             continue
         # Status is first 2 chars, then space, then filename
-        # Ensure we handle filenames with spaces correctly if possible, 
-        # though git status --porcelain might quote them.
-        # Simple split might fail on spaces in filenames, but let's assume standard behavior or quoted.
         # porcelain v1: XY PATH
         parts = line[3:]
         # Remove quotes if present
@@ -51,10 +53,13 @@ def main():
         commit_msg = f"Add {os.path.basename(filename)}"
         commit_result = run_command(f'git commit -m "{commit_msg}"')
         
-        if commit_result:
-            print(f"Successfully committed {filename}")
+        if commit_result is not None:
+             # git commit returns 0 on success, subprocess.run raises if check=True
+             # Our run_command catches error and prints it, returns None on error.
+             # But valid commit output is string.
+             print(f"Successfully committed {filename}")
         else:
-            print(f"Failed to commit {filename}")
+             print(f"Failed to commit {filename}")
 
     print("All files processed.")
     
