@@ -1,44 +1,36 @@
-'use client';
+"use client";
 
-import { useState, useRef, useCallback, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { BlogFormData, BlogPost } from '@/types/blog';
-import Container from '@/components/common/Container';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Container from "@/components/common/Container";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { BlogFormData, BlogPost } from "@/types/blog";
 import {
   ArrowLeft,
-  Save,
-  Eye,
-  Code,
-  FileCode,
-  Plus,
-  X,
-  Loader2,
-  Image as ImageIcon,
   Calculator,
-  Upload,
-} from 'lucide-react';
-import { Link } from 'next-view-transitions';
-import dynamic from 'next/dynamic';
-
-// Dynamic imports for code editor
-const CodeMirror = dynamic(() => import('@uiw/react-codemirror'), { ssr: false });
-const { javascript } = require('@codemirror/lang-javascript');
-const { python } = require('@codemirror/lang-python');
-const { markdown } = require('@codemirror/lang-markdown');
+  Code,
+  Eye,
+  FileCode,
+  Image as ImageIcon,
+  Loader2,
+  Plus,
+  Save,
+  X,
+} from "lucide-react";
+import { Link } from "next-view-transitions";
+import { useRouter } from "next/navigation";
+import { useCallback, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface AdvancedBlogEditorProps {
   post?: BlogPost;
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
 }
 
 interface CodeSnippet {
@@ -52,68 +44,72 @@ interface CodeSnippet {
 export function AdvancedBlogEditor({ post, mode }: AdvancedBlogEditorProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const metaFileInputRef = useRef<HTMLInputElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [activeTab, setActiveTab] = useState('editor');
+  const [activeTab, setActiveTab] = useState("editor");
 
   const [formData, setFormData] = useState<BlogFormData>({
-    title: post?.frontmatter.title || '',
-    description: post?.frontmatter.description || '',
-    content: post?.content || '',
+    title: post?.frontmatter.title || "",
+    description: post?.frontmatter.description || "",
+    content: post?.content || "",
     tags: post?.frontmatter.tags || [],
-    image: post?.frontmatter.image || '',
-    metaImage: post?.frontmatter.metaImage || '',
+    image: post?.frontmatter.image || "",
+    metaImage: post?.frontmatter.metaImage || "",
     isPublished: post?.frontmatter.isPublished ?? false,
     isFeatured: post?.frontmatter.isFeatured ?? false,
-    customSlug: post?.slug || '',
+    customSlug: post?.slug || "",
     author: post?.frontmatter.author || {
-      name: '',
-      email: '',
-      bio: '',
+      name: "",
+      email: "",
+      bio: "",
       social: {
-        instagram: '',
-        twitter: '',
-        github: '',
-        linkedin: '',
-        website: '',
+        instagram: "",
+        twitter: "",
+        github: "",
+        linkedin: "",
+        website: "",
       },
     },
   });
 
-  const [newTag, setNewTag] = useState('');
+  const [newTag, setNewTag] = useState("");
   const [codeSnippets, setCodeSnippets] = useState<CodeSnippet[]>([]);
-  const [latexCode, setLatexCode] = useState('');
+  const [latexCode, setLatexCode] = useState("");
 
   // Handle form changes with useCallback to prevent re-renders
-  const handleChange = useCallback((
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  }, []);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    },
+    [],
+  );
 
-  const handleAuthorChange = useCallback((
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      author: { ...prev.author, [name]: value },
-    }));
-  }, []);
+  const handleAuthorChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({
+        ...prev,
+        author: { ...prev.author, [name]: value },
+      }));
+    },
+    [],
+  );
 
-  const handleSocialChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      author: {
-        ...prev.author,
-        social: { ...prev.author.social, [name]: value },
-      },
-    }));
-  }, []);
+  const handleSocialChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({
+        ...prev,
+        author: {
+          ...prev.author,
+          social: { ...prev.author.social, [name]: value },
+        },
+      }));
+    },
+    [],
+  );
 
   // Tag management with useCallback
   const handleAddTag = useCallback(() => {
@@ -122,7 +118,7 @@ export function AdvancedBlogEditor({ post, mode }: AdvancedBlogEditorProps) {
         ...prev,
         tags: [...prev.tags, newTag.toLowerCase()],
       }));
-      setNewTag('');
+      setNewTag("");
     }
   }, [newTag, formData.tags]);
 
@@ -137,21 +133,24 @@ export function AdvancedBlogEditor({ post, mode }: AdvancedBlogEditorProps) {
   const addCodeSnippet = useCallback(() => {
     const newSnippet: CodeSnippet = {
       id: Date.now().toString(),
-      language: 'javascript',
-      code: '',
-      title: 'Code Snippet',
-      description: '',
+      language: "javascript",
+      code: "",
+      title: "Code Snippet",
+      description: "",
     };
     setCodeSnippets((prev) => [...prev, newSnippet]);
   }, []);
 
-  const updateCodeSnippet = useCallback((id: string, field: keyof CodeSnippet, value: string) => {
-    setCodeSnippets((prev) =>
-      prev.map((snippet) =>
-        snippet.id === id ? { ...snippet, [field]: value } : snippet
-      )
-    );
-  }, []);
+  const updateCodeSnippet = useCallback(
+    (id: string, field: keyof CodeSnippet, value: string) => {
+      setCodeSnippets((prev) =>
+        prev.map((snippet) =>
+          snippet.id === id ? { ...snippet, [field]: value } : snippet,
+        ),
+      );
+    },
+    [],
+  );
 
   const removeCodeSnippet = useCallback((id: string) => {
     setCodeSnippets((prev) => prev.filter((snippet) => snippet.id !== id));
@@ -161,22 +160,22 @@ export function AdvancedBlogEditor({ post, mode }: AdvancedBlogEditorProps) {
     const snippetMDX = `
 ## ${snippet.title}
 
-${snippet.description ? `${snippet.description}\n` : ''}
+${snippet.description ? `${snippet.description}\n` : ""}
 \`\`\`${snippet.language}
 ${snippet.code}
 \`\`\`
 `;
     setFormData((prev) => ({
       ...prev,
-      content: prev.content + '\n' + snippetMDX,
+      content: prev.content + "\n" + snippetMDX,
     }));
-    toast.success('Code snippet inserted into content');
+    toast.success("Code snippet inserted into content");
   }, []);
 
   // LaTeX insertion with useCallback
   const insertLatex = useCallback(() => {
     if (!latexCode.trim()) {
-      toast.error('Please enter LaTeX code');
+      toast.error("Please enter LaTeX code");
       return;
     }
     const latexMDX = `\n$$\n${latexCode}\n$$\n`;
@@ -184,91 +183,97 @@ ${snippet.code}
       ...prev,
       content: prev.content + latexMDX,
     }));
-    toast.success('LaTeX formula inserted');
-    setLatexCode('');
+    toast.success("LaTeX formula inserted");
+    setLatexCode("");
   }, [latexCode]);
 
   // Image upload with useCallback
-  const handleImageUpload = useCallback(async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: 'image' | 'metaImage'
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleImageUpload = useCallback(
+    async (
+      e: React.ChangeEvent<HTMLInputElement>,
+      type: "image" | "metaImage",
+    ) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-    setIsUploading(true);
-    try {
-      const formDataUpload = new FormData();
-      formDataUpload.append('file', file);
-      formDataUpload.append('folder', type === 'metaImage' ? 'meta' : 'blog');
+      setIsUploading(true);
+      try {
+        const formDataUpload = new FormData();
+        formDataUpload.append("file", file);
+        formDataUpload.append("folder", type === "metaImage" ? "meta" : "blog");
 
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formDataUpload,
-      });
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formDataUpload,
+        });
 
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || 'Upload failed');
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || "Upload failed");
+        }
+
+        const { url } = await res.json();
+        setFormData((prev) => ({ ...prev, [type]: url }));
+        toast.success("Image uploaded successfully");
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to upload image",
+        );
+      } finally {
+        setIsUploading(false);
       }
-
-      const { url } = await res.json();
-      setFormData((prev) => ({ ...prev, [type]: url }));
-      toast.success('Image uploaded successfully');
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to upload image'
-      );
-    } finally {
-      setIsUploading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   // Submit form with useCallback
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    if (!formData.title || !formData.description || !formData.content) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    if (!formData.image) {
-      toast.error('Please upload a cover image');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const url = mode === 'create' ? '/api/blog' : `/api/blog/${post?.slug}`;
-      const method = mode === 'create' ? 'POST' : 'PUT';
-
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || 'Failed to save post');
+      if (!formData.title || !formData.description || !formData.content) {
+        toast.error("Please fill in all required fields");
+        return;
       }
 
-      toast.success(
-        mode === 'create'
-          ? 'Post created successfully'
-          : 'Post updated successfully'
-      );
-      router.push('/admin');
-      router.refresh();
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to save post'
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, [formData, mode, post?.slug, router]);
+      if (!formData.image) {
+        toast.error("Please upload a cover image");
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const url = mode === "create" ? "/api/blog" : `/api/blog/${post?.slug}`;
+        const method = mode === "create" ? "POST" : "PUT";
+
+        const res = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || "Failed to save post");
+        }
+
+        toast.success(
+          mode === "create"
+            ? "Post created successfully"
+            : "Post updated successfully",
+        );
+        router.push("/admin");
+        router.refresh();
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to save post",
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [formData, mode, post?.slug, router],
+  );
 
   return (
     <Container className="py-10 sm:py-16">
@@ -283,9 +288,11 @@ ${snippet.code}
             </Button>
             <div>
               <h1 className="text-2xl font-bold">
-                {mode === 'create' ? 'New Technical Blog Post' : 'Edit Blog Post'}
+                {mode === "create"
+                  ? "New Technical Blog Post"
+                  : "Edit Blog Post"}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Advanced editor with code snippets and LaTeX support
               </p>
             </div>
@@ -294,7 +301,7 @@ ${snippet.code}
             <Button
               type="button"
               variant="outline"
-              onClick={() => setActiveTab('preview')}
+              onClick={() => setActiveTab("preview")}
             >
               <Eye className="mr-2 h-4 w-4" />
               Preview
@@ -305,7 +312,7 @@ ${snippet.code}
               ) : (
                 <Save className="mr-2 h-4 w-4" />
               )}
-              {mode === 'create' ? 'Create Post' : 'Save Changes'}
+              {mode === "create" ? "Create Post" : "Save Changes"}
             </Button>
           </div>
         </div>
@@ -336,7 +343,7 @@ ${snippet.code}
           <TabsContent value="editor" className="space-y-6">
             <div className="grid gap-8 lg:grid-cols-3">
               {/* Main Content */}
-              <div className="lg:col-span-2 space-y-6">
+              <div className="space-y-6 lg:col-span-2">
                 <Card>
                   <CardHeader>
                     <CardTitle>Content</CardTitle>
@@ -375,7 +382,7 @@ ${snippet.code}
                         value={formData.customSlug}
                         onChange={handleChange}
                         placeholder="custom-url-slug"
-                        disabled={mode === 'edit'}
+                        disabled={mode === "edit"}
                       />
                     </div>
 
@@ -391,8 +398,9 @@ ${snippet.code}
                         className="font-mono text-sm"
                         required
                       />
-                      <p className="text-xs text-muted-foreground">
-                        Supports Markdown, MDX, LaTeX ($$formula$$), and code blocks
+                      <p className="text-muted-foreground text-xs">
+                        Supports Markdown, MDX, LaTeX ($$formula$$), and code
+                        blocks
                       </p>
                     </div>
                   </CardContent>
@@ -435,7 +443,7 @@ ${snippet.code}
                       <Textarea
                         id="bio"
                         name="bio"
-                        value={formData.author.bio || ''}
+                        value={formData.author.bio || ""}
                         onChange={handleAuthorChange}
                         placeholder="Short author bio"
                         rows={2}
@@ -449,25 +457,25 @@ ${snippet.code}
                       <div className="grid gap-4 sm:grid-cols-2">
                         <Input
                           name="github"
-                          value={formData.author.social?.github || ''}
+                          value={formData.author.social?.github || ""}
                           onChange={handleSocialChange}
                           placeholder="GitHub username"
                         />
                         <Input
                           name="twitter"
-                          value={formData.author.social?.twitter || ''}
+                          value={formData.author.social?.twitter || ""}
                           onChange={handleSocialChange}
                           placeholder="Twitter @username"
                         />
                         <Input
                           name="linkedin"
-                          value={formData.author.social?.linkedin || ''}
+                          value={formData.author.social?.linkedin || ""}
                           onChange={handleSocialChange}
                           placeholder="LinkedIn username"
                         />
                         <Input
                           name="website"
-                          value={formData.author.social?.website || ''}
+                          value={formData.author.social?.website || ""}
                           onChange={handleSocialChange}
                           placeholder="https://website.com"
                         />
@@ -491,7 +499,10 @@ ${snippet.code}
                         id="isPublished"
                         checked={formData.isPublished}
                         onCheckedChange={(checked) =>
-                          setFormData((prev) => ({ ...prev, isPublished: checked }))
+                          setFormData((prev) => ({
+                            ...prev,
+                            isPublished: checked,
+                          }))
                         }
                       />
                     </div>
@@ -501,7 +512,10 @@ ${snippet.code}
                         id="isFeatured"
                         checked={formData.isFeatured}
                         onCheckedChange={(checked) =>
-                          setFormData((prev) => ({ ...prev, isFeatured: checked }))
+                          setFormData((prev) => ({
+                            ...prev,
+                            isFeatured: checked,
+                          }))
                         }
                       />
                     </div>
@@ -515,11 +529,11 @@ ${snippet.code}
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {formData.image ? (
-                      <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                      <div className="bg-muted relative aspect-video overflow-hidden rounded-lg">
                         <img
                           src={formData.image}
                           alt="Cover"
-                          className="object-cover w-full h-full"
+                          className="h-full w-full object-cover"
                         />
                         <Button
                           type="button"
@@ -527,7 +541,7 @@ ${snippet.code}
                           size="icon"
                           className="absolute top-2 right-2"
                           onClick={() =>
-                            setFormData((prev) => ({ ...prev, image: '' }))
+                            setFormData((prev) => ({ ...prev, image: "" }))
                           }
                         >
                           <X className="h-4 w-4" />
@@ -535,11 +549,11 @@ ${snippet.code}
                       </div>
                     ) : (
                       <div
-                        className="aspect-video rounded-lg border-2 border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                        className="hover:bg-muted/50 flex aspect-video cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
                         onClick={() => fileInputRef.current?.click()}
                       >
-                        <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                        <p className="text-sm text-muted-foreground">
+                        <ImageIcon className="text-muted-foreground mb-2 h-8 w-8" />
+                        <p className="text-muted-foreground text-sm">
                           Click to upload
                         </p>
                       </div>
@@ -549,14 +563,17 @@ ${snippet.code}
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={(e) => handleImageUpload(e, 'image')}
+                      onChange={(e) => handleImageUpload(e, "image")}
                       disabled={isUploading}
                     />
                     <Input
                       placeholder="Or paste image URL"
                       value={formData.image}
                       onChange={(e) =>
-                        setFormData((prev) => ({ ...prev, image: e.target.value }))
+                        setFormData((prev) => ({
+                          ...prev,
+                          image: e.target.value,
+                        }))
                       }
                     />
                   </CardContent>
@@ -574,7 +591,7 @@ ${snippet.code}
                         value={newTag}
                         onChange={(e) => setNewTag(e.target.value)}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === "Enter") {
                             e.preventDefault();
                             handleAddTag();
                           }
@@ -617,28 +634,37 @@ ${snippet.code}
               </CardHeader>
               <CardContent className="space-y-6">
                 {codeSnippets.length === 0 ? (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <Code className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No code snippets yet. Click "Add Snippet" to create one.</p>
+                  <div className="text-muted-foreground py-12 text-center">
+                    <Code className="mx-auto mb-4 h-12 w-12 opacity-50" />
+                    <p>
+                      No code snippets yet. Click &quot;Add Snippet&quot; to
+                      create one.
+                    </p>
                   </div>
                 ) : (
                   codeSnippets.map((snippet) => (
                     <Card key={snippet.id}>
-                      <CardContent className="pt-6 space-y-4">
+                      <CardContent className="space-y-4 pt-6">
                         <div className="flex items-center justify-between">
                           <Input
                             placeholder="Snippet title"
                             value={snippet.title}
                             onChange={(e) =>
-                              updateCodeSnippet(snippet.id, 'title', e.target.value)
+                              updateCodeSnippet(
+                                snippet.id,
+                                "title",
+                                e.target.value,
+                              )
                             }
-                            className="flex-1 mr-4"
+                            className="mr-4 flex-1"
                           />
                           <div className="flex gap-2">
                             <Button
                               type="button"
                               size="sm"
-                              onClick={() => insertCodeSnippetIntoContent(snippet)}
+                              onClick={() =>
+                                insertCodeSnippetIntoContent(snippet)
+                              }
                             >
                               Insert
                             </Button>
@@ -656,15 +682,23 @@ ${snippet.code}
                           placeholder="Description (optional)"
                           value={snippet.description}
                           onChange={(e) =>
-                            updateCodeSnippet(snippet.id, 'description', e.target.value)
+                            updateCodeSnippet(
+                              snippet.id,
+                              "description",
+                              e.target.value,
+                            )
                           }
                         />
                         <select
                           value={snippet.language}
                           onChange={(e) =>
-                            updateCodeSnippet(snippet.id, 'language', e.target.value)
+                            updateCodeSnippet(
+                              snippet.id,
+                              "language",
+                              e.target.value,
+                            )
                           }
-                          className="w-full p-2 border rounded-md"
+                          className="w-full rounded-md border p-2"
                         >
                           <option value="javascript">JavaScript</option>
                           <option value="typescript">TypeScript</option>
@@ -687,7 +721,11 @@ ${snippet.code}
                           placeholder="Enter your code here..."
                           value={snippet.code}
                           onChange={(e) =>
-                            updateCodeSnippet(snippet.id, 'code', e.target.value)
+                            updateCodeSnippet(
+                              snippet.id,
+                              "code",
+                              e.target.value,
+                            )
                           }
                           rows={10}
                           className="font-mono text-sm"
@@ -716,8 +754,9 @@ ${snippet.code}
                     rows={8}
                     className="font-mono"
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Example: x = \frac{"{-b \\pm \\sqrt{b^2-4ac}}"}{"{2a}"}
+                  <p className="text-muted-foreground text-xs">
+                    Example: x = \frac{"{-b \\pm \\sqrt{b^2-4ac}}"}
+                    {"{2a}"}
                   </p>
                 </div>
                 <Button type="button" onClick={insertLatex} className="w-full">
@@ -732,16 +771,16 @@ ${snippet.code}
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => setLatexCode('E = mc^2')}
+                      onClick={() => setLatexCode("E = mc^2")}
                     >
-                      Einstein's Equation
+                      Einstein&apos;s Equation
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={() =>
-                        setLatexCode('x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}')
+                        setLatexCode("x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}")
                       }
                     >
                       Quadratic Formula
@@ -750,7 +789,9 @@ ${snippet.code}
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => setLatexCode('\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}')}
+                      onClick={() =>
+                        setLatexCode("\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}")
+                      }
                     >
                       Summation
                     </Button>
@@ -758,7 +799,7 @@ ${snippet.code}
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => setLatexCode('\\int_{a}^{b} f(x) dx')}
+                      onClick={() => setLatexCode("\\int_{a}^{b} f(x) dx")}
                     >
                       Integral
                     </Button>
@@ -776,15 +817,15 @@ ${snippet.code}
               </CardHeader>
               <CardContent>
                 <div className="prose prose-neutral dark:prose-invert max-w-none">
-                  <h1>{formData.title || 'Untitled Post'}</h1>
+                  <h1>{formData.title || "Untitled Post"}</h1>
                   <p className="text-muted-foreground">
-                    {formData.description || 'No description'}
+                    {formData.description || "No description"}
                   </p>
                   {formData.image && (
                     <img
                       src={formData.image}
                       alt="Cover"
-                      className="rounded-lg w-full"
+                      className="w-full rounded-lg"
                     />
                   )}
                   <div className="whitespace-pre-wrap">{formData.content}</div>

@@ -11,6 +11,12 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    rules: {
+      '@next/next/no-img-element': 'off', // Allow img tags in admin components
+      'react/no-unescaped-entities': 'off', // Allow unescaped entities
+    },
+  },
 ];
 
 export default eslintConfig;

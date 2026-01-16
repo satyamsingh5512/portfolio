@@ -79,16 +79,18 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
   fadeSpeed = 0.1,
 }) => {
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
-  const samplesRef = React.useRef<Array<{
-    x: number;
-    y: number;
-    r: number;
-    g: number;
-    b: number;
-    a: number;
-    drop: boolean;
-    seed: number;
-  }>>([]);
+  const samplesRef = React.useRef<
+    Array<{
+      x: number;
+      y: number;
+      r: number;
+      g: number;
+      b: number;
+      a: number;
+      drop: boolean;
+      seed: number;
+    }>
+  >([]);
   const dimsRef = React.useRef<{
     width: number;
     height: number;
@@ -108,7 +110,7 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
   const activityRef = React.useRef<number>(0);
   const activityTargetRef = React.useRef<number>(0);
   const isVisibleRef = React.useRef<boolean>(true);
-  
+
   React.useEffect(() => {
     let isCancelled = false;
     let observer: IntersectionObserver | null = null;
@@ -271,14 +273,8 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
             let count = 0;
             for (let oy = -1; oy <= 1; oy++) {
               for (let ox = -1; ox <= 1; ox++) {
-                const sx = Math.max(
-                  0,
-                  Math.min(offscreen.width - 1, cx + ox),
-                );
-                const sy = Math.max(
-                  0,
-                  Math.min(offscreen.height - 1, cy + oy),
-                );
+                const sx = Math.max(0, Math.min(offscreen.width - 1, cx + ox));
+                const sy = Math.max(0, Math.min(offscreen.height - 1, cy + oy));
                 const sIdx = sy * stride + sx * 4;
                 r += data[sIdx];
                 g += data[sIdx + 1];
@@ -411,7 +407,7 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
           rafRef.current = null;
           return;
         }
-        
+
         const now = performance.now();
         const minDelta = 1000 / Math.max(1, maxFps);
         if (now - lastFrameRef.current < minDelta) {
@@ -518,20 +514,24 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
       };
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(animate);
-      
+
       // Add Intersection Observer to pause animation when off-screen
-      if (typeof IntersectionObserver !== 'undefined') {
+      if (typeof IntersectionObserver !== "undefined") {
         observer = new IntersectionObserver(
           (entries) => {
             isVisibleRef.current = entries[0].isIntersecting;
             if (!isVisibleRef.current && rafRef.current) {
               cancelAnimationFrame(rafRef.current);
               rafRef.current = null;
-            } else if (isVisibleRef.current && !rafRef.current && samplesRef.current.length > 0) {
+            } else if (
+              isVisibleRef.current &&
+              !rafRef.current &&
+              samplesRef.current.length > 0
+            ) {
               rafRef.current = requestAnimationFrame(animate);
             }
           },
-          { threshold: 0.01 }
+          { threshold: 0.01 },
         );
         observer.observe(canvasEl);
       }
@@ -561,7 +561,9 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
       return () => {
         isCancelled = true;
         window.removeEventListener("resize", onResize);
-        const imgWithCleanup = img as HTMLImageElement & { _cleanup?: () => void };
+        const imgWithCleanup = img as HTMLImageElement & {
+          _cleanup?: () => void;
+        };
         if (imgWithCleanup._cleanup) {
           imgWithCleanup._cleanup();
         }
@@ -571,13 +573,13 @@ export const PixelatedCanvas: React.FC<PixelatedCanvasProps> = ({
     return () => {
       isCancelled = true;
       if (observer) observer.disconnect();
-      const imgWithCleanup = img as HTMLImageElement & { _cleanup?: () => void };
+      const imgWithCleanup = img as HTMLImageElement & {
+        _cleanup?: () => void;
+      };
       if (imgWithCleanup._cleanup) {
         imgWithCleanup._cleanup();
       }
     };
-    
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     src,
     width,
