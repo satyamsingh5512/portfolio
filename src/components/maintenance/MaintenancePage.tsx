@@ -1,6 +1,6 @@
 "use client";
 
-import { Gear } from "@/components/svgs/Gear";
+import Gear from "@/components/svgs/Gear";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -41,7 +41,7 @@ export default function MaintenancePage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [estimatedCompletion]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
