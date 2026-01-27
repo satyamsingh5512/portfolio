@@ -2,7 +2,7 @@
 
 import Gear from "@/components/svgs/Gear";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function MaintenancePage() {
   const [countdown, setCountdown] = useState({
@@ -13,7 +13,10 @@ export default function MaintenancePage() {
   const [progress, setProgress] = useState(0);
 
   // Set your estimated completion time here
-  const estimatedCompletion = new Date("2026-01-28T12:00:00");
+  const estimatedCompletion = useMemo(
+    () => new Date("2026-01-28T12:00:00"),
+    [],
+  );
 
   useEffect(() => {
     const timer = setInterval(() => {

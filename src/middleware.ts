@@ -33,7 +33,10 @@ export function middleware(request: NextRequest) {
   }
 
   // Check if IP is allowed (optional bypass)
-  const clientIp = request.ip || request.headers.get("x-forwarded-for") || "";
+  const clientIp =
+    request.headers.get("x-forwarded-for") ||
+    request.headers.get("x-real-ip") ||
+    "";
   if (ALLOWED_IPS.includes(clientIp)) {
     return NextResponse.next();
   }
@@ -42,7 +45,7 @@ export function middleware(request: NextRequest) {
   const bypassToken =
     request.nextUrl.searchParams.get("bypass") ||
     request.cookies.get("maintenance_bypass")?.value;
-  if (bypassToken === process.env.MAINTENANCE_BYPASS_TOKEN) {
+  if (bypassToken && bypassToken === process.env.MAINTENANCE_BYPASS_TOKEN) {
     // Set cookie for future requests
     const response = NextResponse.next();
     response.cookies.set("maintenance_bypass", bypassToken, {
