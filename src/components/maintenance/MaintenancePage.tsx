@@ -2,50 +2,8 @@
 
 import Gear from "@/components/svgs/Gear";
 import { motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
 
 export default function MaintenancePage() {
-  const [countdown, setCountdown] = useState({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-  const [progress, setProgress] = useState(0);
-
-  // Set your estimated completion time here
-  const estimatedCompletion = useMemo(
-    () => new Date("2026-01-28T12:00:00"),
-    [],
-  );
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date();
-      const difference = estimatedCompletion.getTime() - now.getTime();
-
-      if (difference > 0) {
-        const hours = Math.floor(difference / (1000 * 60 * 60));
-        const minutes = Math.floor(
-          (difference % (1000 * 60 * 60)) / (1000 * 60),
-        );
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-        setCountdown({ hours, minutes, seconds });
-
-        // Simulate progress (you can replace this with actual progress from your backend)
-        const totalTime = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-        const elapsed = totalTime - difference;
-        const progressPercent = Math.min((elapsed / totalTime) * 100, 95);
-        setProgress(progressPercent);
-      } else {
-        setCountdown({ hours: 0, minutes: 0, seconds: 0 });
-        setProgress(100);
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [estimatedCompletion]);
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <div className="w-full max-w-2xl">
@@ -87,64 +45,11 @@ export default function MaintenancePage() {
             your experience.
           </motion.p>
 
-          {/* Progress Bar */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4 }}
-            className="mb-8"
-          >
-            <div className="h-3 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
-              <motion.div
-                className="h-full bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.5 }}
-              />
-            </div>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-500">
-              Progress: {Math.round(progress)}%
-            </p>
-          </motion.div>
-
-          {/* Countdown Timer */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mx-auto mb-8 grid max-w-md grid-cols-3 gap-4"
-          >
-            <div className="rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800">
-              <div className="text-3xl font-bold text-blue-600 md:text-4xl dark:text-blue-400">
-                {String(countdown.hours).padStart(2, "0")}
-              </div>
-              <div className="mt-1 text-xs text-gray-500 md:text-sm dark:text-gray-400">
-                Hours
-              </div>
-            </div>
-            <div className="rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800">
-              <div className="text-3xl font-bold text-blue-600 md:text-4xl dark:text-blue-400">
-                {String(countdown.minutes).padStart(2, "0")}
-              </div>
-              <div className="mt-1 text-xs text-gray-500 md:text-sm dark:text-gray-400">
-                Minutes
-              </div>
-            </div>
-            <div className="rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800">
-              <div className="text-3xl font-bold text-blue-600 md:text-4xl dark:text-blue-400">
-                {String(countdown.seconds).padStart(2, "0")}
-              </div>
-              <div className="mt-1 text-xs text-gray-500 md:text-sm dark:text-gray-400">
-                Seconds
-              </div>
-            </div>
-          </motion.div>
-
           {/* Information Cards */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.4 }}
             className="mb-8 grid gap-4 md:grid-cols-2"
           >
             <div className="rounded-lg bg-white p-6 text-left shadow-lg dark:bg-gray-800">
@@ -161,11 +66,7 @@ export default function MaintenancePage() {
                 When will we be back?
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Expected completion:{" "}
-                {estimatedCompletion.toLocaleString("en-US", {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                })}
+                We&apos;ll be back online soon. Thank you for your patience!
               </p>
             </div>
           </motion.div>
@@ -174,7 +75,7 @@ export default function MaintenancePage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.7 }}
+            transition={{ delay: 0.5 }}
             className="text-gray-600 dark:text-gray-400"
           >
             <p className="mb-4">Need immediate assistance?</p>
@@ -220,7 +121,7 @@ export default function MaintenancePage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
+            transition={{ delay: 0.6 }}
             className="mt-12 text-sm text-gray-500 dark:text-gray-500"
           >
             <p>Thank you for your patience!</p>
