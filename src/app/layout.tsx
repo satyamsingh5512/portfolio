@@ -1,12 +1,12 @@
 import UmamiAnalytics from "@/components/analytics/UmamiAnalytics";
-import ChatBubble from "@/components/common/ChatBubble";
 import Footer from "@/components/common/Footer";
+import LazyComponents from "@/components/common/LazyComponents";
 import Navbar from "@/components/common/Navbar";
-import OnekoCat from "@/components/common/OnekoCat";
 import { Quote } from "@/components/common/Quote";
 import { ThemeProvider } from "@/components/common/ThemeProviders";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { generateMetadata as getMetadata } from "@/config/Meta";
+import { hankenGrotesk } from "@/config/fonts";
 import { Analytics } from "@vercel/analytics/next";
 import ReactLenis from "lenis/react";
 import { ViewTransitions } from "next-view-transitions";
@@ -23,7 +23,9 @@ export default function RootLayout({
   return (
     <ViewTransitions>
       <html lang="en" suppressHydrationWarning>
-        <body className={`font-hanken-grotesk antialiased`}>
+        <body
+          className={`${hankenGrotesk.variable} font-hanken-grotesk antialiased`}
+        >
           <SessionProvider>
             <ThemeProvider
               attribute="class"
@@ -34,10 +36,9 @@ export default function RootLayout({
               <ReactLenis root>
                 <Navbar />
                 {children}
-                <OnekoCat />
+                <LazyComponents />
                 <Quote />
                 <Footer />
-                <ChatBubble />
                 <UmamiAnalytics />
                 <Analytics />
               </ReactLenis>

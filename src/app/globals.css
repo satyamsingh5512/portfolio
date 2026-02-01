@@ -2,15 +2,7 @@
 @import 'tw-animate-css';
 @plugin "@tailwindcss/typography";
 
-@font-face {
-  font-family: 'Hanken Grotesk';
-  src: url('/fonts/HankenGrotesk-Variable.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Hanken Grotesk Italic';
-  src: url('/fonts/HankenGrotesk-Italic-Variable.ttf') format('truetype');
-}
+/* Fonts are now handled by next/font/local in src/config/fonts.ts */
 
 @custom-variant dark (&:is(.dark *));
 
@@ -150,7 +142,7 @@
 }
 
 .font-hanken-grotesk {
-  font-family: 'Hanken Grotesk', sans-serif;
+  font-family: var(--font-hanken-grotesk);
 }
 
 .font-hanken-grotesk-italic {
