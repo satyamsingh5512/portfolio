@@ -13,10 +13,6 @@ const ALLOWED_PATHS = [
   "/assets",
 ];
 
-// IP addresses that can bypass maintenance mode (optional)
-const ALLOWED_IPS: string[] =
-  process.env.MAINTENANCE_ALLOWED_IPS?.split(",") || [];
-
 export function middleware(request: NextRequest) {
   // Skip if maintenance mode is disabled
   if (!MAINTENANCE_MODE) {
@@ -28,30 +24,6 @@ export function middleware(request: NextRequest) {
   // Allow access to specific paths
   if (ALLOWED_PATHS.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
-  }
-
-  // Check if IP is allowed (optional bypass)
-  const clientIp =
-    request.headers.get("x-forwarded-for") ||
-    request.headers.get("x-real-ip") ||
-    "";
-  if (ALLOWED_IPS.includes(clientIp)) {
-    return NextResponse.next();
-  }
-
-  // Check for bypass token in query params or cookie (optional)
-  const bypassToken =
-    request.nextUrl.searchParams.get("bypass") ||
-    request.cookies.get("maintenance_bypass")?.value;
-  if (bypassToken && bypassToken === process.env.MAINTENANCE_BYPASS_TOKEN) {
-    // Set cookie for future requests
-    const response = NextResponse.next();
-    response.cookies.set("maintenance_bypass", bypassToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24, // 24 hours
-    });
-    return response;
   }
 
   // Redirect to maintenance page
