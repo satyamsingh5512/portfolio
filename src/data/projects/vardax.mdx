@@ -1,0 +1,68 @@
+---
+title: "VARDAx"
+description: "A next-generation security platform that uses behavioral machine learning to catch zero-day attacks that traditional WAFs miss."
+image: "/project/VardaX.png"
+technologies:
+  - "Python"
+  - "FastAPI"
+  - "PyTorch"
+  - "Scikit-learn"
+  - "React"
+  - "TypeScript"
+  - "Nginx"
+  - "Docker"
+  - "Redis"
+github: "https://github.com/your-username/vardax"
+live: "#"
+timeline: "2024"
+role: "Lead Machine Learning Engineer"
+status: "in-progress"
+featured: true
+isPublished: true
+---
+
+## Project Overview
+
+VARDAx is an intelligent security system designed to protect web applications from sophisticated cyber threats. Unlike traditional WAFs that rely on static signatures, VARDAx uses an ensemble of machine learning models to learn the "normal" behavior of your specific application combined with a powerful real-time decision engine.
+
+When traffic deviates from the established baseline—whether it's a new SQL injection pattern, a slow-rate DDoS, or a bot attack—VARDAx detects the anomaly, explains why it's suspicious, and can automatically block or challenge the request.
+
+## Key Features
+
+### Behavioral Learning
+Automatically learns normal traffic patterns for your specific application, reducing false positives compared to rigid rule-based systems.
+
+### Ensemble ML Detection
+Combines 7 different detection engines for comprehensive coverage:
+- **Isolation Forest**: For point anomalies (outliers).
+- **Autoencoder**: For complex pattern deviations.
+- **EWMA Baseline**: For volume and rate anomalies.
+- **HTTP-BERT**: For deep semantic understanding of requests.
+- **Sequence Detector**: For multi-step attack chains.
+- **Graph Detector**: For coordinated/distributed attacks.
+
+### Explainable AI & Threat Intelligence
+- **Real-time reputation scoring**: Integrates with external threat feeds.
+- **Detailed Explanations**: Doesn't just block; tells you *why* (e.g., "Unusual sequence of API calls" or "Abnormal payload entropy").
+
+### Performance
+- **Real-time Dashboard**: Live visualization of traffic, attack maps, and system health.
+- **Low Latency**: Async architecture adds only ~3ms to request processing.
+
+## Architecture
+
+The system operates as a side-car or reverse proxy layer:
+
+1. **Traffic Ingestion**: NGINX/ModSecurity mirrors traffic to the analysis engine.
+2. **Feature Extraction**: Requests are parsed into numerical feature vectors (latency, entropy, payload size, etc.).
+3. **ML Inference**: The ensemble model processes features in parallel to generate an anomaly score.
+4. **Decision Engine**: High-confidence threats are blocked; suspicious ones are flagged for review.
+5. **Feedback Loop**: False positives marked by admins retrain the models to improve accuracy.
+
+## Installation
+
+Quick setup using the connector package:
+
+```bash
+npm install vardax-connect
+```
