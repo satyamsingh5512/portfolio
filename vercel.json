@@ -1,0 +1,15 @@
+{
+  "git": {
+    "deploymentEnabled": {
+      "maintenance-mode": true
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_MAINTENANCE_MODE": "false"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_MAINTENANCE_MODE": "false"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+name: Maintenance Mode Notification
+
+on:
+  push:
+    branches:
+      - maintenance-mode
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Send notification
+        run: |
+          echo "🚧 Maintenance mode branch deployed!"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          
+      # Optional: Send Telegram notification if you have bot configured
+      - name: Send Telegram Notification
+        if: ${{ secrets.TELEGRAM_BOT_TOKEN && secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d text="🚧 Maintenance Mode Activated%0A%0ABranch: maintenance-mode%0ACommit: ${{ github.sha }}%0AAuthor: ${{ github.actor }}"
