@@ -64,7 +64,7 @@ export const pageMetadata: Record<string, PageMeta> = {
     description:
       "Get in touch with me for collaborations, projects, or opportunities. I'd love to hear from you!",
     keywords: ["contact", "hire", "collaboration", "freelance", "developer"],
-    ogImage: "/assets/logo.png",
+    ogImage: "/assets/satyam-avatar.png",
     twitterCard: "summary",
   },
 
