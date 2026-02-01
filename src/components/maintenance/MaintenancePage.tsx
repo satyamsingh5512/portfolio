@@ -111,7 +111,7 @@ export default function MaintenancePage() {
           >
             <p>Thank you for your patience!</p>
             <p className="mt-2">
-              © {new Date().getFullYear()} Satyam Sharma. All rights reserved.
+              © {new Date().getFullYear()} Satyam Singh. All rights reserved.
             </p>
           </motion.div>
         </motion.div>
