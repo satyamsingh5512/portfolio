@@ -2,9 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Toggle maintenance mode - automatically enabled on maintenance-mode branch
-const MAINTENANCE_MODE =
-  process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true" ||
-  process.env.VERCEL_GIT_COMMIT_REF === "maintenance-mode";
+const MAINTENANCE_MODE = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true";
 
 // Paths that should be accessible during maintenance
 const ALLOWED_PATHS = [
