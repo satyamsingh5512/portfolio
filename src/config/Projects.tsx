@@ -1,9 +1,11 @@
 import ExpressJs from "@/components/technologies/ExpressJs";
 import MongoDB from "@/components/technologies/MongoDB";
 import NextJs from "@/components/technologies/NextJs";
+import Nginx from "@/components/technologies/Nginx";
 import NodeJs from "@/components/technologies/NodeJs";
 import PostgreSQL from "@/components/technologies/PostgreSQL";
 import ReactIcon from "@/components/technologies/ReactIcon";
+import TailwindCss from "@/components/technologies/TailwindCss";
 import TypeScript from "@/components/technologies/TypeScript";
 import Vercel from "@/components/technologies/Vercel";
 import { Project } from "@/types/project";
@@ -28,17 +30,18 @@ export const projects: Project[] = [
     isWorking: true,
   },
   {
-    title: "VardaX",
+    title: "VARDAx",
     description:
-      "ML-powered Web Application Firewall with real-time threat detection using behavioral analysis and anomaly detection. Features lightweight cloud-ready architecture with Python/Scikit-learn for ML models, Redis for caching, and Docker for deployment",
+      "Next-generation ML-powered Web Application Firewall that detects zero-day attacks using behavioral analysis and ensemble learning models (Isolation Forest, Autoencoders, BERT). Features real-time threat visualization and explainable AI decisions.",
     image: "/project/VardaX.png",
     link: "#",
     technologies: [
-      { name: "Node.js", icon: <NodeJs key="nodejs" /> },
-      { name: "Express.js", icon: <ExpressJs key="expressjs" /> },
-      { name: "Next.js", icon: <NextJs key="nextjs" /> },
       { name: "Python", icon: <TypeScript key="python" /> },
-      { name: "MongoDB", icon: <MongoDB key="mongodb" /> },
+      { name: "PyTorch", icon: <NodeJs key="pytorch" /> },
+      { name: "FastAPI", icon: <ExpressJs key="fastapi" /> },
+      { name: "React", icon: <ReactIcon key="react" /> },
+      { name: "Nginx", icon: <Nginx key="nginx" /> },
+      { name: "Docker", icon: <Vercel key="docker" /> },
     ],
     details: true,
     projectDetailsPageSlug: "/projects/vardax",
@@ -47,13 +50,13 @@ export const projects: Project[] = [
   {
     title: "Ubuntu Clipboard Manager",
     description:
-      "Native Ubuntu clipboard manager with Windows-style clipboard history. Built with Python and GTK/libadwaita for native desktop UI, D-Bus for system-level clipboard integration, SQLite for local storage, and Systemd for background service management",
+      "A Linux-native clipboard management application with real-time clipboard tracking, persistent history, global shortcuts, system tray integration, and privacy-first local storage, built using Electron, React, and SQLite",
     image: "/project/Paste-bin.png",
     link: "#",
     technologies: [
-      { name: "Python", icon: <TypeScript key="python" /> },
-      { name: "GTK", icon: <ReactIcon key="gtk" /> },
-      { name: "D-Bus", icon: <NodeJs key="dbus" /> },
+      { name: "Electron.js", icon: <NodeJs key="electron" /> },
+      { name: "React.js", icon: <ReactIcon key="react" /> },
+      { name: "Tailwind CSS", icon: <TailwindCss key="tailwind" /> },
       { name: "SQLite", icon: <MongoDB key="sqlite" /> },
       { name: "Linux", icon: <Vercel key="linux" /> },
     ],
