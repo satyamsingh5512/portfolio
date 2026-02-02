@@ -1,19 +1,18 @@
-import { BlogContent } from '@/components/blog/BlogContent';
-import { BlogList } from '@/components/blog/BlogList';
-import Container from '@/components/common/Container';
-import FontSizeControls from '@/components/common/FontSizeControls';
-import ArrowLeft from '@/components/svgs/ArrowLeft';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { siteConfig } from '@/config/Meta';
+import { BlogContent } from "@/components/blog/BlogContent";
+import { BlogList } from "@/components/blog/BlogList";
+import Container from "@/components/common/Container";
+import ArrowLeft from "@/components/svgs/ArrowLeft";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { siteConfig } from "@/config/Meta";
 import {
   getBlogPostBySlug,
   getBlogPostSlugs,
   getRelatedPosts,
-} from '@/lib/blog';
-import { Metadata } from 'next';
-import { Link } from 'next-view-transitions';
-import { notFound } from 'next/navigation';
+} from "@/lib/blog";
+import { Metadata } from "next";
+import { Link } from "next-view-transitions";
+import { notFound } from "next/navigation";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -40,7 +39,7 @@ export async function generateMetadata({
 
   if (!post || !post.frontmatter.isPublished) {
     return {
-      title: 'Post Not Found',
+      title: "Post Not Found",
     };
   }
 
@@ -54,10 +53,10 @@ export async function generateMetadata({
       title,
       description,
       images: [image],
-      type: 'article',
+      type: "article",
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title,
       description,
       images: [image],
@@ -111,7 +110,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
         </div>
       </Container>
-      <FontSizeControls />
     </>
   );
 }

@@ -1,16 +1,17 @@
-import Container from '@/components/common/Container';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { generateMetadata as getMetadata } from '@/config/Meta';
-import { getAllTags, getPublishedBlogPosts } from '@/lib/blog';
-import { Metadata } from 'next';
-import { Robots } from 'next/dist/lib/metadata/types/metadata-types';
-import { Suspense } from 'react';
+import Container from "@/components/common/Container";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { generateMetadata as getMetadata } from "@/config/Meta";
+import { getAllTags, getPublishedBlogPosts } from "@/lib/blog";
+import { getBlogs } from "@/lib/blog-service";
+import { Metadata } from "next";
+import { Robots } from "next/dist/lib/metadata/types/metadata-types";
+import { Suspense } from "react";
 
-import { BlogPageClient } from './BlogPageClient';
+import { BlogPageClient } from "./BlogPageClient";
 
 export const generateMetadata = (): Metadata => {
-  const metadata = getMetadata('/blog');
+  const metadata = getMetadata("/blog");
   return {
     ...metadata,
     robots: {
@@ -19,10 +20,10 @@ export const generateMetadata = (): Metadata => {
       googleBot: {
         index: true,
         follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      } as Robots['googleBot'],
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      } as Robots["googleBot"],
     },
   };
 };
@@ -33,8 +34,8 @@ function BlogPageLoading() {
       <div className="space-y-8">
         {/* Header Skeleton */}
         <div className="space-y-4 text-center">
-          <Skeleton className="h-12 w-32 mx-auto" />
-          <Skeleton className="h-6 w-96 mx-auto" />
+          <Skeleton className="mx-auto h-12 w-32" />
+          <Skeleton className="mx-auto h-6 w-96" />
         </div>
 
         <Separator />
@@ -67,13 +68,18 @@ function BlogPageLoading() {
   );
 }
 
-export default function BlogPage() {
+export default async function BlogPage() {
   const allPosts = getPublishedBlogPosts();
   const allTags = getAllTags();
+  const externalBlogs = await getBlogs();
 
   return (
     <Suspense fallback={<BlogPageLoading />}>
-      <BlogPageClient initialPosts={allPosts} initialTags={allTags} />
+      <BlogPageClient
+        initialPosts={allPosts}
+        initialTags={allTags}
+        externalBlogs={externalBlogs}
+      />
     </Suspense>
   );
 }
