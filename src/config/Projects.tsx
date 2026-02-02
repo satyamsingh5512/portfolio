@@ -28,6 +28,7 @@ export const projects: Project[] = [
     details: true,
     projectDetailsPageSlug: "/projects/formlytics",
     isWorking: true,
+    order: 1,
   },
   {
     title: "VARDAx",
@@ -46,6 +47,7 @@ export const projects: Project[] = [
     details: true,
     projectDetailsPageSlug: "/projects/vardax",
     isWorking: false,
+    order: 2,
   },
   {
     title: "Ubuntu Clipboard Manager",
@@ -63,6 +65,7 @@ export const projects: Project[] = [
     details: true,
     projectDetailsPageSlug: "/projects/ubuntu-clipboard-manager",
     isWorking: false,
+    order: 3,
   },
   {
     title: "RetroPaste",
@@ -82,6 +85,7 @@ export const projects: Project[] = [
     details: true,
     projectDetailsPageSlug: "/projects/retropaste",
     isWorking: true,
+    order: 4,
   },
   {
     title: "StudyBuddy",
@@ -101,6 +105,7 @@ export const projects: Project[] = [
     details: true,
     projectDetailsPageSlug: "/projects/studybuddy",
     isWorking: true,
+    order: 5,
   },
   {
     title: "CroxShare",
@@ -120,6 +125,7 @@ export const projects: Project[] = [
     details: true,
     projectDetailsPageSlug: "/projects/croxshare",
     isWorking: true,
+    order: 6,
   },
   {
     title: "Spotify Now Playing",
@@ -139,6 +145,7 @@ export const projects: Project[] = [
     details: true,
     projectDetailsPageSlug: "/projects/spotify-now-playing",
     isWorking: true,
+    order: 7,
   },
   {
     title: "Ride-Hailing Backend",
@@ -157,6 +164,7 @@ export const projects: Project[] = [
     details: true,
     projectDetailsPageSlug: "/projects/ride-hailing-backend",
     isWorking: true,
+    order: 8,
   },
   {
     title: "Quizo",
@@ -175,5 +183,6 @@ export const projects: Project[] = [
     details: true,
     projectDetailsPageSlug: "/projects/quizo-platform",
     isWorking: true,
+    order: 9,
   },
 ];
