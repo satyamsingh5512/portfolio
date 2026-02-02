@@ -3,6 +3,7 @@ import Footer from "@/components/common/Footer";
 import LazyComponents from "@/components/common/LazyComponents";
 import Navbar from "@/components/common/Navbar";
 import { Quote } from "@/components/common/Quote";
+import SearchPalette from "@/components/common/SearchPalette";
 import { ThemeProvider } from "@/components/common/ThemeProviders";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { generateMetadata as getMetadata } from "@/config/Meta";
@@ -39,6 +40,7 @@ export default function RootLayout({
                 <LazyComponents />
                 <Quote />
                 <Footer />
+                <SearchPalette />
                 <UmamiAnalytics />
                 <Analytics />
               </ReactLenis>
