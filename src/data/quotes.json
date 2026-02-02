@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1",
+    "quote": "A man who is master of patience is master of everything else.",
+    "author": "George Savile",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "2",
+    "quote": "Man is made by his belief. As he believes, so he is.",
+    "author": "Bhagavad Gita",
+    "createdAt": "2024-01-02T00:00:00.000Z"
+  },
+  {
+    "id": "3",
+    "quote": "Arise, awake, and stop not till the goal is reached.",
+    "author": "Katha Upanishad",
+    "createdAt": "2024-01-03T00:00:00.000Z"
+  },
+  {
+    "id": "4",
+    "quote": "If the pain doesn't kill me, it will only make me stronger.",
+    "author": "Sung Jin-Woo, Solo Leveling",
+    "createdAt": "2024-01-04T00:00:00.000Z"
+  },
+  {
+    "id": "5",
+    "quote": "I'll take a potato chip… AND EAT IT!",
+    "author": "Light Yagami, Death Note",
+    "createdAt": "2024-01-05T00:00:00.000Z"
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "1",
+    "title": "Top 30/2400 Teams - IIT Guwahati Techniche Tech-Expo 2025",
+    "issuer": "IIT Guwahati",
+    "date": "2025-09-15",
+    "file": "/certificates/iit-guwahati-techniche.png",
+    "createdAt": "2025-09-15T00:00:00.000Z"
+  },
+  {
+    "id": "2",
+    "title": "1st Prize - College Research Paper Competition",
+    "issuer": "NIST University - Paper: \"Fault-Tolerant Task Scheduling for Cloud Computing\"",
+    "date": "2024-11-10",
+    "file": "/certificates/research-paper-prize.png",
+    "createdAt": "2024-11-10T00:00:00.000Z"
+  },
+  {
+    "id": "3",
+    "title": "SSoC Certificate",
+    "issuer": "Summer of Code (SSoC)",
+    "date": "2025-10-10",
+    "file": "/certificates/ssoc-piyush.png",
+    "createdAt": "2025-10-10T00:00:00.000Z"
+  },
+  {
+    "id": "4",
+    "title": "SSoC Participation Certificate",
+    "issuer": "SSoC",
+    "date": "2025-10-10",
+    "file": "/certificates/ssoc-certificate.png",
+    "createdAt": "2025-10-10T00:00:00.000Z"
+  }
+]

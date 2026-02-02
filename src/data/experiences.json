@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1",
+    "company": "IIT Mandi",
+    "position": "Machine Learning Research Intern",
+    "startDate": "June 2024",
+    "endDate": "August 2024",
+    "isCurrent": false,
+    "location": "Mandi, Himachal Pradesh",
+    "companyUrl": "https://www.iitmandi.ac.in/",
+    "logo": "/company/iit-mandi.svg",
+    "technologies": [
+      "PyTorch",
+      "Computer Vision",
+      "YOLO",
+      "Python",
+      "CUDA",
+      "Deep Learning",
+      "Remote Sensing",
+      "Object Detection"
+    ],
+    "description": [
+      "Conducted research on **Computer Vision for small object detection in remote sensing** using advanced deep learning techniques.",
+      "Developed and optimized **FFCA-YOLO (Feature Fusion and Channel Attention YOLO)** model for improved detection accuracy of small objects in satellite imagery.",
+      "Implemented deep learning models using **PyTorch and CUDA** for real-time inference and performance optimization.",
+      "Worked on cutting-edge research in **remote sensing applications** with focus on agricultural monitoring and environmental analysis.",
+      "Collaborated with research team on **computer vision algorithms** and contributed to ongoing research publications.",
+      "Gained hands-on experience with **GPU acceleration** and optimization techniques for deep learning models."
+    ],
+    "createdAt": "2024-06-01T00:00:00.000Z"
+  }
+]
