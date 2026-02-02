@@ -1,0 +1,110 @@
+/**
+ * Migration script to insert experiences from JSON file into Supabase
+ * Run with: npx tsx scripts/migrate-experiences.ts
+ */
+
+import fs from 'fs';
+import path from 'path';
+import { createClient } from '@supabase/supabase-js';
+
+interface Experience {
+  id: string;
+  company: string;
+  position: string;
+  startDate: string;
+  endDate: string;
+  isCurrent: boolean;
+  location: string;
+  companyUrl?: string;
+  logo?: string;
+  technologies: string[];
+  description: string[];
+  createdAt: string;
+}
+
+// Manually load .env file
+const envPath = path.join(process.cwd(), '.env');
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf-8');
+  envContent.split('\n').forEach(line => {
+    const match = line.match(/^([^=:#]+)=(.*)$/);
+    if (match) {
+      const key = match[1].trim();
+      const value = match[2].trim().replace(/^["']|["']$/g, '');
+      process.env[key] = value;
+    }
+  });
+}
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Error: Missing Supabase credentials in environment variables');
+  console.error('   Required: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY');
+  console.error('   Found URL:', supabaseUrl ? 'Yes' : 'No');
+  console.error('   Found Key:', supabaseKey ? 'Yes' : 'No');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+async function migrateExperiences() {
+  try {
+    // Read experiences from JSON file
+    const jsonPath = path.join(process.cwd(), 'src/data/experiences.json');
+    const experiences: Experience[] = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+
+    console.log(`📚 Found ${experiences.length} experiences in JSON file\n`);
+
+    // Clear existing experiences (optional - comment out if you want to keep existing ones)
+    console.log('🗑️  Clearing existing experiences...');
+    const { error: deleteError } = await supabase
+      .from('experiences')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+
+    if (deleteError) {
+      console.error('⚠️  Warning: Could not clear existing experiences:', deleteError.message);
+    } else {
+      console.log('✓ Cleared existing experiences\n');
+    }
+
+    // Insert experiences one by one
+    console.log('📝 Inserting experiences into database...\n');
+
+    for (const experience of experiences) {
+      const { data, error } = await supabase
+        .from('experiences')
+        .insert({
+          title: experience.position, // Map position to title
+          company: experience.company,
+          location: experience.location,
+          start_date: experience.startDate,
+          end_date: experience.endDate,
+          description: experience.description,
+          technologies: experience.technologies,
+          is_current: experience.isCurrent,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error(`❌ Failed to insert "${experience.position} at ${experience.company}":`, error.message);
+      } else {
+        console.log(`✓ Inserted: ${experience.position} at ${experience.company}`);
+        console.log(`  ID: ${data.id} (UUID)\n`);
+      }
+    }
+
+    console.log('✅ Experiences migration completed successfully!');
+    console.log('\n💡 You can now delete or archive src/data/experiences.json if desired');
+    console.log('🔄 Hard refresh the admin page (Ctrl+Shift+R) to see the changes');
+
+  } catch (error: unknown) {
+    console.error('❌ Migration failed:', (error as Error).message);
+    process.exit(1);
+  }
+}
+
+migrateExperiences();
