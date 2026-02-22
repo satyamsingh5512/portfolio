@@ -2,8 +2,10 @@ import Container from "@/components/common/Container";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateMetadata as getMetadata } from "@/config/Meta";
-import { getAllTags, getPublishedBlogPosts } from "@/lib/blog";
+import { connectToDatabase } from "@/lib/mongodb";
+import BlogPostModel, { IBlogPost } from "@/lib/models/BlogPost";
 import { getBlogs } from "@/lib/blog-service";
+import { BlogPostPreview } from "@/types/blog";
 import { Metadata } from "next";
 import { Robots } from "next/dist/lib/metadata/types/metadata-types";
 import { Suspense } from "react";
@@ -27,6 +29,26 @@ export const generateMetadata = (): Metadata => {
     },
   };
 };
+
+// Map MongoDB document to the BlogPostPreview shape expected by existing UI components
+function toPostPreview(doc: IBlogPost & { createdAt: Date; updatedAt: Date }): BlogPostPreview {
+  return {
+    slug: doc.slug,
+    frontmatter: {
+      title: doc.title,
+      description: doc.description ?? "",
+      image: doc.image ?? "",
+      metaImage: doc.metaImage,
+      tags: doc.tags ?? [],
+      date: doc.createdAt ? new Date(doc.createdAt).toISOString() : new Date().toISOString(),
+      updatedAt: doc.updatedAt ? new Date(doc.updatedAt).toISOString() : undefined,
+      isPublished: doc.isPublished,
+      isFeatured: doc.isFeatured,
+      readingTime: doc.readingTime,
+      author: doc.author,
+    },
+  };
+}
 
 function BlogPageLoading() {
   return (
@@ -69,8 +91,20 @@ function BlogPageLoading() {
 }
 
 export default async function BlogPage() {
-  const allPosts = getPublishedBlogPosts();
-  const allTags = getAllTags();
+  await connectToDatabase();
+
+  const docs = await BlogPostModel.find({ isPublished: true })
+    .select("-content -contentHTML")
+    .sort({ createdAt: -1 })
+    .lean<(IBlogPost & { createdAt: Date; updatedAt: Date })[]>();
+
+  const allPosts = docs.map(toPostPreview);
+
+  // Extract unique sorted tags from published posts
+  const tagsSet = new Set<string>();
+  allPosts.forEach((p) => p.frontmatter.tags.forEach((t) => tagsSet.add(t.toLowerCase())));
+  const allTags = Array.from(tagsSet).sort();
+
   const externalBlogs = await getBlogs();
 
   return (

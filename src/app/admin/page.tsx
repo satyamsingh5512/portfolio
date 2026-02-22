@@ -1,135 +1,88 @@
 import type { AchievementData } from "@/components/admin/AchievementsTab";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import type { ExperienceData } from "@/components/admin/ExperiencesTab";
-import type { QuoteData } from "@/components/admin/QuotesTab";
 import { authOptions } from "@/lib/auth";
-import { getAllBlogPosts } from "@/lib/blog";
 import { getBlogs } from "@/lib/blog-service";
-import {
-  ProjectRecord,
-  getSiteSettings,
-  getSupabase,
-  projectFromDb,
-} from "@/lib/supabase";
+import BlogPostModel, { IBlogPost } from "@/lib/models/BlogPost";
+import type { AdminBlogPost } from "@/components/admin/AdminDashboard";
+import { connectToDatabase } from "@/lib/mongodb";
+import ProjectModel from "@/lib/models/Project";
+import AchievementModel from "@/lib/models/Achievement";
+import ExperienceModel from "@/lib/models/Experience";
+import { ProjectRecord, getSiteSettings } from "@/lib/supabase";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
+function mongoToProjectRecord(doc: Record<string, unknown>): ProjectRecord {
+  return {
+    id: String(doc._id),
+    title: String(doc.title ?? ""),
+    shortDescription: String(doc.short_description ?? ""),
+    description: String(doc.description ?? ""),
+    technologies: (doc.technologies as string[]) || [],
+    githubUrl: (doc.github_url as string) || undefined,
+    liveUrl: (doc.live_url as string) || undefined,
+    image: (doc.image as string) || undefined,
+    featured: Boolean(doc.featured),
+    status: (doc.status as ProjectRecord["status"]) || "completed",
+    startDate: (doc.start_date as string) || undefined,
+    endDate: (doc.end_date as string) || undefined,
+    category: (doc.category as string) || undefined,
+    orderIndex: Number(doc.order_index ?? 0),
+    createdAt: doc.createdAt ? new Date(doc.createdAt as string).toISOString() : new Date().toISOString(),
+    updatedAt: doc.updatedAt ? new Date(doc.updatedAt as string).toISOString() : new Date().toISOString(),
+  };
+}
+
 async function getProjects(): Promise<ProjectRecord[]> {
   try {
-    const supabase = getSupabase();
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) throw error;
-    return (data || []).map(projectFromDb);
+    await connectToDatabase();
+    const data = await ProjectModel.find({}).sort({ createdAt: -1 }).lean();
+    return (data as unknown as Record<string, unknown>[]).map(mongoToProjectRecord);
   } catch (err) {
-    console.error("Failed to fetch projects from Supabase:", err);
+    console.error("Failed to fetch projects from MongoDB:", err);
     return [];
   }
 }
 
 async function getAchievements(): Promise<AchievementData[]> {
   try {
-    const supabase = getSupabase();
-    const { data, error } = await supabase
-      .from("achievements")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) throw error;
-    return (data || []).map(
-      (record: {
-        id: string;
-        title: string;
-        issuer: string;
-        date: string;
-        file: string;
-        created_at: string;
-      }) => ({
-        id: record.id,
-        title: record.title,
-        issuer: record.issuer,
-        date: record.date,
-        file: record.file,
-        createdAt: record.created_at,
-      }),
-    );
+    await connectToDatabase();
+    const data = await AchievementModel.find({}).sort({ createdAt: -1 }).lean();
+    return (data as unknown as Record<string, unknown>[]).map((doc) => ({
+      id: String(doc._id),
+      title: String(doc.title ?? ""),
+      issuer: String(doc.issuer ?? ""),
+      date: String(doc.date ?? ""),
+      file: String(doc.file ?? ""),
+      createdAt: doc.createdAt ? new Date(doc.createdAt as string).toISOString() : new Date().toISOString(),
+    }));
   } catch (err) {
-    console.error("Failed to fetch achievements from Supabase:", err);
+    console.error("Failed to fetch achievements from MongoDB:", err);
     return [];
   }
 }
 
 async function getExperiences(): Promise<ExperienceData[]> {
   try {
-    const supabase = getSupabase();
-    const { data, error } = await supabase
-      .from("experiences")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) throw error;
-    return (data || []).map(
-      (record: {
-        id: string;
-        company: string;
-        title: string;
-        location: string;
-        start_date: string;
-        end_date: string;
-        description: string[];
-        technologies: string[];
-        is_current: boolean;
-        company_url?: string;
-        logo?: string;
-        created_at: string;
-      }) => ({
-        id: record.id,
-        company: record.company,
-        position: record.title, // Map title back to position
-        startDate: record.start_date,
-        endDate: record.end_date,
-        isCurrent: record.is_current,
-        description: record.description,
-        technologies: record.technologies,
-        location: record.location,
-        companyUrl: record.company_url,
-        logo: record.logo,
-        createdAt: record.created_at,
-      }),
-    );
+    await connectToDatabase();
+    const data = await ExperienceModel.find({}).sort({ createdAt: -1 }).lean();
+    return (data as unknown as Record<string, unknown>[]).map((doc) => ({
+      id: String(doc._id),
+      company: String(doc.company ?? ""),
+      position: String(doc.position ?? ""),
+      startDate: String(doc.start_date ?? ""),
+      endDate: String(doc.end_date ?? ""),
+      isCurrent: Boolean(doc.is_current),
+      description: (doc.description as string[]) || [],
+      technologies: (doc.technologies as string[]) || [],
+      location: String(doc.location ?? ""),
+      companyUrl: (doc.company_url as string) || undefined,
+      logo: (doc.logo as string) || undefined,
+      createdAt: doc.createdAt ? new Date(doc.createdAt as string).toISOString() : new Date().toISOString(),
+    }));
   } catch (err) {
-    console.error("Failed to fetch experiences from Supabase:", err);
-    return [];
-  }
-}
-
-async function getQuotes(): Promise<QuoteData[]> {
-  try {
-    const supabase = getSupabase();
-    const { data, error } = await supabase
-      .from("quotes")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) throw error;
-    return (data || []).map(
-      (record: {
-        id: string;
-        quote: string;
-        author: string;
-        created_at: string;
-      }) => ({
-        id: record.id,
-        quote: record.quote,
-        author: record.author,
-        createdAt: record.created_at,
-      }),
-    );
-  } catch (err) {
-    console.error("Failed to fetch quotes from Supabase:", err);
+    console.error("Failed to fetch experiences from MongoDB:", err);
     return [];
   }
 }
@@ -141,22 +94,40 @@ export default async function AdminPage() {
     redirect("/admin/login");
   }
 
-  const posts = getAllBlogPosts();
+  await connectToDatabase();
+
+  // ── MongoDB blog posts (published + drafts) ──────────────────────────────
+  type MongoPost = IBlogPost & { createdAt: Date; updatedAt: Date };
+  const postDocs = await BlogPostModel.find({})
+    .select("-content -contentHTML")
+    .sort({ createdAt: -1 })
+    .lean<MongoPost[]>();
+
+  const blogPosts: AdminBlogPost[] = postDocs.map((doc) => ({
+    id: String(doc._id),
+    slug: doc.slug,
+    title: doc.title,
+    description: doc.description ?? "",
+    tags: doc.tags ?? [],
+    isPublished: doc.isPublished,
+    isFeatured: doc.isFeatured ?? false,
+    readingTime: doc.readingTime,
+    createdAt: new Date(doc.createdAt).toISOString(),
+  }));
+
   const externalBlogs = await getBlogs();
   const projects = await getProjects();
   const siteSettings = await getSiteSettings();
   const achievements = await getAchievements();
   const experiences = await getExperiences();
-  const quotes = await getQuotes();
 
   return (
     <AdminDashboard
-      posts={posts}
+      posts={blogPosts}
       externalBlogs={externalBlogs}
       projects={projects}
       achievements={achievements}
       experiences={experiences}
-      quotes={quotes}
       siteSettings={siteSettings}
       user={session.user}
     />

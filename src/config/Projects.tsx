@@ -15,7 +15,7 @@ export const projects: Project[] = [
     title: "Formlytics",
     description:
       "Google Forms–style form builder with a minimal black-and-white design. Features drag-and-drop form creation, quiz builder, response analytics with Recharts, NextAuth.js authentication, and Prisma ORM with MongoDB for scalable data storage",
-    image: "/project/formlytics.png",
+    image: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769873/portfolio/project/formlytics.png",
     link: "https://formlyticx.vercel.app/",
     technologies: [
       { name: "Next.js", icon: <NextJs key="nextjs" /> },
@@ -34,7 +34,7 @@ export const projects: Project[] = [
     title: "VARDAx",
     description:
       "Next-generation ML-powered Web Application Firewall that detects zero-day attacks using behavioral analysis and ensemble learning models (Isolation Forest, Autoencoders, BERT). Features real-time threat visualization and explainable AI decisions.",
-    image: "/project/VardaX.png",
+    image: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771770043/portfolio/project/vardax.jpg",
     link: "#",
     technologies: [
       { name: "Python", icon: <TypeScript key="python" /> },
@@ -53,7 +53,7 @@ export const projects: Project[] = [
     title: "Ubuntu Clipboard Manager",
     description:
       "A Linux-native clipboard management application with real-time clipboard tracking, persistent history, global shortcuts, system tray integration, and privacy-first local storage, built using Electron, React, and SQLite",
-    image: "/project/Paste-bin.png",
+    image: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771770046/portfolio/project/paste-bin.jpg",
     link: "#",
     technologies: [
       { name: "Electron.js", icon: <NodeJs key="electron" /> },
@@ -71,7 +71,7 @@ export const projects: Project[] = [
     title: "RetroPaste",
     description:
       "Terminal-themed pastebin with CRT effects, phosphor glow, and 8-bit sounds. Features AI-powered code analysis for security vulnerabilities and best practices, ephemeral pastes with view limits, auto language detection, and JWT authentication",
-    image: "/project/retro-paste.png",
+    image: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771770069/portfolio/project/retro-paste.jpg",
     link: "https://retropaste.vercel.app/",
     technologies: [
       { name: "Next.js", icon: <NextJs key="nextjs" /> },
@@ -91,7 +91,7 @@ export const projects: Project[] = [
     title: "StudyBuddy",
     description:
       "Full-stack study companion with smart task management, Pomodoro timer with session tracking, study analytics dashboard, real-time chat, and friend system. Deployed with Docker, PostgreSQL via Supabase, and CI/CD workflows",
-    image: "/project/study-buddy.png",
+    image: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771770081/portfolio/project/study-buddy.jpg",
     link: "https://sbd.satym.in",
     technologies: [
       { name: "React", icon: <ReactIcon key="react" /> },
@@ -111,7 +111,7 @@ export const projects: Project[] = [
     title: "CroxShare",
     description:
       "P2P file sharing with WebRTC direct transfers, browser-native compression (85% savings on JSON), clipboard paste support, and real-time transfer analytics. Features pause/resume, sound effects, and Apple-inspired glassmorphic UI",
-    image: "/project/crosx-share.png",
+    image: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771770077/portfolio/project/crosx-share.jpg",
     link: "https://croxshare.vercel.app/",
     technologies: [
       { name: "Next.js", icon: <NextJs key="nextjs" /> },
@@ -131,7 +131,7 @@ export const projects: Project[] = [
     title: "Spotify Now Playing",
     description:
       'Glassmorphic Spotify widget with real-time "Now Playing" display. Features SWR-based polling, Framer Motion animations, rotating album art, and macOS-inspired design. Integrates Spotify Web API with secure OAuth token handling',
-    image: "/project/spotify-client.png",
+    image: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771770051/portfolio/project/spotify-client.jpg",
     link: "https://spotify-now-client.vercel.app/",
     technologies: [
       { name: "Next.js", icon: <NextJs key="nextjs" /> },
@@ -151,7 +151,7 @@ export const projects: Project[] = [
     title: "Ride-Hailing Backend",
     description:
       "Scalable ride-hailing microservices with geospatial driver matching using PostGIS, dynamic surge pricing algorithm, event-driven architecture with Kafka for real-time updates, Redis caching, and JWT authentication",
-    image: "/project/ride-Handlin-Back.png",
+    image: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771770096/portfolio/project/ride-handlin-back.jpg",
     link: "https://github.com/satyamsinghpx/ride-hailing-backend",
     technologies: [
       { name: "Spring Boot", icon: <NodeJs key="springboot" /> },
@@ -170,7 +170,7 @@ export const projects: Project[] = [
     title: "Quizo",
     description:
       "Real-time quiz platform with anti-cheat mechanisms including tab-switch detection and copy-paste blocking. Features live leaderboards, timed sessions, admin dashboard for quiz management, and WebSocket-based score updates serving 150+ concurrent users",
-    image: "/project/quizo.png",
+    image: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771770060/portfolio/project/quizo.jpg",
     link: "https://quizo.live",
     technologies: [
       { name: "React.js", icon: <ReactIcon key="react" /> },

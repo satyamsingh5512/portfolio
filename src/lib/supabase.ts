@@ -1,36 +1,16 @@
-import { SupabaseClient, createClient } from "@supabase/supabase-js";
+/**
+ * supabase.ts  →  Kept as a type/helper module.
+ * All Supabase references have been replaced with MongoDB equivalents.
+ * Types and helper functions are preserved so existing imports continue to work.
+ */
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-// Validate that Supabase credentials are configured
-const isConfigured = Boolean(supabaseUrl && supabaseAnonKey);
-
-// Create Supabase client - singleton pattern
-let _supabase: SupabaseClient | null = null;
-
-export function getSupabase(): SupabaseClient {
-  if (!isConfigured) {
-    throw new Error(
-      "Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.",
-    );
-  }
-  if (!_supabase) {
-    _supabase = createClient(supabaseUrl, supabaseAnonKey);
-  }
-  return _supabase;
-}
-
-// Export the Supabase client directly
-export const supabase = isConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : (null as unknown as SupabaseClient);
+import { connectToDatabase } from "@/lib/mongodb";
+import SiteSetting from "@/lib/models/SiteSetting";
 
 // ============================================
 // PROJECTS TYPES
 // ============================================
 
-// Types for the projects table (matches the SQL schema)
 export interface ProjectDBRecord {
   id: string;
   title: string;
@@ -50,7 +30,6 @@ export interface ProjectDBRecord {
   updated_at: string;
 }
 
-// App-facing project record type
 export interface ProjectRecord {
   id: string;
   title: string;
@@ -70,7 +49,6 @@ export interface ProjectRecord {
   updatedAt: string;
 }
 
-// Helper to convert from DB format to app format
 export function projectFromDb(record: ProjectDBRecord): ProjectRecord {
   return {
     id: record.id,
@@ -92,7 +70,6 @@ export function projectFromDb(record: ProjectDBRecord): ProjectRecord {
   };
 }
 
-// Helper to convert from app format to DB format
 export function projectToDb(
   project: Omit<ProjectRecord, "id" | "createdAt" | "updatedAt">,
 ): Omit<ProjectDBRecord, "id" | "created_at" | "updated_at"> {
@@ -124,10 +101,7 @@ export interface HeroSettings {
   description: string;
   resumeUrl: string;
   contactUrl: string;
-  skills: Array<{
-    name: string;
-    href: string;
-  }>;
+  skills: Array<{ name: string; href: string }>;
 }
 
 export interface AboutSettings {
@@ -139,14 +113,7 @@ export interface AboutSettings {
 export interface SocialLink {
   name: string;
   href: string;
-  icon:
-    | "linkedin"
-    | "github"
-    | "email"
-    | "twitter"
-    | "instagram"
-    | "youtube"
-    | "website";
+  icon: "linkedin" | "github" | "email" | "twitter" | "instagram" | "youtube" | "website";
 }
 
 export interface ContactSettings {
@@ -177,12 +144,11 @@ export interface SiteSettings {
   footer: FooterSettings;
 }
 
-// Default settings (fallback when DB not configured)
 export const defaultSiteSettings: SiteSettings = {
   hero: {
     name: "Satyam",
     title: "Full Stack Developer",
-    avatar: "/assets/satyam-avatar.png",
+    avatar: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
     description:
       "I am a <b>Full Stack Software Engineer</b> focused on designing and building scalable, production-ready systems.",
     resumeUrl: "/assets/resume.pdf",
@@ -198,37 +164,21 @@ export const defaultSiteSettings: SiteSettings = {
   },
   about: {
     name: "Satyam",
-    description: `Hey, I'm Satyam. I'm a 3rd-year B.Tech Computer Science student and a Full-Stack Developer with strong Machine Learning expertise.`,
-    skills: [
-      "React",
-      "TypeScript",
-      "Node.js",
-      "PostgreSQL",
-      "MongoDB",
-      "Next.js",
-    ],
+    description: "Hey, I'm Satyam. I'm a 3rd-year B.Tech Computer Science student and a Full-Stack Developer with strong Machine Learning expertise.",
+    skills: ["React", "TypeScript", "Node.js", "PostgreSQL", "MongoDB", "Next.js"],
   },
   socialLinks: [
-    {
-      name: "LinkedIn",
-      href: "https://www.linkedin.com/in/satym5512/",
-      icon: "linkedin",
-    },
-    {
-      name: "Github",
-      href: "https://github.com/satyamsingh5512",
-      icon: "github",
-    },
+    { name: "LinkedIn", href: "https://www.linkedin.com/in/satym5512/", icon: "linkedin" },
+    { name: "Github", href: "https://github.com/satyamsingh5512", icon: "github" },
     { name: "Email", href: "mailto:satyamssinghpx@gmail.com", icon: "email" },
   ],
   contact: {
     title: "Contact",
-    description:
-      "Get in touch with me. I will get back to you as soon as possible.",
+    description: "Get in touch with me. I will get back to you as soon as possible.",
     email: "satyamssinghpx@gmail.com",
   },
   cta: {
-    profileImage: "/assets/satyam-avatar.png",
+    profileImage: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
     preText: "Hey, you scrolled this far, let's talk.",
     linkText: "Book a Free Call",
     calLink: "satyamsinghpx/meeting",
@@ -240,52 +190,56 @@ export const defaultSiteSettings: SiteSettings = {
   },
 };
 
-// Fetch site settings from Supabase
+// ============================================
+// MONGODB-BACKED SITE SETTINGS
+// ============================================
+
 export async function getSiteSettings(): Promise<SiteSettings> {
   try {
-    const client = getSupabase();
-    const { data, error } = await client
-      .from("site_settings")
-      .select("key, value")
-      .in("key", ["hero", "about", "socialLinks", "contact", "cta", "footer"]);
-
-    if (error) throw error;
+    await connectToDatabase();
+    const rows = await SiteSetting.find({
+      key: { $in: ["hero", "about", "socialLinks", "contact", "cta", "footer"] },
+    }).lean();
 
     const settings: SiteSettings = { ...defaultSiteSettings };
-
-    for (const row of data || []) {
+    for (const row of rows) {
       const key = row.key as keyof SiteSettings;
       if (key in settings && row.value) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (settings as any)[key] = row.value;
       }
     }
-
     return settings;
   } catch (err) {
-    console.error("Failed to fetch site settings:", err);
+    console.error("Failed to fetch site settings from MongoDB:", err);
     return defaultSiteSettings;
   }
 }
 
-// Update a specific setting
 export async function updateSiteSetting<K extends keyof SiteSettings>(
   key: K,
   value: SiteSettings[K],
 ): Promise<boolean> {
   try {
-    const client = getSupabase();
-    const { error } = await client
-      .from("site_settings")
-      .upsert(
-        { key, value, updated_at: new Date().toISOString() },
-        { onConflict: "key" },
-      );
-
-    if (error) throw error;
+    await connectToDatabase();
+    await SiteSetting.findOneAndUpdate(
+      { key },
+      { key, value },
+      { upsert: true, returnDocument: "after" },
+    );
     return true;
   } catch (err) {
-    console.error("Failed to update site setting:", err);
+    console.error("Failed to update site setting in MongoDB:", err);
     return false;
   }
+}
+
+/**
+ * @deprecated The project has been migrated to MongoDB.
+ * Use connectToDatabase() and the Mongoose models instead.
+ */
+export function getSupabase(): never {
+  throw new Error(
+    "getSupabase() is no longer available. The project has migrated to MongoDB.",
+  );
 }

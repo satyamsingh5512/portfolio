@@ -1,5 +1,6 @@
 "use client";
 
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -189,16 +190,14 @@ export function AchievementsTab({ initialAchievements }: AchievementsTabProps) {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="file">Certificate Image Path *</Label>
-                <Input
-                  id="file"
-                  value={file}
-                  onChange={(e) => setFile(e.target.value)}
-                  placeholder="/certificates/my-certificate.png"
-                  required
-                />
-              </div>
+              <ImageUploadField
+                id="file"
+                label="Certificate Image"
+                folder="achievements"
+                value={file}
+                onChange={setFile}
+                required
+              />
 
               <Button type="submit" disabled={loading} className="w-full">
                 {loading

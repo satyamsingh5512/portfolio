@@ -6,7 +6,7 @@ export default function PixelatedCanvasDemo() {
   return (
     <div className="mx-auto mt-8">
       <PixelatedCanvas
-        src="/assets/satyam-professional.jpg"
+        src="https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769097/portfolio/assets/zugwca7oj7n4yh7xxw9l.jpg"
         width={400}
         height={500}
         cellSize={3}

@@ -1,5 +1,6 @@
 "use client";
 
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -196,15 +197,13 @@ export function ProjectsTab({ initialProjects }: ProjectsTabProps) {
                     required
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="image">Image Path</Label>
-                  <Input
-                    id="image"
-                    value={image}
-                    onChange={(e) => setImage(e.target.value)}
-                    placeholder="/project/my-project.png"
-                  />
-                </div>
+                <ImageUploadField
+                  id="image"
+                  label="Image"
+                  folder="projects"
+                  value={image}
+                  onChange={setImage}
+                />
               </div>
 
               <div className="space-y-2">

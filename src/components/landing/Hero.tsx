@@ -7,13 +7,11 @@ import React, { useMemo } from 'react';
 
 import Container from '../common/Container';
 import Skill from '../common/Skill';
-import CV from '../svgs/CV';
 import Chat from '../svgs/Chat';
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 const buttonIcons = {
-  CV: CV,
   Chat: Chat,
 };
 
@@ -67,7 +65,7 @@ export default function Hero() {
           Hi, I&apos;m {name} — <span className="text-secondary">{title}</span>
         </h1>
 
-        <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-x-1 sm:gap-x-1.5 gap-y-2 text-sm sm:text-base md:text-lg text-neutral-500 whitespace-pre-wrap">
+        <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-y-2 text-sm sm:text-base md:text-lg text-neutral-500">
           {renderedDescription}
         </div>
       </div>

@@ -55,8 +55,8 @@ export const skillComponents = {
 export const heroConfig = {
   // Personal Information
   name: 'Satyam',
-  title: 'Full Stack Developer',
-  avatar: '/assets/satyam-avatar.png',
+  title: 'Full Stack System Design Engineer',
+  avatar: 'https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg',
 
   // Skills Configuration
   skills: [
@@ -100,12 +100,6 @@ export const heroConfig = {
 
   // Buttons Configuration
   buttons: [
-    {
-      variant: 'outline',
-      text: 'Resume / CV',
-      href: '/assets/resume.pdf',
-      icon: 'CV',
-    },
     {
       variant: 'default',
       text: 'Get in touch',

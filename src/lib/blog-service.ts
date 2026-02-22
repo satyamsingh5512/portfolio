@@ -1,7 +1,5 @@
-import fs from "fs";
-import path from "path";
-
-const BLOGS_FILE_PATH = path.join(process.cwd(), "src/data/blogs.json");
+import { connectToDatabase } from "@/lib/mongodb";
+import BlogModel from "@/lib/models/Blog";
 
 export interface Blog {
   id: string;
@@ -11,35 +9,38 @@ export interface Blog {
   date: string;
 }
 
+function docToBlog(doc: Record<string, unknown>): Blog {
+  return {
+    id: String(doc._id),
+    title: String(doc.title ?? ""),
+    description: String(doc.description ?? ""),
+    url: String(doc.url ?? ""),
+    date: String(doc.date ?? ""),
+  };
+}
+
 export async function getBlogs(): Promise<Blog[]> {
   try {
-    const fileContent = await fs.promises.readFile(BLOGS_FILE_PATH, "utf-8");
-    return JSON.parse(fileContent) as Blog[];
+    await connectToDatabase();
+    const data = await BlogModel.find({}).sort({ createdAt: -1 }).lean();
+    return (data as unknown as Record<string, unknown>[]).map(docToBlog);
   } catch {
-    // If file doesn't exist or is empty, return empty array
     return [];
   }
 }
 
 export async function addBlog(blog: Omit<Blog, "id" | "date">): Promise<Blog> {
-  const blogs = await getBlogs();
-  const newBlog: Blog = {
-    ...blog,
-    id: crypto.randomUUID(),
+  await connectToDatabase();
+  const created = await BlogModel.create({
+    title: blog.title,
+    description: blog.description,
+    url: blog.url,
     date: new Date().toISOString(),
-  };
-
-  blogs.unshift(newBlog); // Add to beginning
-  await fs.promises.writeFile(BLOGS_FILE_PATH, JSON.stringify(blogs, null, 2));
-
-  return newBlog;
+  });
+  return docToBlog(created.toObject() as unknown as Record<string, unknown>);
 }
 
 export async function deleteBlog(id: string): Promise<void> {
-  const blogs = await getBlogs();
-  const filteredBlogs = blogs.filter((blog) => blog.id !== id);
-  await fs.promises.writeFile(
-    BLOGS_FILE_PATH,
-    JSON.stringify(filteredBlogs, null, 2),
-  );
+  await connectToDatabase();
+  await BlogModel.findByIdAndDelete(id);
 }

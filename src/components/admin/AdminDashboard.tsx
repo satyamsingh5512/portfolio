@@ -14,7 +14,6 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Blog } from "@/lib/blog-service";
 import type { ProjectRecord, SiteSettings } from "@/lib/supabase";
-import { BlogPostPreview } from "@/types/blog";
 import { Edit, Eye, FileText, LogOut, Plus, Trash2 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { Link } from "next-view-transitions";
@@ -27,16 +26,27 @@ import { AchievementData, AchievementsTab } from "./AchievementsTab";
 import { ExperienceData, ExperiencesTab } from "./ExperiencesTab";
 import { ExternalBlogsTab } from "./ExternalBlogsTab";
 import { ProjectsTab } from "./ProjectsTab";
-import { QuoteData, QuotesTab } from "./QuotesTab";
 import { SiteSettingsTab } from "./SiteSettingsTab";
 
+// ─── Admin blog post type (flat — from MongoDB, no frontmatter wrapper) ────────
+export interface AdminBlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  description?: string;
+  tags?: string[];
+  isPublished: boolean;
+  isFeatured?: boolean;
+  readingTime?: number;
+  createdAt: string;
+}
+
 interface AdminDashboardProps {
-  posts: BlogPostPreview[];
+  posts: AdminBlogPost[];
   externalBlogs: Blog[];
   projects: ProjectRecord[];
   achievements: AchievementData[];
   experiences: ExperienceData[];
-  quotes: QuoteData[];
   siteSettings: SiteSettings;
   user: {
     name?: string | null;
@@ -50,7 +60,7 @@ const PostCard = React.memo(
     onDelete,
     isDeleting,
   }: {
-    post: BlogPostPreview;
+    post: AdminBlogPost;
     onDelete: (slug: string) => void;
     isDeleting: boolean;
   }) => {
@@ -59,30 +69,36 @@ const PostCard = React.memo(
       [onDelete, post.slug],
     );
 
+    const formattedDate = new Date(post.createdAt).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+
     return (
       <Card>
         <CardContent className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-center">
           <div className="min-w-0 flex-1">
             <div className="mb-1 flex items-center gap-2">
-              <h3 className="truncate font-medium">{post.frontmatter.title}</h3>
-              <Badge
-                variant={post.frontmatter.isPublished ? "default" : "secondary"}
-              >
-                {post.frontmatter.isPublished ? "Published" : "Draft"}
+              <h3 className="truncate font-medium">{post.title}</h3>
+              <Badge variant={post.isPublished ? "default" : "secondary"}>
+                {post.isPublished ? "Published" : "Draft"}
               </Badge>
-              {post.frontmatter.isFeatured && (
-                <Badge variant="outline">Featured</Badge>
-              )}
+              {post.isFeatured && <Badge variant="outline">Featured</Badge>}
             </div>
             <p className="text-muted-foreground truncate text-sm">
-              {post.frontmatter.description}
+              {post.description}
             </p>
-            <div className="mt-2 flex gap-2">
-              {post.frontmatter.tags.slice(0, 3).map((tag) => (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {(post.tags ?? []).slice(0, 3).map((tag) => (
                 <Badge key={tag} variant="outline" className="text-xs">
                   {tag}
                 </Badge>
               ))}
+              <span className="text-muted-foreground text-xs">{formattedDate}</span>
+              {post.readingTime !== undefined && (
+                <span className="text-muted-foreground text-xs">{post.readingTime} min read</span>
+              )}
             </div>
           </div>
           <div className="flex shrink-0 gap-2">
@@ -119,7 +135,6 @@ export function AdminDashboard({
   projects,
   achievements,
   experiences,
-  quotes,
   siteSettings,
   user,
 }: AdminDashboardProps) {
@@ -128,8 +143,8 @@ export function AdminDashboard({
 
   const { publishedPosts, draftPosts } = useMemo(
     () => ({
-      publishedPosts: posts.filter((p) => p.frontmatter.isPublished),
-      draftPosts: posts.filter((p) => !p.frontmatter.isPublished),
+      publishedPosts: posts.filter((p) => p.isPublished),
+      draftPosts: posts.filter((p) => !p.isPublished),
     }),
     [posts],
   );
@@ -186,7 +201,6 @@ export function AdminDashboard({
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="experiences">Experiences</TabsTrigger>
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
-            <TabsTrigger value="quotes">Quotes</TabsTrigger>
           </TabsList>
 
           <TabsContent value="settings">
@@ -209,25 +223,15 @@ export function AdminDashboard({
             <AchievementsTab initialAchievements={achievements} />
           </TabsContent>
 
-          <TabsContent value="quotes">
-            <QuotesTab initialQuotes={quotes} />
-          </TabsContent>
-
           <TabsContent value="local" className="space-y-8">
-            {/* Existing Local Blog Management */}
+            {/* MongoDB Blog Management */}
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold tracking-tight">Local Blogs</h2>
+              <h2 className="text-2xl font-bold tracking-tight">Blog Posts</h2>
               <div className="flex gap-2">
                 <Button asChild>
                   <Link href="/admin/blog/new">
                     <Plus className="mr-2 h-4 w-4" />
                     New Post
-                  </Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/admin/blog/advanced">
-                    <FileText className="mr-2 h-4 w-4" />
-                    Advanced Editor
                   </Link>
                 </Button>
               </div>

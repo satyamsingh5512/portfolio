@@ -16,7 +16,7 @@ export const siteConfig = {
   description:
     "Full Stack Developer - Satyam Portfolio | NIST University | Web Development Expert",
   url: process.env.NEXT_PUBLIC_URL || "http://localhost:3000",
-  ogImage: "/meta/opengraph-image.png",
+  ogImage: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768661/portfolio/meta/file.png",
   author: {
     name: about.name,
     twitter: "@satyamsinghpx",
@@ -54,7 +54,7 @@ export const pageMetadata: Record<string, PageMeta> = {
       "web development",
       "projects",
     ],
-    ogImage: "/meta/hero.png",
+    ogImage: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768665/portfolio/meta/file.png",
     twitterCard: "summary_large_image",
   },
 
@@ -64,7 +64,7 @@ export const pageMetadata: Record<string, PageMeta> = {
     description:
       "Get in touch with me for collaborations, projects, or opportunities. I'd love to hear from you!",
     keywords: ["contact", "hire", "collaboration", "freelance", "developer"],
-    ogImage: "/assets/satyam-avatar.png",
+    ogImage: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
     twitterCard: "summary",
   },
 
@@ -83,7 +83,7 @@ export const pageMetadata: Record<string, PageMeta> = {
       "PyTorch",
       "YOLO",
     ],
-    ogImage: "/meta/work.png",
+    ogImage: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768674/portfolio/meta/file.png",
     twitterCard: "summary_large_image",
   },
 
@@ -99,7 +99,7 @@ export const pageMetadata: Record<string, PageMeta> = {
       "applications",
       "software",
     ],
-    ogImage: "/meta/projects.png",
+    ogImage: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768672/portfolio/meta/file.jpg",
     twitterCard: "summary_large_image",
   },
 
@@ -115,7 +115,7 @@ export const pageMetadata: Record<string, PageMeta> = {
       "web development",
       "technical writing",
     ],
-    ogImage: "/meta/blogs.png",
+    ogImage: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768658/portfolio/meta/file.png",
     twitterCard: "summary_large_image",
   },
 
@@ -131,7 +131,7 @@ export const pageMetadata: Record<string, PageMeta> = {
       "qualifications",
       "download",
     ],
-    ogImage: "/meta/resume.png",
+    ogImage: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768659/portfolio/meta/file.png",
     twitterCard: "summary",
   },
 
@@ -148,7 +148,7 @@ export const pageMetadata: Record<string, PageMeta> = {
       "productivity",
       "development environment",
     ],
-    ogImage: "/meta/gears.png",
+    ogImage: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768667/portfolio/meta/file.png",
     twitterCard: "summary_large_image",
   },
 
@@ -165,7 +165,7 @@ export const pageMetadata: Record<string, PageMeta> = {
       "development environment",
       "guide",
     ],
-    ogImage: "/meta/setup.png",
+    ogImage: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768670/portfolio/meta/file.png",
     twitterCard: "summary_large_image",
   },
 };

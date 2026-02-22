@@ -15,6 +15,7 @@ import { chatSuggestions } from "@/config/ChatPrompt";
 import { heroConfig } from "@/config/Hero";
 import { useHapticFeedback } from "@/hooks/use-haptic-feedback";
 import { cn } from "@/lib/utils";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import React, { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -40,12 +41,46 @@ const initialMessages: Message[] = [
   },
 ];
 
+// Quick-response patterns — handled client-side, no AI call needed
+const QUICK_RESPONSE_PATTERNS: { pattern: RegExp; response: string }[] = [
+  {
+    pattern: /^(hi+|hello+|hey+|helo|howdy|sup|yo+|greetings|namaste|what'?s ?up)[\s!?.]*$/i,
+    response: "Hey! 👋 Ask me anything — my skills, projects, experience, or how to reach me.",
+  },
+  {
+    pattern: /^(how are you|how r u|how do you do|how'?s it going|hows it going|you ok)[\s!?]*$/i,
+    response: "Doing great, thanks for asking! 😄 What would you like to know about my work?",
+  },
+  {
+    pattern: /^(thanks?|thank you|ty|thx|cheers)[\s!.]*$/i,
+    response: "You're welcome! Let me know if you have any other questions. 😊",
+  },
+  {
+    pattern: /^(bye|goodbye|see ya|later|cya|take care|good ?night|good ?day)[\s!.]*$/i,
+    response: "Thanks for visiting! Feel free to come back anytime. 👋",
+  },
+  {
+    pattern: /^(ok|okay|k|got it|sure|alright|cool|nice|great|awesome)[\s!.]*$/i,
+    response: "Got it! Anything else you'd like to know? 😊",
+  },
+];
+
+function getQuickResponse(message: string): string | null {
+  for (const { pattern, response } of QUICK_RESPONSE_PATTERNS) {
+    if (pattern.test(message.trim())) return response;
+  }
+  return null;
+}
+
 const ChatBubble: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { triggerHaptic, isMobile } = useHapticFeedback();
+  // Track which bot message IDs have already completed their text-generate animation.
+  // Seed with initial message IDs so the greeting doesn't animate on load.
+  const animatedIds = useRef<Set<number>>(new Set(initialMessages.map((m) => m.id)));
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -149,6 +184,21 @@ const ChatBubble: React.FC = () => {
   };
 
   const sendMessage = async (messageText: string, botMessageId: number) => {
+    // Handle common phrases instantly without calling the AI
+    const quickResponse = getQuickResponse(messageText);
+    if (quickResponse) {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === botMessageId
+            ? { ...msg, text: quickResponse, isStreaming: false }
+            : msg,
+        ),
+      );
+      setIsLoading(false);
+      setNewMessage("");
+      return;
+    }
+
     try {
       // Prepare conversation history for Gemini API format
       const history = messages.slice(-10).map((msg) => ({
@@ -257,7 +307,7 @@ const ChatBubble: React.FC = () => {
       <ExpandableChatHeader>
         <div className="flex items-center space-x-3">
           <Avatar className="border-primary h-8 w-8 border-2 bg-blue-300 dark:bg-yellow-300">
-            <AvatarImage src="/assets/satyam-avatar.png" alt="Assistant" />
+            <AvatarImage src="https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg" alt="Assistant" />
             <AvatarFallback>AI</AvatarFallback>
           </Avatar>
           <div>
@@ -291,7 +341,7 @@ const ChatBubble: React.FC = () => {
                   {message.sender === "bot" && (
                     <Avatar className="border-primary h-6 w-6 border-2 bg-blue-300 dark:bg-yellow-300">
                       <AvatarImage
-                        src="/assets/satyam-avatar.png"
+                        src="https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg"
                         alt="Assistant"
                       />
                       <AvatarFallback>AI</AvatarFallback>
@@ -300,7 +350,22 @@ const ChatBubble: React.FC = () => {
                   <div className="max-w-xs flex-1 md:max-w-sm">
                     <div className="flex items-center gap-2">
                       <div className="prose prose-sm dark:prose-invert max-w-none flex-1">
-                        {message.text ? (
+                        {message.sender === "bot" &&
+                        !message.isStreaming &&
+                        message.text &&
+                        !animatedIds.current.has(message.id) ? (
+                          // Animate newly completed bot responses word-by-word.
+                          // Once rendered, mark as animated so re-renders don't replay it.
+                          <TextGenerateEffect
+                            key={message.id}
+                            words={message.text}
+                            className="text-sm leading-relaxed"
+                            duration={0.35}
+                            onAnimationComplete={() =>
+                              animatedIds.current.add(message.id)
+                            }
+                          />
+                        ) : message.text ? (
                           <ReactMarkdown
                             components={{
                               a: (props) => (
@@ -311,11 +376,9 @@ const ChatBubble: React.FC = () => {
                                   className="wrap-break-word text-blue-500 underline hover:text-blue-700"
                                 />
                               ),
-                              // Custom paragraph component to remove default margins
                               p: (props) => (
                                 <p {...props} className="m-0 leading-relaxed" />
                               ),
-                              // Custom list components
                               ul: (props) => (
                                 <ul {...props} className="m-0 pl-4" />
                               ),
@@ -323,7 +386,6 @@ const ChatBubble: React.FC = () => {
                                 <ol {...props} className="m-0 pl-4" />
                               ),
                               li: (props) => <li {...props} className="m-0" />,
-                              // Custom strong/bold component
                               strong: (props) => (
                                 <strong {...props} className="font-semibold" />
                               ),

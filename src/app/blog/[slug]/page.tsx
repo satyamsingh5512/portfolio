@@ -1,49 +1,65 @@
-import { BlogContent } from "@/components/blog/BlogContent";
 import { BlogList } from "@/components/blog/BlogList";
+import { TipTapBlogContent } from "@/components/blog/TipTapBlogContent";
 import Container from "@/components/common/Container";
 import ArrowLeft from "@/components/svgs/ArrowLeft";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { siteConfig } from "@/config/Meta";
-import {
-  getBlogPostBySlug,
-  getBlogPostSlugs,
-  getRelatedPosts,
-} from "@/lib/blog";
+import { connectToDatabase } from "@/lib/mongodb";
+import BlogPostModel, { IBlogPost } from "@/lib/models/BlogPost";
+import { BlogPostPreview } from "@/types/blog";
 import { Metadata } from "next";
 import { Link } from "next-view-transitions";
 import { notFound } from "next/navigation";
 
 interface BlogPostPageProps {
-  params: Promise<{
-    slug: string;
-  }>;
+  params: Promise<{ slug: string }>;
 }
 
-// Generate static paths for all blog posts
+type MongoPost = IBlogPost & { createdAt: Date; updatedAt: Date };
+
+// Map a MongoDB post to BlogPostPreview for the related posts list
+function toPostPreview(doc: MongoPost): BlogPostPreview {
+  return {
+    slug: doc.slug,
+    frontmatter: {
+      title: doc.title,
+      description: doc.description ?? "",
+      image: doc.image ?? "",
+      metaImage: doc.metaImage,
+      tags: doc.tags ?? [],
+      date: new Date(doc.createdAt).toISOString(),
+      updatedAt: doc.updatedAt ? new Date(doc.updatedAt).toISOString() : undefined,
+      isPublished: doc.isPublished,
+      isFeatured: doc.isFeatured,
+      readingTime: doc.readingTime,
+      author: doc.author,
+    },
+  };
+}
+
+// Generate static paths from MongoDB slugs
 export async function generateStaticParams() {
-  const slugs = getBlogPostSlugs();
-
-  return slugs.map((slug) => ({
-    slug,
-  }));
+  try {
+    await connectToDatabase();
+    const posts = await BlogPostModel.find({ isPublished: true }).select("slug").lean();
+    return posts.map((p) => ({ slug: (p as { slug: string }).slug }));
+  } catch {
+    return [];
+  }
 }
 
-// Generate metadata for each blog post
-export async function generateMetadata({
-  params,
-}: BlogPostPageProps): Promise<Metadata> {
-  //  await params
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getBlogPostBySlug(slug);
+  await connectToDatabase();
+  const post = await BlogPostModel.findOne({ slug, isPublished: true })
+    .select("title description image metaImage")
+    .lean<MongoPost>();
 
-  if (!post || !post.frontmatter.isPublished) {
-    return {
-      title: "Post Not Found",
-    };
-  }
+  if (!post) return { title: "Post Not Found" };
 
-  const { title, description, image } = post.frontmatter;
+  const { title, description, metaImage, image } = post;
+  const ogImage = metaImage || image || "";
 
   return {
     metadataBase: new URL(siteConfig.url),
@@ -52,26 +68,38 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      images: [image],
+      images: ogImage ? [ogImage] : [],
       type: "article",
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [image],
+      images: ogImage ? [ogImage] : [],
     },
   };
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = await getBlogPostBySlug(slug);
+  await connectToDatabase();
 
-  if (!post || !post.frontmatter.isPublished) {
-    notFound();
-  }
-  const relatedPosts = await getRelatedPosts(slug, 3);
+  const post = await BlogPostModel.findOne({ slug, isPublished: true }).lean<MongoPost>();
+  if (!post) notFound();
+
+  // Related posts — same tags, excluding current
+  const currentTags = post.tags.map((t) => t.toLowerCase());
+  const relatedDocs = await BlogPostModel.find({
+    isPublished: true,
+    slug: { $ne: slug },
+    tags: { $in: currentTags },
+  })
+    .select("-content -contentHTML")
+    .sort({ createdAt: -1 })
+    .limit(3)
+    .lean<MongoPost[]>();
+
+  const relatedPosts = relatedDocs.map(toPostPreview);
 
   return (
     <>
@@ -88,7 +116,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
 
           {/* Blog Content */}
-          <BlogContent frontmatter={post.frontmatter} content={post.content} />
+          <TipTapBlogContent post={post} />
 
           {/* Related Posts */}
           {relatedPosts.length > 0 && (
