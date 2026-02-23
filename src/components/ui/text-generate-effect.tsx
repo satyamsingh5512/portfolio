@@ -1,7 +1,8 @@
 "use client";
-import { useEffect } from "react";
-import { motion, stagger, useAnimate } from "motion/react";
+
 import { cn } from "@/lib/utils";
+import { motion, stagger, useAnimate } from "motion/react";
+import { useEffect } from "react";
 
 export const TextGenerateEffect = ({
   words,
@@ -31,8 +32,10 @@ export const TextGenerateEffect = ({
         delay: stagger(0.06),
       },
     ).then(() => onAnimationComplete?.());
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scope.current]);
+    // `animate` and `stagger` are stable references; `scope.current` intentionally
+    // omitted — we want this to run once on mount per component instance.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className={cn(className)}>

@@ -5,12 +5,14 @@ import ArrowLeft from "@/components/svgs/ArrowLeft";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { siteConfig } from "@/config/Meta";
-import { connectToDatabase } from "@/lib/mongodb";
 import BlogPostModel, { IBlogPost } from "@/lib/models/BlogPost";
+import { connectToDatabase } from "@/lib/mongodb";
 import { BlogPostPreview } from "@/types/blog";
 import { Metadata } from "next";
 import { Link } from "next-view-transitions";
 import { notFound } from "next/navigation";
+
+export const revalidate = 60; // ISR: revalidate slug pages every 60 s
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -29,7 +31,9 @@ function toPostPreview(doc: MongoPost): BlogPostPreview {
       metaImage: doc.metaImage,
       tags: doc.tags ?? [],
       date: new Date(doc.createdAt).toISOString(),
-      updatedAt: doc.updatedAt ? new Date(doc.updatedAt).toISOString() : undefined,
+      updatedAt: doc.updatedAt
+        ? new Date(doc.updatedAt).toISOString()
+        : undefined,
       isPublished: doc.isPublished,
       isFeatured: doc.isFeatured,
       readingTime: doc.readingTime,
@@ -42,14 +46,18 @@ function toPostPreview(doc: MongoPost): BlogPostPreview {
 export async function generateStaticParams() {
   try {
     await connectToDatabase();
-    const posts = await BlogPostModel.find({ isPublished: true }).select("slug").lean();
+    const posts = await BlogPostModel.find({ isPublished: true })
+      .select("slug")
+      .lean();
     return posts.map((p) => ({ slug: (p as { slug: string }).slug }));
   } catch {
     return [];
   }
 }
 
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   await connectToDatabase();
   const post = await BlogPostModel.findOne({ slug, isPublished: true })
@@ -84,7 +92,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
   await connectToDatabase();
 
-  const post = await BlogPostModel.findOne({ slug, isPublished: true }).lean<MongoPost>();
+  const post = await BlogPostModel.findOne({
+    slug,
+    isPublished: true,
+  }).lean<MongoPost>();
   if (!post) notFound();
 
   // Related posts — same tags, excluding current

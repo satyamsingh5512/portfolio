@@ -38,7 +38,8 @@ const BlogPostSchema = new Schema<IBlogPost>(
     readingTime: { type: Number },
     author: {
       name: { type: String, required: true },
-      email: { type: String, required: true },
+      // Not strictly required so drafts created without a session email don't fail
+      email: { type: String, default: "" },
     },
   },
   { timestamps: true },

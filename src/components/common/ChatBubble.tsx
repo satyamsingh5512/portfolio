@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/expandable-chat";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import { chatSuggestions } from "@/config/ChatPrompt";
 import { heroConfig } from "@/config/Hero";
 import { useHapticFeedback } from "@/hooks/use-haptic-feedback";
 import { cn } from "@/lib/utils";
-import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
 import React, { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -44,23 +44,29 @@ const initialMessages: Message[] = [
 // Quick-response patterns — handled client-side, no AI call needed
 const QUICK_RESPONSE_PATTERNS: { pattern: RegExp; response: string }[] = [
   {
-    pattern: /^(hi+|hello+|hey+|helo|howdy|sup|yo+|greetings|namaste|what'?s ?up)[\s!?.]*$/i,
-    response: "Hey! 👋 Ask me anything — my skills, projects, experience, or how to reach me.",
+    pattern:
+      /^(hi+|hello+|hey+|helo|howdy|sup|yo+|greetings|namaste|what'?s ?up)[\s!?.]*$/i,
+    response:
+      "Hey! 👋 Ask me anything — my skills, projects, experience, or how to reach me.",
   },
   {
-    pattern: /^(how are you|how r u|how do you do|how'?s it going|hows it going|you ok)[\s!?]*$/i,
-    response: "Doing great, thanks for asking! 😄 What would you like to know about my work?",
+    pattern:
+      /^(how are you|how r u|how do you do|how'?s it going|hows it going|you ok)[\s!?]*$/i,
+    response:
+      "Doing great, thanks for asking! 😄 What would you like to know about my work?",
   },
   {
     pattern: /^(thanks?|thank you|ty|thx|cheers)[\s!.]*$/i,
     response: "You're welcome! Let me know if you have any other questions. 😊",
   },
   {
-    pattern: /^(bye|goodbye|see ya|later|cya|take care|good ?night|good ?day)[\s!.]*$/i,
+    pattern:
+      /^(bye|goodbye|see ya|later|cya|take care|good ?night|good ?day)[\s!.]*$/i,
     response: "Thanks for visiting! Feel free to come back anytime. 👋",
   },
   {
-    pattern: /^(ok|okay|k|got it|sure|alright|cool|nice|great|awesome)[\s!.]*$/i,
+    pattern:
+      /^(ok|okay|k|got it|sure|alright|cool|nice|great|awesome)[\s!.]*$/i,
     response: "Got it! Anything else you'd like to know? 😊",
   },
 ];
@@ -80,7 +86,11 @@ const ChatBubble: React.FC = () => {
   const { triggerHaptic, isMobile } = useHapticFeedback();
   // Track which bot message IDs have already completed their text-generate animation.
   // Seed with initial message IDs so the greeting doesn't animate on load.
-  const animatedIds = useRef<Set<number>>(new Set(initialMessages.map((m) => m.id)));
+  // Stored in state so that marking a message as animated triggers a re-render
+  // and the message switches from animated spans to proper ReactMarkdown.
+  const [animatedIds, setAnimatedIds] = useState<Set<number>>(
+    () => new Set(initialMessages.map((m) => m.id)),
+  );
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -307,7 +317,10 @@ const ChatBubble: React.FC = () => {
       <ExpandableChatHeader>
         <div className="flex items-center space-x-3">
           <Avatar className="border-primary h-8 w-8 border-2 bg-blue-300 dark:bg-yellow-300">
-            <AvatarImage src="https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg" alt="Assistant" />
+            <AvatarImage
+              src="https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg"
+              alt="Assistant"
+            />
             <AvatarFallback>AI</AvatarFallback>
           </Avatar>
           <div>
@@ -353,7 +366,7 @@ const ChatBubble: React.FC = () => {
                         {message.sender === "bot" &&
                         !message.isStreaming &&
                         message.text &&
-                        !animatedIds.current.has(message.id) ? (
+                        !animatedIds.has(message.id) ? (
                           // Animate newly completed bot responses word-by-word.
                           // Once rendered, mark as animated so re-renders don't replay it.
                           <TextGenerateEffect
@@ -362,7 +375,9 @@ const ChatBubble: React.FC = () => {
                             className="text-sm leading-relaxed"
                             duration={0.35}
                             onAnimationComplete={() =>
-                              animatedIds.current.add(message.id)
+                              setAnimatedIds(
+                                (prev) => new Set([...prev, message.id]),
+                              )
                             }
                           />
                         ) : message.text ? (

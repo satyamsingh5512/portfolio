@@ -204,6 +204,7 @@ ${snippet.code}
 
         const res = await fetch("/api/upload", {
           method: "POST",
+          credentials: "include",
           body: formDataUpload,
         });
 
@@ -213,6 +214,13 @@ ${snippet.code}
         }
 
         const { url } = await res.json();
+        if (
+          !url ||
+          typeof url !== "string" ||
+          !url.includes("res.cloudinary.com")
+        ) {
+          throw new Error("Upload did not return a Cloudinary URL");
+        }
         setFormData((prev) => ({ ...prev, [type]: url }));
         toast.success("Image uploaded successfully");
       } catch (error) {

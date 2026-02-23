@@ -16,11 +16,12 @@ import {
   Send,
   X,
 } from "lucide-react";
-import dynamic from "next/dynamic";
 import { Link } from "next-view-transitions";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+
 import type { RichBlogEditorPayload } from "./RichBlogEditor";
 
 // Dynamic import — no SSR for TipTap
@@ -92,11 +93,23 @@ function ImageField({
         const fd = new FormData();
         fd.append("file", file);
         fd.append("folder", folder);
-        const res = await fetch("/api/upload", { method: "POST", body: fd });
-        if (!res.ok) throw new Error((await res.json()).error ?? "Upload failed");
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: fd,
+          credentials: "include",
+        });
+        if (!res.ok)
+          throw new Error((await res.json()).error ?? "Upload failed");
         const { url } = await res.json();
+        if (
+          !url ||
+          typeof url !== "string" ||
+          !url.includes("res.cloudinary.com")
+        ) {
+          throw new Error("Upload did not return a Cloudinary URL");
+        }
         onChange(url);
-        toast.success("Image uploaded");
+        toast.success("Image uploaded to Cloudinary");
       } catch (err) {
         toast.error(err instanceof Error ? err.message : "Upload failed");
       } finally {
@@ -112,9 +125,14 @@ function ImageField({
       <Label>{label}</Label>
       {value ? (
         <div className="group relative overflow-hidden rounded-lg border border-white/10">
-          <img src={value} alt={label} className="aspect-video w-full object-cover" />          <button
+          <img
+            src={value}
+            alt={label}
+            className="aspect-video w-full object-cover"
+          />{" "}
+          <button
             type="button"
-            className="absolute right-2 top-2 rounded-full bg-black/60 p-1 opacity-0 transition group-hover:opacity-100"
+            className="absolute top-2 right-2 rounded-full bg-black/60 p-1 opacity-0 transition group-hover:opacity-100"
             onClick={() => onChange("")}
           >
             <X className="h-3 w-3 text-white" />
@@ -154,19 +172,29 @@ function ImageField({
 }
 
 // ─── Main Form ────────────────────────────────────────────────────────────────
-export function BlogPostForm({ initialData, authorName = "", authorEmail = "" }: BlogPostFormProps) {
+export function BlogPostForm({
+  initialData,
+  authorName = "",
+  authorEmail = "",
+}: BlogPostFormProps) {
   const router = useRouter();
   const isEdit = Boolean(initialData?.slug);
 
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [slug, setSlug] = useState(initialData?.slug ?? "");
-  const [description, setDescription] = useState(initialData?.description ?? "");
+  const [description, setDescription] = useState(
+    initialData?.description ?? "",
+  );
   const [tags, setTags] = useState<string[]>(initialData?.tags ?? []);
   const [tagInput, setTagInput] = useState("");
   const [image, setImage] = useState(initialData?.image ?? "");
   const [metaImage, setMetaImage] = useState(initialData?.metaImage ?? "");
-  const [isPublished, setIsPublished] = useState(initialData?.isPublished ?? false);
-  const [isFeatured, setIsFeatured] = useState(initialData?.isFeatured ?? false);
+  const [isPublished, setIsPublished] = useState(
+    initialData?.isPublished ?? false,
+  );
+  const [isFeatured, setIsFeatured] = useState(
+    initialData?.isFeatured ?? false,
+  );
   const [editorData, setEditorData] = useState<RichBlogEditorPayload>({
     json: (initialData?.content as Record<string, unknown>) ?? {},
     html: initialData?.contentHTML ?? "",
@@ -214,7 +242,8 @@ export function BlogPostForm({ initialData, authorName = "", authorEmail = "" }:
         toast.error("Title and slug are required");
         return;
       }
-      if (!image) {
+      // Require cover image only when creating a new post
+      if (!isEdit && !image) {
         toast.error("Please add a cover image");
         return;
       }
@@ -229,7 +258,9 @@ export function BlogPostForm({ initialData, authorName = "", authorEmail = "" }:
         image,
         metaImage,
         tags,
-        isPublished: publish,
+        // In edit mode, "Save" preserves the current toggle state.
+        // "Publish" always forces true. In create mode, Save Draft = false.
+        isPublished: publish ? true : isEdit ? isPublished : false,
         isFeatured,
         readingTime,
         author: {
@@ -276,6 +307,7 @@ export function BlogPostForm({ initialData, authorName = "", authorEmail = "" }:
       image,
       metaImage,
       tags,
+      isPublished,
       isFeatured,
       readingTime,
       authorName,
@@ -316,7 +348,7 @@ export function BlogPostForm({ initialData, authorName = "", authorEmail = "" }:
             ) : (
               <Save className="mr-2 h-4 w-4" />
             )}
-            Save Draft
+            {isEdit ? "Save" : "Save Draft"}
           </Button>
           <Button disabled={isSaving} onClick={() => submit(true)}>
             {isSaving ? (
@@ -480,7 +512,9 @@ export function BlogPostForm({ initialData, authorName = "", authorEmail = "" }:
                   <BookOpen className="h-3.5 w-3.5" />
                   Reading time
                 </span>
-                <span className="text-sm font-medium">{readingTime} min read</span>
+                <span className="text-sm font-medium">
+                  {readingTime} min read
+                </span>
               </div>
             </CardContent>
           </Card>

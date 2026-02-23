@@ -1,6 +1,6 @@
 import { authOptions } from "@/lib/auth";
-import { connectToDatabase } from "@/lib/mongodb";
 import BlogPostModel from "@/lib/models/BlogPost";
+import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,6 +11,16 @@ function slugify(value: string): string {
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
+}
+
+/** Recursively extract all plain text from a TipTap JSON document. */
+function extractTextFromTipTap(node: unknown): string {
+  if (!node || typeof node !== "object") return "";
+  const n = node as Record<string, unknown>;
+  if (n.type === "text" && typeof n.text === "string") return n.text;
+  if (Array.isArray(n.content))
+    return n.content.map(extractTextFromTipTap).join(" ");
+  return "";
 }
 
 // ─── GET /api/blog — public, returns published posts (no content/contentHTML) ──
@@ -24,7 +34,10 @@ export async function GET() {
     return NextResponse.json(posts);
   } catch (error) {
     console.error("GET /api/blog error:", error);
-    return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch posts" },
+      { status: 500 },
+    );
   }
 }
 
@@ -57,13 +70,19 @@ export async function POST(request: NextRequest) {
 
     const slug = rawSlug ? slugify(rawSlug) : slugify(title);
 
-    // Word-count based reading time
-    const text: string =
+    // Extract plain text for accurate reading-time calculation
+    const plainText: string =
       typeof content === "object" && content !== null
-        ? JSON.stringify(content)
+        ? extractTextFromTipTap(content)
         : String(content ?? "");
-    const words = text.trim().split(/\s+/).filter(Boolean).length;
+    const words = plainText.trim().split(/\s+/).filter(Boolean).length;
     const readingTime = Math.max(1, Math.ceil(words / 200));
+
+    // Always ensure author.email is non-empty (Mongoose 9 rejects empty required strings)
+    const resolvedAuthor = {
+      name: author?.name || session.user.name || "Admin",
+      email: author?.email || session.user.email || "unknown@portfolio",
+    };
 
     await connectToDatabase();
 
@@ -79,17 +98,17 @@ export async function POST(request: NextRequest) {
       isPublished: isPublished ?? false,
       isFeatured: isFeatured ?? false,
       readingTime,
-      author: author ?? {
-        name: session.user.name ?? "Admin",
-        email: session.user.email ?? "",
-      },
+      author: resolvedAuthor,
     });
 
     return NextResponse.json({ slug: post.slug }, { status: 201 });
   } catch (error) {
     console.error("POST /api/blog error:", error);
-    const message =
-      error instanceof Error ? error.message : "Failed to create post";
+    // Surface duplicate-slug errors with a friendlier message
+    const raw = error instanceof Error ? error.message : "";
+    const message = raw.includes("E11000")
+      ? `A post with that slug already exists. Please use a different title or slug.`
+      : raw || "Failed to create post";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

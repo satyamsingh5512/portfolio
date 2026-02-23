@@ -1,20 +1,20 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import CharacterCount from "@tiptap/extension-character-count";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import Typography from "@tiptap/extension-typography";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { createLowlight } from "lowlight";
-import javascript from "highlight.js/lib/languages/javascript";
-import typescript from "highlight.js/lib/languages/typescript";
-import css from "highlight.js/lib/languages/css";
-import python from "highlight.js/lib/languages/python";
 import bash from "highlight.js/lib/languages/bash";
+import css from "highlight.js/lib/languages/css";
+import javascript from "highlight.js/lib/languages/javascript";
+import python from "highlight.js/lib/languages/python";
+import typescript from "highlight.js/lib/languages/typescript";
+import { createLowlight } from "lowlight";
 import {
   Bold,
   Code,
@@ -112,16 +112,29 @@ function MenuBar({ editor }: { editor: ReturnType<typeof useEditor> | null }) {
         formData.append("file", file);
         formData.append("folder", "blog");
 
-        const res = await fetch("/api/upload", { method: "POST", body: formData });
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
         if (!res.ok) {
           const err = await res.json();
           throw new Error(err.error ?? "Upload failed");
         }
         const { url } = await res.json();
+        if (
+          !url ||
+          typeof url !== "string" ||
+          !url.includes("res.cloudinary.com")
+        ) {
+          throw new Error("Upload did not return a Cloudinary URL");
+        }
         editor.chain().focus().setImage({ src: url }).run();
       } catch (err) {
         console.error("Image upload failed:", err);
-        window.alert(err instanceof Error ? err.message : "Image upload failed");
+        window.alert(
+          err instanceof Error ? err.message : "Image upload failed",
+        );
       } finally {
         // reset so same file can be chosen again
         if (fileInputRef.current) fileInputRef.current.value = "";
@@ -292,7 +305,10 @@ function Divider() {
 }
 
 // ─── Main Editor ──────────────────────────────────────────────────────────────
-export function RichBlogEditor({ initialContent, onChange }: RichBlogEditorProps) {
+export function RichBlogEditor({
+  initialContent,
+  onChange,
+}: RichBlogEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -340,17 +356,16 @@ export function RichBlogEditor({ initialContent, onChange }: RichBlogEditorProps
     },
   });
 
-  // Sync external initialContent changes (edit mode hydration)
+  // Sync content once the editor is ready (handles edit mode where editor starts null
+  // because immediatelyRender: false, so the dep must include `editor` itself).
   useEffect(() => {
     if (!editor || !initialContent) return;
     const current = JSON.stringify(editor.getJSON());
     const incoming = JSON.stringify(initialContent);
     if (current !== incoming) {
-      editor.commands.setContent(initialContent);
+      editor.commands.setContent(initialContent, { emitUpdate: false });
     }
-    // Only run when initialContent reference changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialContent]);
+  }, [editor, initialContent]);
 
   return (
     <div className="rounded-xl border border-white/10 bg-white/[0.02]">

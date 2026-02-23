@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import Container from '@/components/common/Container';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
-import { BlogFormData, BlogPost } from '@/types/blog';
+import Container from "@/components/common/Container";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { BlogFormData, BlogPost } from "@/types/blog";
 import {
   ArrowLeft,
   Image as ImageIcon,
@@ -17,15 +17,15 @@ import {
   Plus,
   Save,
   X,
-} from 'lucide-react';
-import { Link } from 'next-view-transitions';
-import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
-import { toast } from 'sonner';
+} from "lucide-react";
+import { Link } from "next-view-transitions";
+import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface BlogEditorProps {
   post?: BlogPost;
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
 }
 
 export function BlogEditor({ post, mode }: BlogEditorProps) {
@@ -37,40 +37,40 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
   const [isUploading, setIsUploading] = useState(false);
 
   const [formData, setFormData] = useState<BlogFormData>({
-    title: post?.frontmatter.title || '',
-    description: post?.frontmatter.description || '',
-    content: post?.content || '',
+    title: post?.frontmatter.title || "",
+    description: post?.frontmatter.description || "",
+    content: post?.content || "",
     tags: post?.frontmatter.tags || [],
-    image: post?.frontmatter.image || '',
-    metaImage: post?.frontmatter.metaImage || '',
+    image: post?.frontmatter.image || "",
+    metaImage: post?.frontmatter.metaImage || "",
     isPublished: post?.frontmatter.isPublished ?? false,
     isFeatured: post?.frontmatter.isFeatured ?? false,
-    customSlug: post?.slug || '',
+    customSlug: post?.slug || "",
     author: post?.frontmatter.author || {
-      name: '',
-      email: '',
-      bio: '',
+      name: "",
+      email: "",
+      bio: "",
       social: {
-        instagram: '',
-        twitter: '',
-        github: '',
-        linkedin: '',
-        website: '',
+        instagram: "",
+        twitter: "",
+        github: "",
+        linkedin: "",
+        website: "",
       },
     },
   });
 
-  const [newTag, setNewTag] = useState('');
+  const [newTag, setNewTag] = useState("");
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleAuthorChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -96,7 +96,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
         ...prev,
         tags: [...prev.tags, newTag.toLowerCase()],
       }));
-      setNewTag('');
+      setNewTag("");
     }
   };
 
@@ -109,7 +109,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
 
   const handleImageUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: 'image' | 'metaImage'
+    type: "image" | "metaImage",
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -117,25 +117,33 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
     setIsUploading(true);
     try {
       const formDataUpload = new FormData();
-      formDataUpload.append('file', file);
-      formDataUpload.append('folder', type === 'metaImage' ? 'meta' : 'blog');
+      formDataUpload.append("file", file);
+      formDataUpload.append("folder", type === "metaImage" ? "meta" : "blog");
 
-      const res = await fetch('/api/upload', {
-        method: 'POST',
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        credentials: "include",
         body: formDataUpload,
       });
 
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.error || 'Upload failed');
+        throw new Error(error.error || "Upload failed");
       }
 
       const { url } = await res.json();
+      if (
+        !url ||
+        typeof url !== "string" ||
+        !url.includes("res.cloudinary.com")
+      ) {
+        throw new Error("Upload did not return a Cloudinary URL");
+      }
       setFormData((prev) => ({ ...prev, [type]: url }));
-      toast.success('Image uploaded successfully');
+      toast.success("Image uploaded successfully");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to upload image'
+        error instanceof Error ? error.message : "Failed to upload image",
       );
     } finally {
       setIsUploading(false);
@@ -146,41 +154,41 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
     e.preventDefault();
 
     if (!formData.title || !formData.description || !formData.content) {
-      toast.error('Please fill in all required fields');
+      toast.error("Please fill in all required fields");
       return;
     }
 
     if (!formData.image) {
-      toast.error('Please upload a cover image');
+      toast.error("Please upload a cover image");
       return;
     }
 
     setIsLoading(true);
     try {
-      const url = mode === 'create' ? '/api/blog' : `/api/blog/${post?.slug}`;
-      const method = mode === 'create' ? 'POST' : 'PUT';
+      const url = mode === "create" ? "/api/blog" : `/api/blog/${post?.slug}`;
+      const method = mode === "create" ? "POST" : "PUT";
 
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.error || 'Failed to save post');
+        throw new Error(error.error || "Failed to save post");
       }
 
       toast.success(
-        mode === 'create'
-          ? 'Post created successfully'
-          : 'Post updated successfully'
+        mode === "create"
+          ? "Post created successfully"
+          : "Post updated successfully",
       );
-      router.push('/admin');
+      router.push("/admin");
       router.refresh();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to save post'
+        error instanceof Error ? error.message : "Failed to save post",
       );
     } finally {
       setIsLoading(false);
@@ -199,7 +207,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
               </Link>
             </Button>
             <h1 className="text-2xl font-bold">
-              {mode === 'create' ? 'New Blog Post' : 'Edit Blog Post'}
+              {mode === "create" ? "New Blog Post" : "Edit Blog Post"}
             </h1>
           </div>
           <div className="flex gap-2">
@@ -209,7 +217,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
               ) : (
                 <Save className="mr-2 h-4 w-4" />
               )}
-              {mode === 'create' ? 'Create Post' : 'Save Changes'}
+              {mode === "create" ? "Create Post" : "Save Changes"}
             </Button>
           </div>
         </div>
@@ -218,7 +226,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
 
         <div className="grid gap-8 lg:grid-cols-3">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             <Card>
               <CardHeader>
                 <CardTitle>Content</CardTitle>
@@ -257,9 +265,9 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                     value={formData.customSlug}
                     onChange={handleChange}
                     placeholder="custom-url-slug"
-                    disabled={mode === 'edit'}
+                    disabled={mode === "edit"}
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     Leave empty to auto-generate from title
                   </p>
                 </div>
@@ -276,7 +284,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                     className="font-mono text-sm"
                     required
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     Supports Markdown and MDX components. Use ## for headings,
                     **bold**, *italic*, [links](url), ![images](url), etc.
                   </p>
@@ -321,7 +329,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                   <Textarea
                     id="bio"
                     name="bio"
-                    value={formData.author.bio || ''}
+                    value={formData.author.bio || ""}
                     onChange={handleAuthorChange}
                     placeholder="Short author bio"
                     rows={2}
@@ -340,7 +348,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                       <Input
                         id="instagram"
                         name="instagram"
-                        value={formData.author.social?.instagram || ''}
+                        value={formData.author.social?.instagram || ""}
                         onChange={handleSocialChange}
                         placeholder="@username"
                       />
@@ -352,7 +360,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                       <Input
                         id="twitter"
                         name="twitter"
-                        value={formData.author.social?.twitter || ''}
+                        value={formData.author.social?.twitter || ""}
                         onChange={handleSocialChange}
                         placeholder="@username"
                       />
@@ -364,7 +372,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                       <Input
                         id="github"
                         name="github"
-                        value={formData.author.social?.github || ''}
+                        value={formData.author.social?.github || ""}
                         onChange={handleSocialChange}
                         placeholder="username"
                       />
@@ -376,7 +384,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                       <Input
                         id="linkedin"
                         name="linkedin"
-                        value={formData.author.social?.linkedin || ''}
+                        value={formData.author.social?.linkedin || ""}
                         onChange={handleSocialChange}
                         placeholder="username"
                       />
@@ -388,7 +396,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                       <Input
                         id="website"
                         name="website"
-                        value={formData.author.social?.website || ''}
+                        value={formData.author.social?.website || ""}
                         onChange={handleSocialChange}
                         placeholder="https://example.com"
                       />
@@ -437,11 +445,11 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
               </CardHeader>
               <CardContent className="space-y-4">
                 {formData.image ? (
-                  <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                  <div className="bg-muted relative aspect-video overflow-hidden rounded-lg">
                     <img
                       src={formData.image}
                       alt="Cover"
-                      className="object-cover w-full h-full"
+                      className="h-full w-full object-cover"
                     />
                     <Button
                       type="button"
@@ -449,7 +457,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                       size="icon"
                       className="absolute top-2 right-2"
                       onClick={() =>
-                        setFormData((prev) => ({ ...prev, image: '' }))
+                        setFormData((prev) => ({ ...prev, image: "" }))
                       }
                     >
                       <X className="h-4 w-4" />
@@ -457,11 +465,11 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                   </div>
                 ) : (
                   <div
-                    className="aspect-video rounded-lg border-2 border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                    className="hover:bg-muted/50 flex aspect-video cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-sm text-muted-foreground">
+                    <ImageIcon className="text-muted-foreground mb-2 h-8 w-8" />
+                    <p className="text-muted-foreground text-sm">
                       Click to upload
                     </p>
                   </div>
@@ -471,7 +479,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={(e) => handleImageUpload(e, 'image')}
+                  onChange={(e) => handleImageUpload(e, "image")}
                   disabled={isUploading}
                 />
                 <Input
@@ -491,11 +499,11 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
               </CardHeader>
               <CardContent className="space-y-4">
                 {formData.metaImage ? (
-                  <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                  <div className="bg-muted relative aspect-video overflow-hidden rounded-lg">
                     <img
                       src={formData.metaImage}
                       alt="Meta"
-                      className="object-cover w-full h-full"
+                      className="h-full w-full object-cover"
                     />
                     <Button
                       type="button"
@@ -503,7 +511,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                       size="icon"
                       className="absolute top-2 right-2"
                       onClick={() =>
-                        setFormData((prev) => ({ ...prev, metaImage: '' }))
+                        setFormData((prev) => ({ ...prev, metaImage: "" }))
                       }
                     >
                       <X className="h-4 w-4" />
@@ -511,11 +519,11 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                   </div>
                 ) : (
                   <div
-                    className="aspect-video rounded-lg border-2 border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                    className="hover:bg-muted/50 flex aspect-video cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
                     onClick={() => metaFileInputRef.current?.click()}
                   >
-                    <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-sm text-muted-foreground">
+                    <ImageIcon className="text-muted-foreground mb-2 h-8 w-8" />
+                    <p className="text-muted-foreground text-sm">
                       Click to upload
                     </p>
                   </div>
@@ -525,10 +533,10 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={(e) => handleImageUpload(e, 'metaImage')}
+                  onChange={(e) => handleImageUpload(e, "metaImage")}
                   disabled={isUploading}
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   Used for social sharing. Falls back to cover image if not set.
                 </p>
               </CardContent>
@@ -546,7 +554,7 @@ export function BlogEditor({ post, mode }: BlogEditorProps) {
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         e.preventDefault();
                         handleAddTag();
                       }
