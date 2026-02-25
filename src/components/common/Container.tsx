@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default function Container({
   children,
@@ -9,10 +9,7 @@ export default function Container({
   className?: string;
 }) {
   return (
-    <div
-      className={`container mx-auto max-w-3xl px-4 animate-fade-in-blur ${className}`}
-      {...props}
-    >
+    <div className={`container mx-auto max-w-3xl px-4 ${className}`} {...props}>
       {children}
     </div>
   );

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import * as z from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import * as z from "zod";
 
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
@@ -15,12 +15,12 @@ const contactSchema = z.object({
 
 function getClientIP(request: NextRequest): string {
   // Get IP from various headers in order of preference
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  const cfConnectingIP = request.headers.get('cf-connecting-ip');
+  const forwarded = request.headers.get("x-forwarded-for");
+  const realIP = request.headers.get("x-real-ip");
+  const cfConnectingIP = request.headers.get("cf-connecting-ip");
 
   if (forwarded) {
-    return forwarded.split(',')[0].trim();
+    return forwarded.split(",")[0].trim();
   }
   if (realIP) {
     return realIP;
@@ -29,7 +29,7 @@ function getClientIP(request: NextRequest): string {
     return cfConnectingIP;
   }
 
-  return 'unknown';
+  return "unknown";
 }
 
 function checkRateLimit(clientIP: string): {
@@ -72,12 +72,12 @@ async function sendToTelegram(data: {
   const telegramChatId = process.env.TELEGRAM_CHAT_ID;
 
   if (!telegramToken) {
-    console.error('TELEGRAM_BOT_TOKEN not configured');
+    console.error("TELEGRAM_BOT_TOKEN not configured");
     return false;
   }
 
   if (!telegramChatId) {
-    console.error('TELEGRAM_CHAT_ID not configured');
+    console.error("TELEGRAM_CHAT_ID not configured");
     return false;
   }
 
@@ -99,14 +99,14 @@ ${data.message.trim()}
     const telegramUrl = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
 
     const response = await fetch(telegramUrl, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         chat_id: telegramChatId,
         text: message,
-        parse_mode: 'Markdown',
+        parse_mode: "Markdown",
       }),
     });
 
@@ -114,11 +114,11 @@ ${data.message.trim()}
       return true;
     } else {
       const errorText = await response.text();
-      console.error('Failed to send to Telegram:', errorText);
+      console.error("Failed to send to Telegram:", errorText);
       return false;
     }
   } catch (error) {
-    console.error('Error sending to Telegram:', error);
+    console.error("Error sending to Telegram:", error);
     return false;
   }
 }
@@ -131,51 +131,59 @@ export async function POST(request: NextRequest) {
     if (!rateLimit.allowed) {
       return NextResponse.json(
         {
-          error: 'Too many requests. Please try again later.',
+          error: "Too many requests. Please try again later.",
           retryAfter: RATE_LIMIT_WINDOW / 1000,
         },
         {
           status: 429,
           headers: {
-            'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
-            'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-            'X-RateLimit-Reset': (Date.now() + RATE_LIMIT_WINDOW).toString(),
+            "X-RateLimit-Limit": RATE_LIMIT_MAX_REQUESTS.toString(),
+            "X-RateLimit-Remaining": rateLimit.remaining.toString(),
+            "X-RateLimit-Reset": (Date.now() + RATE_LIMIT_WINDOW).toString(),
           },
         },
       );
     }
 
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON request body" },
+        { status: 400 },
+      );
+    }
     const validatedData = contactSchema.parse(body);
 
     const telegramSent = await sendToTelegram(validatedData);
 
     if (!telegramSent) {
       return NextResponse.json(
-        { error: 'Failed to send message. Please try again.' },
+        { error: "Failed to send message. Please try again." },
         { status: 500 },
       );
     }
 
     return NextResponse.json(
       {
-        message: 'Message sent successfully!',
+        message: "Message sent successfully!",
         success: true,
       },
       {
         headers: {
-          'X-RateLimit-Limit': RATE_LIMIT_MAX_REQUESTS.toString(),
-          'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+          "X-RateLimit-Limit": RATE_LIMIT_MAX_REQUESTS.toString(),
+          "X-RateLimit-Remaining": rateLimit.remaining.toString(),
         },
       },
     );
   } catch (error) {
-    console.error('API Error:', error);
+    console.error("API Error:", error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
-          error: 'Invalid form data',
+          error: "Invalid form data",
           details: error.errors,
         },
         { status: 400 },
@@ -183,12 +191,12 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 },
     );
   }
 }
 
 export async function GET() {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
+  return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
 }

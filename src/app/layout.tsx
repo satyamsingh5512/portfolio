@@ -6,7 +6,12 @@ import SearchPalette from "@/components/common/SearchPalette";
 import { ThemeProvider } from "@/components/common/ThemeProviders";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { generateMetadata as getMetadata } from "@/config/Meta";
-import { hankenGrotesk } from "@/config/fonts";
+import {
+  bricolageGrotesque,
+  geistMono,
+  geistSans,
+  hankenGrotesk,
+} from "@/config/fonts";
 import { Analytics } from "@vercel/analytics/next";
 import ReactLenis from "lenis/react";
 import { ViewTransitions } from "next-view-transitions";
@@ -24,7 +29,7 @@ export default function RootLayout({
     <ViewTransitions>
       <html lang="en" suppressHydrationWarning>
         <body
-          className={`${hankenGrotesk.variable} font-hanken-grotesk antialiased`}
+          className={`${hankenGrotesk.variable} ${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} font-sans antialiased`}
         >
           <SessionProvider>
             <ThemeProvider

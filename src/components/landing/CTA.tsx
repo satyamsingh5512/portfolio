@@ -1,19 +1,20 @@
-'use client';
+"use client";
 
-import { ctaConfig } from '@/config/CTA';
-import { useHapticFeedback } from '@/hooks/use-haptic-feedback';
-import Cal, { getCalApi } from '@calcom/embed-react';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { ctaConfig } from "@/config/CTA";
+import { useHapticFeedback } from "@/hooks/use-haptic-feedback";
+import Cal, { getCalApi } from "@calcom/embed-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
-import Container from '../common/Container';
+import FadeIn from "../animations/FadeIn";
+import Container from "../common/Container";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
+} from "../ui/dialog";
 
 interface CallToActionProps {
   profileImage?: string;
@@ -38,15 +39,15 @@ export default function CTA({
       try {
         const calApi = await getCalApi();
         if (calApi) {
-          calApi('on', {
-            action: 'bookingSuccessful',
+          calApi("on", {
+            action: "bookingSuccessful",
             callback: () => {
               setShowCalPopup(false);
             },
           });
         }
       } catch (error) {
-        console.error('Failed to initialize Cal API:', error);
+        console.error("Failed to initialize Cal API:", error);
       }
     };
     cal();
@@ -54,66 +55,68 @@ export default function CTA({
 
   const handleButtonClick = () => {
     if (isMobile()) {
-      triggerHaptic('medium');
+      triggerHaptic("medium");
     }
     setShowCalPopup(true);
   };
 
   return (
     <>
-      <Container className="mt-12 sm:mt-20 border border-dashed dark:border-white/10 border-black/20 py-6 sm:py-8 rounded-md ">
-        <div className="px-4 sm:px-12 mt-4 sm:mt-6 pb-6 sm:pb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center w-full">
-          <p className="opacity-50 text-sm sm:text-base md:text-xl mb-4 sm:mb-3 text-center sm:text-left">
-            {preText}
-          </p>
-          <div className="w-full sm:w-auto mt-3 sm:mt-0 flex justify-center sm:justify-end">
-            <div
-              className="inline-flex items-center text-xs sm:text-sm bg-black/5 dark:bg-white/15 border border-dashed dark:border-white/30 border-black/20 py-1 px-2 rounded-md shadow-[0_0_5px_rgba(0,0,0,0.1)] dark:shadow-[0_0_5px_rgba(255,255,255,0.1)] self-end text-black dark:text-white cursor-pointer transition-all group"
-              onClick={handleButtonClick}
-            >
-              <div className="flex items-center gap-2 group-hover:gap-8 transition-all duration-300 relative z-20">
-                <div className="w-5 h-5 rounded-full overflow-hidden flex-shrink-0">
-                  <Image
-                    alt={profileAlt}
-                    width={20}
-                    height={20}
-                    className="w-full h-full object-cover"
-                    src={profileImage}
-                    style={{ color: 'transparent' }}
-                  />
-                </div>
-                <div className="flex items-center gap-0 absolute left-[24px] transform -translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-3 h-3"
-                  >
-                    <path d="M5 12h14"></path>
-                    <path d="M12 5v14"></path>
-                  </svg>
-                  <div className="w-5 h-5 rounded-full bg-black/10 dark:bg-white/10  flex items-center justify-center text-[8px] ml-1 mr-2">
-                    You
+      <FadeIn>
+        <Container className="mt-12 rounded-md border border-dashed border-black/20 py-6 sm:mt-20 sm:py-8 dark:border-white/10">
+          <div className="mt-4 flex w-full flex-col px-4 pb-6 sm:mt-6 sm:flex-row sm:items-center sm:justify-between sm:px-12 sm:pb-8">
+            <p className="mb-4 text-center text-sm opacity-50 sm:mb-3 sm:text-left sm:text-base md:text-xl">
+              {preText}
+            </p>
+            <div className="mt-3 flex w-full justify-center sm:mt-0 sm:w-auto sm:justify-end">
+              <div
+                className="group inline-flex cursor-pointer items-center self-end rounded-md border border-dashed border-black/20 bg-black/5 px-2 py-1 text-xs text-black shadow-[0_0_5px_rgba(0,0,0,0.1)] transition-all sm:text-sm dark:border-white/30 dark:bg-white/15 dark:text-white dark:shadow-[0_0_5px_rgba(255,255,255,0.1)]"
+                onClick={handleButtonClick}
+              >
+                <div className="relative z-20 flex items-center gap-2 transition-all duration-300 group-hover:gap-8">
+                  <div className="h-5 w-5 flex-shrink-0 overflow-hidden rounded-full">
+                    <Image
+                      alt={profileAlt}
+                      width={20}
+                      height={20}
+                      className="h-full w-full object-cover"
+                      src={profileImage}
+                      style={{ color: "transparent" }}
+                    />
                   </div>
+                  <div className="absolute left-[24px] flex -translate-x-full transform items-center gap-0 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-3 w-3"
+                    >
+                      <path d="M5 12h14"></path>
+                      <path d="M12 5v14"></path>
+                    </svg>
+                    <div className="mr-2 ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/10 text-[8px] dark:bg-white/10">
+                      You
+                    </div>
+                  </div>
+                  <span className="relative ml-0 block text-sm font-bold whitespace-nowrap transition-all duration-300 group-hover:ml-4">
+                    {linkText}
+                  </span>
                 </div>
-                <span className="whitespace-nowrap relative block text-sm font-bold ml-0 group-hover:ml-4 transition-all duration-300">
-                  {linkText}
-                </span>
               </div>
             </div>
           </div>
-        </div>
-      </Container>
+        </Container>
+      </FadeIn>
 
       {/* Cal.com Dialog */}
       <Dialog open={showCalPopup} onOpenChange={setShowCalPopup}>
-        <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-[calc(100vw-4rem)] md:max-w-4xl max-h-[90vh] overflow-hidden">
+        <DialogContent className="max-h-[90vh] max-w-[calc(100vw-2rem)] overflow-hidden sm:max-w-[calc(100vw-4rem)] md:max-w-4xl">
           <DialogHeader>
             <DialogTitle>Book a Meeting</DialogTitle>
             <DialogDescription>
@@ -121,15 +124,15 @@ export default function CTA({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="overflow-y-auto max-h-[calc(90vh-220px)] rounded-lg">
+          <div className="max-h-[calc(90vh-220px)] overflow-y-auto rounded-lg">
             <Cal
               calLink={calLink}
               config={{
-                name: 'Portfolio Visitor',
-                email: '',
-                notes: 'Booked from portfolio website',
+                name: "Portfolio Visitor",
+                email: "",
+                notes: "Booked from portfolio website",
               }}
-              className="w-full h-[500px] rounded-lg"
+              className="h-[500px] w-full rounded-lg"
             />
           </div>
         </DialogContent>

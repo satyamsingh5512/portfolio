@@ -1,34 +1,42 @@
-import { ArrowRight } from 'lucide-react';
-import { Link } from 'next-view-transitions';
-import React from 'react';
+import { journeyItems } from "@/config/Journey";
+import { ArrowRight } from "lucide-react";
+import { Link } from "next-view-transitions";
+import React from "react";
 
-import Container from '../common/Container';
-import SectionHeading from '../common/SectionHeading';
-
-import { Card } from '../ui/card';
-import { journeyItems } from '@/config/Journey';
+import FadeIn from "../animations/FadeIn";
+import Container from "../common/Container";
+import SectionHeading from "../common/SectionHeading";
+import { Card } from "../ui/card";
 
 export default function Journey() {
   return (
     <Container className="mt-10">
-      <SectionHeading subHeading="Journey" heading="Journey" />
-      <div className="flex flex-col gap-4 mt-8">
-        {journeyItems.map((item) => (
-          <Link className="group" href={item.href} key={item.name}>
-            <Card className="px-4 py-2 flex flex-row items-center gap-4 justify-between">
-              <div className="p-2 bg-muted rounded-md flex items-center justify-center">
-                {(() => {
-                  const Icon = item.icon as React.ComponentType<{ className?: string }>;
-                  return <Icon className="size-4" />;
-                })()}
-              </div>
-              <div className="flex flex-col w-full">
-                <h3 className="text-base font-semibold">{item.name}</h3>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
-              </div>
-              <ArrowRight className="size-4 hidden group-hover:block transition-all duration-300" />
-            </Card>
-          </Link>
+      <FadeIn>
+        <SectionHeading subHeading="Journey" heading="Journey" />
+      </FadeIn>
+      <div className="mt-8 flex flex-col gap-4">
+        {journeyItems.map((item, index) => (
+          <FadeIn key={item.name} delay={index * 0.1 + 0.2} direction="left">
+            <Link className="group" href={item.href}>
+              <Card className="hover:bg-muted/50 flex flex-row items-center justify-between gap-4 px-4 py-2 transition-all duration-300">
+                <div className="bg-muted flex items-center justify-center rounded-md p-2">
+                  {(() => {
+                    const Icon = item.icon as React.ComponentType<{
+                      className?: string;
+                    }>;
+                    return <Icon className="size-4" />;
+                  })()}
+                </div>
+                <div className="flex w-full flex-col">
+                  <h3 className="text-base font-semibold">{item.name}</h3>
+                  <p className="text-muted-foreground text-sm">
+                    {item.description}
+                  </p>
+                </div>
+                <ArrowRight className="hidden size-4 transition-all duration-300 group-hover:block group-hover:translate-x-1" />
+              </Card>
+            </Link>
+          </FadeIn>
         ))}
       </div>
     </Container>

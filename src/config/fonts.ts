@@ -1,3 +1,4 @@
+import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 
 export const hankenGrotesk = localFont({
@@ -13,4 +14,19 @@ export const hankenGrotesk = localFont({
   ],
   variable: "--font-hanken-grotesk",
   display: "swap",
+});
+
+export const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+export const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const bricolageGrotesque = Bricolage_Grotesque({
+  variable: "--font-bricolage-grotesque",
+  subsets: ["latin"],
 });

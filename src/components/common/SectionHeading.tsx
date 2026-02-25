@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface SectionHeadingProps {
   subHeading: string;
@@ -11,8 +11,12 @@ export default function SectionHeading({
 }: SectionHeadingProps) {
   return (
     <div>
-      <p className="text-secondary text-xs sm:text-sm">{subHeading}</p>
-      <h2 className="text-xl sm:text-2xl font-bold">{heading}</h2>
+      <p className="text-secondary text-xs font-medium tracking-wider uppercase sm:text-sm">
+        {subHeading}
+      </p>
+      <h2 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">
+        {heading}
+      </h2>
     </div>
   );
 }
