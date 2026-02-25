@@ -1,0 +1,618 @@
+{
+  "entries": [
+    "scripts/generate-password-hash.js",
+    "scripts/migrate-mdx-to-mongo.ts",
+    "scripts/seed-mongodb.ts",
+    "src/app/admin/blog/advanced/page.tsx",
+    "src/app/admin/blog/edit/[slug]/page.tsx",
+    "src/app/admin/blog/new/page.tsx",
+    "src/app/admin/login/page.tsx",
+    "src/app/admin/page.tsx",
+    "src/app/api/admin/achievements/route.ts",
+    "src/app/api/admin/blog/route.ts",
+    "src/app/api/admin/experiences/route.ts",
+    "src/app/api/admin/projects/route.ts",
+    "src/app/api/admin/settings/route.ts",
+    "src/app/api/auth/[...nextauth]/route.ts",
+    "src/app/api/blog/[slug]/route.ts",
+    "src/app/api/blog/route.ts",
+    "src/app/api/blogs/route.ts",
+    "src/app/api/chat/route.ts",
+    "src/app/api/contact/route.ts",
+    "src/app/api/health/route.ts",
+    "src/app/api/upload/route.ts",
+    "src/app/api/visitor-count/route.ts",
+    "src/app/blog/[slug]/page.tsx",
+    "src/app/blog/page.tsx",
+    "src/app/contact/page.tsx",
+    "src/app/demo/page.tsx",
+    "src/app/gears/page.tsx",
+    "src/app/journey/certificates/page.tsx",
+    "src/app/journey/page.tsx",
+    "src/app/layout.tsx",
+    "src/app/maintenance/page.tsx",
+    "src/app/page.tsx",
+    "src/app/projects/[slug]/page.tsx",
+    "src/app/projects/page.tsx",
+    "src/app/resume/page.tsx",
+    "src/app/setup/page.tsx",
+    "src/app/work-experience/page.tsx",
+    "src/middleware.ts"
+  ],
+  "unreachable": [
+    {
+      "path": "next-env.d.ts",
+      "size": 262,
+      "lines": 7,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "next.config.ts",
+      "size": 1081,
+      "lines": 48,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "public/oneko/oneko.js",
+      "size": 5584,
+      "lines": 240,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/admin/BlogEditor.tsx",
+      "size": 20331,
+      "lines": 584,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/admin/QuotesTab.tsx",
+      "size": 6685,
+      "lines": 224,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/blog/BlogContent.tsx",
+      "size": 6259,
+      "lines": 185,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/common/BackToTop.tsx",
+      "size": 1024,
+      "lines": 40,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/common/SettingsModal.tsx",
+      "size": 8888,
+      "lines": 267,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/common/Skill.tsx",
+      "size": 652,
+      "lines": 22,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/common/UserMenu.tsx",
+      "size": 4087,
+      "lines": 137,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/gears/GearCard.tsx",
+      "size": 105,
+      "lines": 8,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/ArrowRight.tsx",
+      "size": 441,
+      "lines": 15,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/ArrowUUpRight.tsx",
+      "size": 478,
+      "lines": 15,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/ArrowUpRight.tsx",
+      "size": 410,
+      "lines": 15,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/Chat.tsx",
+      "size": 619,
+      "lines": 15,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/Code.tsx",
+      "size": 641,
+      "lines": 15,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/Copied.tsx",
+      "size": 663,
+      "lines": 15,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/Copy.tsx",
+      "size": 469,
+      "lines": 15,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/Moon.tsx",
+      "size": 656,
+      "lines": 14,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/PlayCircle.tsx",
+      "size": 451,
+      "lines": 14,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/SendIcon.tsx",
+      "size": 595,
+      "lines": 13,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/Sun.tsx",
+      "size": 873,
+      "lines": 14,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/Website.tsx",
+      "size": 827,
+      "lines": 15,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/svgs/X.tsx",
+      "size": 491,
+      "lines": 14,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/technologies/AWS.tsx",
+      "size": 3832,
+      "lines": 15,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/Appwrite.tsx",
+      "size": 2451,
+      "lines": 16,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/BootStrap.tsx",
+      "size": 1024,
+      "lines": 8,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/CSS.tsx",
+      "size": 1019,
+      "lines": 31,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/Figma.tsx",
+      "size": 792,
+      "lines": 27,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/Github.tsx",
+      "size": 2120,
+      "lines": 21,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/Html.tsx",
+      "size": 754,
+      "lines": 20,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/MDXIcon.tsx",
+      "size": 844,
+      "lines": 16,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/Motion.tsx",
+      "size": 392,
+      "lines": 15,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/NestJs.tsx",
+      "size": 5634,
+      "lines": 11,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/Netlify.tsx",
+      "size": 914,
+      "lines": 15,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/Postman.tsx",
+      "size": 3849,
+      "lines": 19,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/Sanity.tsx",
+      "size": 1379,
+      "lines": 26,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/Shadcn.tsx",
+      "size": 576,
+      "lines": 18,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/SocketIo.tsx",
+      "size": 870,
+      "lines": 18,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/technologies/TechnologyMapper.tsx",
+      "size": 3856,
+      "lines": 148,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/technologies/ThreeJs.tsx",
+      "size": 1889,
+      "lines": 32,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/technologies/TechnologyMapper.tsx"]
+    },
+    {
+      "path": "src/components/ui/accordion.tsx",
+      "size": 2063,
+      "lines": 66,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/alert-dialog.tsx",
+      "size": 3883,
+      "lines": 157,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/alert.tsx",
+      "size": 1624,
+      "lines": 66,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/aspect-ratio.tsx",
+      "size": 284,
+      "lines": 12,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/breadcrumb.tsx",
+      "size": 2371,
+      "lines": 109,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/calendar.tsx",
+      "size": 7656,
+      "lines": 210,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/carousel.tsx",
+      "size": 5623,
+      "lines": 241,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/checkbox.tsx",
+      "size": 1233,
+      "lines": 32,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/collapsible.tsx",
+      "size": 806,
+      "lines": 34,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/context-menu.tsx",
+      "size": 8254,
+      "lines": 252,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/drawer.tsx",
+      "size": 4272,
+      "lines": 135,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/dropdown-menu.tsx",
+      "size": 8316,
+      "lines": 257,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/common/UserMenu.tsx"]
+    },
+    {
+      "path": "src/components/ui/hover-card.tsx",
+      "size": 1540,
+      "lines": 44,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/input-otp.tsx",
+      "size": 2269,
+      "lines": 77,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/menubar.tsx",
+      "size": 8429,
+      "lines": 276,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/navigation-menu.tsx",
+      "size": 6687,
+      "lines": 168,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/pagination.tsx",
+      "size": 2726,
+      "lines": 127,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/pixelated-canvas-demo.tsx",
+      "size": 850,
+      "lines": 31,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/pixelated-canvas.tsx",
+      "size": 19556,
+      "lines": 619,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/ui/pixelated-canvas-demo.tsx"]
+    },
+    {
+      "path": "src/components/ui/popover.tsx",
+      "size": 1644,
+      "lines": 48,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/progress.tsx",
+      "size": 746,
+      "lines": 31,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/radio-group.tsx",
+      "size": 1474,
+      "lines": 45,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/resizable.tsx",
+      "size": 2039,
+      "lines": 56,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/sheet.tsx",
+      "size": 4108,
+      "lines": 139,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/ui/sidebar.tsx"]
+    },
+    {
+      "path": "src/components/ui/sidebar.tsx",
+      "size": 21756,
+      "lines": 726,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/slider.tsx",
+      "size": 2011,
+      "lines": 63,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/sonner.tsx",
+      "size": 571,
+      "lines": 26,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/table.tsx",
+      "size": 2463,
+      "lines": 116,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/toggle-group.tsx",
+      "size": 1937,
+      "lines": 73,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/components/ui/toggle.tsx",
+      "size": 1578,
+      "lines": 47,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/ui/toggle-group.tsx"]
+    },
+    {
+      "path": "src/components/ui/tooltip.tsx",
+      "size": 1900,
+      "lines": 61,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/ui/sidebar.tsx"]
+    },
+    {
+      "path": "src/config/Resume.ts",
+      "size": 116,
+      "lines": 3,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/hooks/use-mobile.ts",
+      "size": 585,
+      "lines": 22,
+      "incoming_count": 1,
+      "incoming_sample": ["src/components/ui/sidebar.tsx"]
+    },
+    {
+      "path": "src/hooks/use-umami.ts",
+      "size": 1013,
+      "lines": 46,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/lib/blog-api.ts",
+      "size": 6447,
+      "lines": 205,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/lib/lenis.ts",
+      "size": 44,
+      "lines": 4,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/types/analytics.ts",
+      "size": 869,
+      "lines": 49,
+      "incoming_count": 1,
+      "incoming_sample": ["src/hooks/use-umami.ts"]
+    },
+    {
+      "path": "src/types/auth.ts",
+      "size": 686,
+      "lines": 40,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/validate/check-hash.ts",
+      "size": 400,
+      "lines": 17,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/validate/testTelegram.ts",
+      "size": 3633,
+      "lines": 122,
+      "incoming_count": 0,
+      "incoming_sample": []
+    },
+    {
+      "path": "src/validate/verify-blogs.ts",
+      "size": 1266,
+      "lines": 45,
+      "incoming_count": 0,
+      "incoming_sample": []
+    }
+  ]
+}

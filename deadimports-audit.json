@@ -1,0 +1,436 @@
+[
+  {
+    "file": "src/app/page.tsx",
+    "line": 11,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/app/gears/page.tsx",
+    "line": 9,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/app/journey/page.tsx",
+    "line": 5,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/app/work-experience/page.tsx",
+    "line": 7,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/app/setup/page.tsx",
+    "line": 9,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/app/contact/page.tsx",
+    "line": 7,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/app/journey/certificates/page.tsx",
+    "line": 7,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/projects/DBProjectList.tsx",
+    "line": 12,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/projects/ProjectList.tsx",
+    "line": 2,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/gears/GearCard.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/experience/ExperienceCard.tsx",
+    "line": 9,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/experience/ExperienceList.tsx",
+    "line": 2,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/common/BackToTop.tsx",
+    "line": 5,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/common/OnekoCat.tsx",
+    "line": 3,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/common/Footer.tsx",
+    "line": 2,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/common/ThemeSwitch.tsx",
+    "line": 5,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/common/Navbar.tsx",
+    "line": 4,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/common/SectionHeading.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/technologies/Sanity.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/technologies/Github.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/technologies/MDXIcon.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/technologies/Appwrite.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/technologies/SocketIo.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/technologies/Nginx.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/technologies/Motion.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/technologies/Shadcn.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/technologies/TailwindCss.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/technologies/ThreeJs.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/technologies/Netlify.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/Calender.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/X.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/ArrowUUpRight.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/Github.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/Sun.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/PlayCircle.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/LinkedIn.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/Moon.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/ArrowLeft.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/Mail.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/Copied.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/ArrowRight.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/ArrowUpRight.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/Website.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/Gear.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/Chat.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/CheckCircle.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/CV.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/Code.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/Copy.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/blog/CodeCopyButton.tsx",
+    "line": 2,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/landing/About.tsx",
+    "line": 2,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/landing/Setup.tsx",
+    "line": 3,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/landing/Experience.tsx",
+    "line": 3,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/landing/Projects.tsx",
+    "line": 5,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/landing/Blog.tsx",
+    "line": 3,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/landing/Hero.tsx",
+    "line": 6,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/devices/Mouse.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/devices/Monitor.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/devices/Headphones.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/devices/Laptop.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/devices/Keyboard.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  },
+  {
+    "file": "src/components/svgs/devices/Phone.tsx",
+    "line": 1,
+    "import": "React",
+    "module": "react",
+    "safe": "YES"
+  }
+]
