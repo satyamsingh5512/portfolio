@@ -17,14 +17,17 @@ export default function Navbar() {
     <Container className="sticky top-0 z-20 rounded-md py-4 backdrop-blur-sm">
       <div className="flex items-center justify-between px-2 sm:px-6">
         <div className="flex items-center gap-2 sm:gap-4">
-          <Link href="/">
-            <Image
-              className="h-10 w-10 rounded-md border border-gray-200 bg-blue-300 transition-all duration-300 ease-in-out hover:scale-90 sm:h-12 sm:w-12 dark:bg-yellow-300"
-              src={navbarConfig.logo.src}
-              alt={navbarConfig.logo.alt}
-              width={navbarConfig.logo.width}
-              height={navbarConfig.logo.height}
-            />
+          <Link href="/" className="block shrink-0">
+            <div className="relative h-11 w-11 overflow-hidden rounded-md border border-gray-200 bg-blue-300 transition-all duration-300 ease-in-out hover:scale-95 sm:h-12 sm:w-12 dark:bg-yellow-300">
+              <Image
+                className="object-cover object-center"
+                src={navbarConfig.logo.src}
+                alt={navbarConfig.logo.alt}
+                fill
+                sizes="(max-width: 640px) 44px, 48px"
+                priority
+              />
+            </div>
           </Link>
           <div className="flex items-center justify-center gap-2 sm:gap-4">
             {navbarConfig.navItems.map((item) => {
