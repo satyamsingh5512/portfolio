@@ -6,6 +6,15 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import * as z from "zod";
 
+const relativeOrAbsoluteUrlSchema = z
+  .string()
+  .trim()
+  .refine(
+    (value) =>
+      value.length === 0 || value.startsWith("/") || /^https?:\/\//.test(value),
+    "Must be a relative path or an absolute URL",
+  );
+
 const experienceSchema = z.object({
   company: z.string().trim().min(1).max(200),
   position: z.string().trim().min(1).max(200),
@@ -16,7 +25,7 @@ const experienceSchema = z.object({
   technologies: z.array(z.string().trim().min(1).max(60)).max(50).default([]),
   location: z.string().trim().min(1).max(200),
   companyUrl: z.string().url().optional().or(z.literal("")),
-  logo: z.string().url().optional().or(z.literal("")),
+  logo: relativeOrAbsoluteUrlSchema.optional().default(""),
 });
 
 function getObjectIdOrNull(id: string | null): mongoose.Types.ObjectId | null {

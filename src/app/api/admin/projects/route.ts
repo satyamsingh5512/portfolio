@@ -8,6 +8,15 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import * as z from "zod";
 
+const relativeOrAbsoluteUrlSchema = z
+  .string()
+  .trim()
+  .refine(
+    (value) =>
+      value.length === 0 || value.startsWith("/") || /^https?:\/\//.test(value),
+    "Must be a relative path or an absolute URL",
+  );
+
 const projectSchema = z.object({
   title: z.string().trim().min(1).max(200),
   shortDescription: z.string().trim().min(1).max(500),
@@ -15,7 +24,7 @@ const projectSchema = z.object({
   technologies: z.array(z.string().trim().min(1).max(60)).max(50),
   githubUrl: z.string().url().optional().or(z.literal("")),
   liveUrl: z.string().url().optional().or(z.literal("")),
-  image: z.string().url().optional().or(z.literal("")),
+  image: relativeOrAbsoluteUrlSchema.optional().default(""),
   featured: z.boolean().default(false),
   status: z.enum(["completed", "in-progress", "archived"]).default("completed"),
   startDate: z.string().optional().or(z.literal("")),

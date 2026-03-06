@@ -253,11 +253,15 @@ ${snippet.code}
       try {
         const url = mode === "create" ? "/api/blog" : `/api/blog/${post?.slug}`;
         const method = mode === "create" ? "POST" : "PUT";
+        const payload = {
+          ...formData,
+          slug: formData.customSlug?.trim() || undefined,
+        };
 
         const res = await fetch(url, {
           method,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
 
         if (!res.ok) {
