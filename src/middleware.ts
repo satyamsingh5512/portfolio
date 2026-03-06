@@ -57,7 +57,9 @@ export function middleware(request: NextRequest) {
     process.env.MAINTENANCE_ALLOWED_IPS?.split(",").map((ip) => ip.trim()) ||
     [];
   const clientIp =
-    request.ip || request.headers.get("x-forwarded-for")?.split(",")[0];
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip")?.trim() ||
+    null;
 
   if (clientIp && allowedIps.includes(clientIp)) {
     return NextResponse.next();
