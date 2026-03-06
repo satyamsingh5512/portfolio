@@ -10,7 +10,14 @@ const achievementSchema = z.object({
   title: z.string().trim().min(1).max(200),
   issuer: z.string().trim().min(1).max(200),
   date: z.string().trim().min(1).max(50),
-  file: z.string().url().or(z.string().startsWith("/")).min(1),
+  file: z
+    .string()
+    .trim()
+    .min(1)
+    .refine(
+      (value) => value.startsWith("/") || /^https?:\/\//.test(value),
+      "File must be a relative path or an absolute URL",
+    ),
 });
 
 function getObjectIdOrNull(id: string | null): mongoose.Types.ObjectId | null {
