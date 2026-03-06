@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const maintenanceMode = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true";
+  const isMaintenanceMode =
+    process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true" ||
+    process.env.VERCEL_GIT_COMMIT_REF === "maintenance-mode";
 
   return NextResponse.json({
-    status: maintenanceMode ? "maintenance" : "operational",
+    status: isMaintenanceMode ? "maintenance" : "operational",
     timestamp: new Date().toISOString(),
-    maintenance: maintenanceMode,
+    maintenance: isMaintenanceMode,
   });
 }

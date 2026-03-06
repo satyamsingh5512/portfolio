@@ -13,6 +13,33 @@ const contactSchema = z.object({
   message: z.string().min(10).max(1000),
 });
 
+function isAllowedOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) return true;
+
+  const host = request.headers.get("host");
+  if (!host) return false;
+
+  const allowed = new Set<string>();
+  const inferredProtocol = host.includes("localhost") ? "http" : "https";
+  allowed.add(`${inferredProtocol}://${host}`);
+
+  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (configuredSiteUrl) {
+    try {
+      allowed.add(new URL(configuredSiteUrl).origin);
+    } catch {
+      // Ignore invalid env value and rely on host-based check
+    }
+  }
+
+  return allowed.has(origin);
+}
+
+function escapeTelegramMarkdown(text: string): string {
+  return text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&");
+}
+
 function getClientIP(request: NextRequest): string {
   // Get IP from various headers in order of preference
   const forwarded = request.headers.get("x-forwarded-for");
@@ -84,12 +111,12 @@ async function sendToTelegram(data: {
   const message = `
 🔔 *New Contact Form Submission*
 
-👤 *Name:* ${data.name.trim()}
-📧 *Email:* ${data.email.trim()}
-📱 *Phone:* ${data.phone.trim()}
+👤 *Name:* ${escapeTelegramMarkdown(data.name.trim())}
+📧 *Email:* ${escapeTelegramMarkdown(data.email.trim())}
+📱 *Phone:* ${escapeTelegramMarkdown(data.phone.trim())}
 
 💬 *Message:*
-${data.message.trim()}
+${escapeTelegramMarkdown(data.message.trim())}
 
 ⏰ *Submitted:* ${new Date().toISOString()}
 📍 *Timezone:* ${Intl.DateTimeFormat().resolvedOptions().timeZone}
@@ -125,6 +152,10 @@ ${data.message.trim()}
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isAllowedOrigin(request)) {
+      return NextResponse.json({ error: "Forbidden origin" }, { status: 403 });
+    }
+
     const clientIP = getClientIP(request);
     const rateLimit = checkRateLimit(clientIP);
 

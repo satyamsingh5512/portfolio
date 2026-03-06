@@ -4,6 +4,19 @@ import { connectToDatabase } from "@/lib/mongodb";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import * as z from "zod";
+
+const achievementSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  issuer: z.string().trim().min(1).max(200),
+  date: z.string().trim().min(1).max(50),
+  file: z.string().url().or(z.string().startsWith("/")).min(1),
+});
+
+function getObjectIdOrNull(id: string | null): mongoose.Types.ObjectId | null {
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) return null;
+  return new mongoose.Types.ObjectId(id);
+}
 
 interface AchievementData {
   id: string;
@@ -51,7 +64,17 @@ export async function POST(request: NextRequest) {
 
   try {
     await connectToDatabase();
-    const body = await request.json();
+    const parsed = achievementSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid achievement payload",
+          details: parsed.error.flatten(),
+        },
+        { status: 400 },
+      );
+    }
+    const body = parsed.data;
     const created = await AchievementModel.create({
       title: body.title,
       issuer: body.issuer,
@@ -82,16 +105,26 @@ export async function PUT(request: NextRequest) {
   try {
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    if (!id)
+    const objectId = getObjectIdOrNull(searchParams.get("id"));
+    if (!objectId)
       return NextResponse.json(
-        { error: "Achievement ID required" },
+        { error: "Valid achievement ID required" },
         { status: 400 },
       );
 
-    const body = await request.json();
+    const parsed = achievementSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid achievement payload",
+          details: parsed.error.flatten(),
+        },
+        { status: 400 },
+      );
+    }
+    const body = parsed.data;
     const updated = await AchievementModel.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(id),
+      objectId,
       {
         $set: {
           title: body.title,
@@ -129,14 +162,14 @@ export async function DELETE(request: NextRequest) {
   try {
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    if (!id)
+    const objectId = getObjectIdOrNull(searchParams.get("id"));
+    if (!objectId)
       return NextResponse.json(
-        { error: "Achievement ID required" },
+        { error: "Valid achievement ID required" },
         { status: 400 },
       );
 
-    await AchievementModel.findByIdAndDelete(new mongoose.Types.ObjectId(id));
+    await AchievementModel.findByIdAndDelete(objectId);
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Failed to delete achievement:", err);

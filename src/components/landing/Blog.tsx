@@ -1,4 +1,6 @@
-import { getPublishedBlogPosts } from "@/lib/blog";
+import BlogPostModel, { IBlogPost } from "@/lib/models/BlogPost";
+import { connectToDatabase } from "@/lib/mongodb";
+import { BlogPostPreview } from "@/types/blog";
 import { Link } from "next-view-transitions";
 import React from "react";
 
@@ -8,8 +10,46 @@ import Container from "../common/Container";
 import SectionHeading from "../common/SectionHeading";
 import { Button } from "../ui/button";
 
-export default function Blog() {
-  const posts = getPublishedBlogPosts();
+type MongoPost = IBlogPost & { createdAt: Date; updatedAt: Date };
+const FALLBACK_IMAGE = "/meta/blogs.png";
+
+function toPostPreview(doc: MongoPost): BlogPostPreview {
+  return {
+    slug: doc.slug,
+    frontmatter: {
+      title: doc.title,
+      description: doc.description ?? "",
+      image: doc.image || FALLBACK_IMAGE,
+      metaImage: doc.metaImage || undefined,
+      tags: doc.tags ?? [],
+      date: doc.createdAt
+        ? new Date(doc.createdAt).toISOString()
+        : new Date().toISOString(),
+      updatedAt: doc.updatedAt
+        ? new Date(doc.updatedAt).toISOString()
+        : undefined,
+      isPublished: doc.isPublished,
+      isFeatured: doc.isFeatured,
+      readingTime: doc.readingTime,
+      author: doc.author,
+    },
+  };
+}
+
+export default async function Blog() {
+  let posts: BlogPostPreview[] = [];
+
+  try {
+    await connectToDatabase();
+    const docs = await BlogPostModel.find({ isPublished: true })
+      .select("-content -contentHTML")
+      .sort({ createdAt: -1 })
+      .limit(2)
+      .lean<MongoPost[]>();
+    posts = docs.map(toPostPreview);
+  } catch (error) {
+    console.error("Failed to load landing blog posts:", error);
+  }
 
   return (
     <Container className="mt-12 sm:mt-20">

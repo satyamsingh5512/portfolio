@@ -6,6 +6,28 @@ import type { ProjectRecord } from "@/lib/supabase";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import * as z from "zod";
+
+const projectSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  shortDescription: z.string().trim().min(1).max(500),
+  description: z.string().trim().min(1).max(5000),
+  technologies: z.array(z.string().trim().min(1).max(60)).max(50),
+  githubUrl: z.string().url().optional().or(z.literal("")),
+  liveUrl: z.string().url().optional().or(z.literal("")),
+  image: z.string().url().optional().or(z.literal("")),
+  featured: z.boolean().default(false),
+  status: z.enum(["completed", "in-progress", "archived"]).default("completed"),
+  startDate: z.string().optional().or(z.literal("")),
+  endDate: z.string().optional().or(z.literal("")),
+  category: z.string().trim().max(120).optional().or(z.literal("")),
+  orderIndex: z.number().int().min(0).max(100000).default(0),
+});
+
+function getObjectIdOrNull(id: string | null): mongoose.Types.ObjectId | null {
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) return null;
+  return new mongoose.Types.ObjectId(id);
+}
 
 function docToRecord(doc: Record<string, unknown>): ProjectRecord {
   return {
@@ -35,7 +57,7 @@ function docToRecord(doc: Record<string, unknown>): ProjectRecord {
 export async function GET() {
   try {
     await connectToDatabase();
-    const data = await ProjectModel.find({}).sort({ createdAt: -1 }).lean();
+    const data = await ProjectModel.find({}).sort({ order_index: 1 }).lean();
     const projects = (data as unknown as Record<string, unknown>[]).map(
       docToRecord,
     );
@@ -57,8 +79,23 @@ export async function POST(request: NextRequest) {
 
   try {
     await connectToDatabase();
-    const body = await request.json();
-    const dbData = projectToDb(body);
+    const parsed = projectSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid project payload", details: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
+    const body = parsed.data;
+    const dbData = projectToDb({
+      ...body,
+      githubUrl: body.githubUrl || undefined,
+      liveUrl: body.liveUrl || undefined,
+      image: body.image || undefined,
+      startDate: body.startDate || undefined,
+      endDate: body.endDate || undefined,
+      category: body.category || undefined,
+    });
 
     const created = await ProjectModel.create(dbData);
     return NextResponse.json(
@@ -85,19 +122,34 @@ export async function PUT(request: NextRequest) {
   try {
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    if (!id) {
+    const objectId = getObjectIdOrNull(searchParams.get("id"));
+    if (!objectId) {
       return NextResponse.json(
-        { error: "Project ID required" },
+        { error: "Valid project ID required" },
         { status: 400 },
       );
     }
 
-    const body = await request.json();
-    const dbData = projectToDb(body);
+    const parsed = projectSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid project payload", details: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
+    const body = parsed.data;
+    const dbData = projectToDb({
+      ...body,
+      githubUrl: body.githubUrl || undefined,
+      liveUrl: body.liveUrl || undefined,
+      image: body.image || undefined,
+      startDate: body.startDate || undefined,
+      endDate: body.endDate || undefined,
+      category: body.category || undefined,
+    });
 
     const updated = await ProjectModel.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(id),
+      objectId,
       { $set: dbData },
       { new: true },
     ).lean();
@@ -126,15 +178,15 @@ export async function DELETE(request: NextRequest) {
   try {
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    if (!id) {
+    const objectId = getObjectIdOrNull(searchParams.get("id"));
+    if (!objectId) {
       return NextResponse.json(
-        { error: "Project ID required" },
+        { error: "Valid project ID required" },
         { status: 400 },
       );
     }
 
-    await ProjectModel.findByIdAndDelete(new mongoose.Types.ObjectId(id));
+    await ProjectModel.findByIdAndDelete(objectId);
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Failed to delete project:", err);

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 interface Stats {
-  pageviews: {
+  visitors: {
     value: number;
   };
 }
@@ -19,7 +19,7 @@ export default function VisitorCount() {
         const response = await fetch("/api/visitor-count");
         if (response.ok) {
           const data: Stats = await response.json();
-          setVisitors(data.pageviews.value);
+          setVisitors(data.visitors.value);
         } else {
           const errorData = await response
             .json()

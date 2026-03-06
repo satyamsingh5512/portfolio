@@ -4,6 +4,25 @@ import { connectToDatabase } from "@/lib/mongodb";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import * as z from "zod";
+
+const experienceSchema = z.object({
+  company: z.string().trim().min(1).max(200),
+  position: z.string().trim().min(1).max(200),
+  startDate: z.string().trim().min(1).max(50),
+  endDate: z.string().trim().max(50).optional().or(z.literal("")),
+  isCurrent: z.boolean().optional().default(false),
+  description: z.array(z.string().trim().min(1).max(400)).max(50).default([]),
+  technologies: z.array(z.string().trim().min(1).max(60)).max(50).default([]),
+  location: z.string().trim().min(1).max(200),
+  companyUrl: z.string().url().optional().or(z.literal("")),
+  logo: z.string().url().optional().or(z.literal("")),
+});
+
+function getObjectIdOrNull(id: string | null): mongoose.Types.ObjectId | null {
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) return null;
+  return new mongoose.Types.ObjectId(id);
+}
 
 interface ExperienceData {
   id: string;
@@ -63,18 +82,28 @@ export async function POST(request: NextRequest) {
 
   try {
     await connectToDatabase();
-    const body = await request.json();
+    const parsed = experienceSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid experience payload",
+          details: parsed.error.flatten(),
+        },
+        { status: 400 },
+      );
+    }
+    const body = parsed.data;
     const created = await ExperienceModel.create({
       company: body.company,
       position: body.position,
       start_date: body.startDate,
-      end_date: body.endDate,
+      end_date: body.endDate || null,
       is_current: body.isCurrent ?? false,
       description: body.description || [],
       technologies: body.technologies || [],
       location: body.location,
-      company_url: body.companyUrl,
-      logo: body.logo,
+      company_url: body.companyUrl || undefined,
+      logo: body.logo || undefined,
     });
     return NextResponse.json(
       docToData(
@@ -100,28 +129,38 @@ export async function PUT(request: NextRequest) {
   try {
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    if (!id)
+    const objectId = getObjectIdOrNull(searchParams.get("id"));
+    if (!objectId)
       return NextResponse.json(
-        { error: "Experience ID required" },
+        { error: "Valid experience ID required" },
         { status: 400 },
       );
 
-    const body = await request.json();
+    const parsed = experienceSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid experience payload",
+          details: parsed.error.flatten(),
+        },
+        { status: 400 },
+      );
+    }
+    const body = parsed.data;
     const updated = await ExperienceModel.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(id),
+      objectId,
       {
         $set: {
           company: body.company,
           position: body.position,
           start_date: body.startDate,
-          end_date: body.endDate,
+          end_date: body.endDate || null,
           is_current: body.isCurrent ?? false,
           description: body.description || [],
           technologies: body.technologies || [],
           location: body.location,
-          company_url: body.companyUrl,
-          logo: body.logo,
+          company_url: body.companyUrl || undefined,
+          logo: body.logo || undefined,
         },
       },
       { new: true },
@@ -153,14 +192,14 @@ export async function DELETE(request: NextRequest) {
   try {
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    if (!id)
+    const objectId = getObjectIdOrNull(searchParams.get("id"));
+    if (!objectId)
       return NextResponse.json(
-        { error: "Experience ID required" },
+        { error: "Valid experience ID required" },
         { status: 400 },
       );
 
-    await ExperienceModel.findByIdAndDelete(new mongoose.Types.ObjectId(id));
+    await ExperienceModel.findByIdAndDelete(objectId);
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Failed to delete experience:", err);

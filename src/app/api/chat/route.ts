@@ -7,6 +7,8 @@ const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 const RATE_LIMIT_WINDOW = 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
+const MAX_HISTORY_ITEMS = 20;
+const FETCH_TIMEOUT_MS = 30_000;
 
 const chatSchema = z.object({
   message: z.string().min(1).max(2000),
@@ -14,9 +16,10 @@ const chatSchema = z.object({
     .array(
       z.object({
         role: z.enum(["user", "model"]),
-        parts: z.array(z.object({ text: z.string() })),
+        parts: z.array(z.object({ text: z.string().max(2000) })).max(4),
       }),
     )
+    .max(MAX_HISTORY_ITEMS)
     .optional()
     .default([]),
 });
@@ -106,8 +109,35 @@ function checkRateLimit(clientIP: string): {
   };
 }
 
+function isAllowedOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) return true;
+
+  const host = request.headers.get("host");
+  if (!host) return false;
+
+  const allowed = new Set<string>();
+  const inferredProtocol = host.includes("localhost") ? "http" : "https";
+  allowed.add(`${inferredProtocol}://${host}`);
+
+  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (configuredSiteUrl) {
+    try {
+      allowed.add(new URL(configuredSiteUrl).origin);
+    } catch {
+      // Ignore invalid env value and rely on host-based check
+    }
+  }
+
+  return allowed.has(origin);
+}
+
 export async function POST(request: NextRequest) {
   try {
+    if (!isAllowedOrigin(request)) {
+      return NextResponse.json({ error: "Forbidden origin" }, { status: 403 });
+    }
+
     const clientIP = getClientIP(request);
     const rateLimit = checkRateLimit(clientIP);
 
@@ -185,13 +215,21 @@ export async function POST(request: NextRequest) {
 
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=${apiKey}`;
 
-    const response = await fetch(geminiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+    let response: Response;
+    try {
+      response = await fetch(geminiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
       throw new Error(`Gemini API error: ${response.status}`);
@@ -250,7 +288,6 @@ export async function POST(request: NextRequest) {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
         Connection: "keep-alive",
-        "Access-Control-Allow-Origin": "*",
         "X-RateLimit-Limit": RATE_LIMIT_MAX_REQUESTS.toString(),
         "X-RateLimit-Remaining": rateLimit.remaining.toString(),
       },

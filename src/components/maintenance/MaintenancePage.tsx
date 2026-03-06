@@ -2,8 +2,48 @@
 
 import Gear from "@/components/svgs/Gear";
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
+
+// Update this to your estimated maintenance completion time
+const ESTIMATED_COMPLETION = new Date("2026-03-03T12:00:00Z");
+// Fixed start time for progress calculation (e.g., when you enabled maintenance)
+const START_TIME = new Date("2026-03-02T08:00:00Z");
 
 export default function MaintenancePage() {
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const difference = ESTIMATED_COMPLETION.getTime() - now.getTime();
+
+      if (difference > 0) {
+        setTimeLeft({
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        });
+
+        // Calculate progress percentage
+        const total = ESTIMATED_COMPLETION.getTime() - START_TIME.getTime();
+        const elapsed = now.getTime() - START_TIME.getTime();
+        const percentage = Math.min(Math.max((elapsed / total) * 100, 0), 99);
+        setProgress(percentage);
+      } else {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        setProgress(100);
+        clearInterval(timer);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <div className="w-full max-w-2xl">
@@ -45,11 +85,53 @@ export default function MaintenancePage() {
             your experience.
           </motion.p>
 
+          {/* Progress Bar */}
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="mb-8 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800"
+          >
+            <div className="h-4 px-4 text-xs font-medium text-white">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="flex h-full items-center justify-end rounded-full bg-blue-600 dark:bg-blue-500"
+              >
+                <span className="pr-1">{Math.round(progress)}%</span>
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Countdown Timer */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mb-12 flex justify-center gap-4 text-center md:gap-8"
+          >
+            {[
+              { label: "Hours", value: timeLeft.hours },
+              { label: "Minutes", value: timeLeft.minutes },
+              { label: "Seconds", value: timeLeft.seconds },
+            ].map((item) => (
+              <div key={item.label} className="flex flex-col">
+                <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-white text-2xl font-bold text-gray-900 shadow-md md:h-20 md:w-20 md:text-3xl dark:bg-gray-800 dark:text-white">
+                  {String(item.value).padStart(2, "0")}
+                </div>
+                <span className="mt-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </motion.div>
+
           {/* Information Cards */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.6 }}
             className="mb-8 grid gap-4 md:grid-cols-2"
           >
             <div className="rounded-lg bg-white p-6 text-left shadow-lg dark:bg-gray-800">
@@ -66,7 +148,11 @@ export default function MaintenancePage() {
                 When will we be back?
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                We&apos;ll be back online soon. Thank you for your patience!
+                Estimated completion:{" "}
+                {ESTIMATED_COMPLETION.toLocaleString(undefined, {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
               </p>
             </div>
           </motion.div>
@@ -75,7 +161,7 @@ export default function MaintenancePage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.7 }}
             className="text-gray-600 dark:text-gray-400"
           >
             <p className="mb-4">Need immediate assistance?</p>
@@ -106,7 +192,7 @@ export default function MaintenancePage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.8 }}
             className="mt-12 text-sm text-gray-500 dark:text-gray-500"
           >
             <p>Thank you for your patience!</p>
