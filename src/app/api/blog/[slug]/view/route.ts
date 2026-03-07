@@ -56,8 +56,19 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
-    const clientIP = getClientIP(request);
-    const ipHash = hashIP(clientIP);
+    // Prefer the client-supplied visitorId (session UUID) for deduplication.
+    // Fall back to IP hash when visitorId is absent (e.g. direct API calls).
+    let ipHash: string;
+    try {
+      const body = (await request.json()) as { visitorId?: string };
+      if (body.visitorId && typeof body.visitorId === "string") {
+        ipHash = hashIP(body.visitorId);
+      } else {
+        ipHash = hashIP(getClientIP(request));
+      }
+    } catch {
+      ipHash = hashIP(getClientIP(request));
+    }
 
     const result = await BlogViewModel.updateOne(
       { slug, ipHash },

@@ -21,8 +21,18 @@ export function BlogViewCounter({
 
     const syncViews = async () => {
       try {
+        // Use a session-scoped visitor ID so each browser session counts
+        // as one unique view, regardless of IP address.
+        let visitorId = sessionStorage.getItem("blog_visitor_id");
+        if (!visitorId) {
+          visitorId = crypto.randomUUID();
+          sessionStorage.setItem("blog_visitor_id", visitorId);
+        }
+
         const res = await fetch(`/api/blog/${encodeURIComponent(slug)}/view`, {
           method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ visitorId }),
         });
         if (!res.ok) return;
         const data = (await res.json()) as { views?: number };
