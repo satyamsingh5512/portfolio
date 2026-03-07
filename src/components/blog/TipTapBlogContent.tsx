@@ -3,6 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import { IBlogPost } from "@/lib/models/BlogPost";
 import { Clock } from "lucide-react";
 import Image from "next/image";
+
 import Calender from "../svgs/Calender";
 
 interface TipTapBlogContentProps {
@@ -38,9 +39,9 @@ export function TipTapBlogContent({ post }: TipTapBlogContentProps) {
       : null;
 
   return (
-    <article className="mx-auto max-w-4xl">
+    <article className="mx-auto w-full max-w-4xl min-w-0">
       {/* Hero Section */}
-      <header className="mb-8 space-y-6">
+      <header className="mb-8 space-y-5 sm:space-y-6">
         {image && (
           <div className="relative aspect-video overflow-hidden rounded-lg">
             <Image
@@ -62,12 +63,14 @@ export function TipTapBlogContent({ post }: TipTapBlogContentProps) {
             ))}
           </div>
 
-          <h1 className="text-4xl font-bold leading-tight lg:text-5xl">
+          <h1 className="text-2xl leading-tight font-bold sm:text-3xl lg:text-5xl">
             {title}
           </h1>
 
           {description && (
-            <p className="text-muted-foreground text-xl">{description}</p>
+            <p className="text-muted-foreground text-base sm:text-lg">
+              {description}
+            </p>
           )}
 
           <div className="text-muted-foreground flex flex-wrap items-center gap-4 text-sm">
@@ -101,7 +104,7 @@ export function TipTapBlogContent({ post }: TipTapBlogContentProps) {
 
       {/* TipTap-rendered HTML */}
       <div
-        className="prose prose-neutral max-w-none dark:prose-invert"
+        className="prose prose-neutral dark:prose-invert max-w-none min-w-0 break-words [&_img]:h-auto [&_img]:max-w-full [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto"
         dangerouslySetInnerHTML={{ __html: contentHTML ?? "" }}
       />
     </article>

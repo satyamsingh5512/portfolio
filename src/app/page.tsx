@@ -1,4 +1,3 @@
-import Container from "@/components/common/Container";
 import About from "@/components/landing/About";
 import Blog from "@/components/landing/Blog";
 import CTA from "@/components/landing/CTA";
@@ -12,7 +11,7 @@ import React from "react";
 
 export default function page() {
   return (
-    <Container className="min-h-screen py-16">
+    <main className="min-h-screen py-16">
       <Hero />
       <Experience />
       <Work />
@@ -22,6 +21,6 @@ export default function page() {
       <CTA />
       <Setup />
       <Journey />
-    </Container>
+    </main>
   );
 }

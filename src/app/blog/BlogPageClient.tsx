@@ -81,7 +81,7 @@ export function BlogPageClient({
   };
 
   return (
-    <Container className="py-10 sm:py-16">
+    <Container className="py-8 sm:py-12 lg:py-16">
       <div className="space-y-6 sm:space-y-8">
         {/* Header */}
         <div className="space-y-3 text-center sm:space-y-4">
@@ -98,7 +98,7 @@ export function BlogPageClient({
         {/* Tags */}
         {initialTags.length > 0 && (
           <div className="space-y-3 sm:space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-base font-semibold sm:text-lg">
                 Popular Tags
               </h2>
@@ -134,16 +134,35 @@ export function BlogPageClient({
           </div>
         )}
 
+        {/* Regular Blog Posts */}
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="min-w-0 text-lg leading-tight font-semibold break-words sm:text-xl lg:text-2xl">
+              {selectedTag ? `Posts tagged "${selectedTag}"` : "Latest Posts"}
+              {filteredPosts.length > 0 && (
+                <span className="text-muted-foreground ml-2 inline-block text-xs font-normal sm:text-sm">
+                  ({filteredPosts.length}{" "}
+                  {filteredPosts.length === 1 ? "post" : "posts"})
+                </span>
+              )}
+            </h2>
+          </div>
+
+          <BlogList posts={filteredPosts} />
+        </div>
+
         {/* External Blogs Section */}
         {externalBlogs.length > 0 && !selectedTag && (
           <div className="space-y-4 sm:space-y-6">
-            <div className="flex items-center justify-between">
+            <Separator />
+
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-xl font-semibold sm:text-2xl">
                 External Articles
               </h2>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {externalBlogs.map((blog) => (
                 <a
                   key={blog.id}
@@ -160,8 +179,10 @@ export function BlogPageClient({
                       <p className="text-muted-foreground line-clamp-3 text-sm">
                         {blog.description}
                       </p>
-                      <div className="mt-auto flex items-center pt-2 text-xs font-medium text-blue-500">
-                        Read on {new URL(blog.url).hostname}{" "}
+                      <div className="mt-auto flex min-w-0 items-center pt-2 text-xs font-medium text-blue-500">
+                        <span className="min-w-0 break-all">
+                          Read on {new URL(blog.url).hostname}
+                        </span>{" "}
                         <ExternalLink className="ml-1 h-3 w-3" />
                       </div>
                     </CardContent>
@@ -169,27 +190,8 @@ export function BlogPageClient({
                 </a>
               ))}
             </div>
-
-            <Separator />
           </div>
         )}
-
-        {/* Regular Blog Posts */}
-        <div className="space-y-4 sm:space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold sm:text-2xl">
-              {selectedTag ? `Posts tagged "${selectedTag}"` : "Latest Posts"}
-              {filteredPosts.length > 0 && (
-                <span className="text-muted-foreground ml-2 text-xs font-normal sm:text-sm">
-                  ({filteredPosts.length}{" "}
-                  {filteredPosts.length === 1 ? "post" : "posts"})
-                </span>
-              )}
-            </h2>
-          </div>
-
-          <BlogList posts={filteredPosts} />
-        </div>
       </div>
     </Container>
   );
