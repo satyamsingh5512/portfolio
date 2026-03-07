@@ -7,12 +7,13 @@
 
 export const ctaConfig = {
   // Profile image settings
-  profileImage: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
+  profileImage:
+    "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
   profileAlt: "Profile",
 
   // CTA button settings
   linkText: "Book a Free Call",
-  calLink: "satyamsinghpx/meeting",
+  emailAddress: "satyamssinghpx@gmail.com",
 
   // Pre-text message
   preText: "Hey, you scrolled this far, let's talk.",

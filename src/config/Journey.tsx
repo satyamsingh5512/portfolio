@@ -1,6 +1,5 @@
-import React from 'react';
-import CV from '@/components/svgs/CV';
-import Calender from '@/components/svgs/Calender';
+import Calender from "@/components/svgs/Calender";
+import React from "react";
 
 export type JourneyItem = {
   name: string;
@@ -11,16 +10,10 @@ export type JourneyItem = {
 
 export const journeyItems: JourneyItem[] = [
   {
-    name: 'My Journey',
-    description: 'Overview of my learning and career journey.',
+    name: "My Journey",
+    description: "Overview of my learning and career journey.",
     icon: Calender,
-    href: '/journey',
-  },
-  {
-    name: 'Certificates & Achievements',
-    description: 'A curated list of certificates and achievements.',
-    icon: CV,
-    href: '/journey/certificates',
+    href: "/journey",
   },
 ];
 

@@ -2,25 +2,16 @@
 
 import { ctaConfig } from "@/config/CTA";
 import { useHapticFeedback } from "@/hooks/use-haptic-feedback";
-import Cal, { getCalApi } from "@calcom/embed-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 import FadeIn from "../animations/FadeIn";
 import Container from "../common/Container";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
 
 interface CallToActionProps {
   profileImage?: string;
   profileAlt?: string;
   linkText?: string;
-  calLink?: string;
+  emailAddress?: string;
   preText?: string;
 }
 
@@ -28,36 +19,16 @@ export default function CTA({
   profileImage = ctaConfig.profileImage,
   profileAlt = ctaConfig.profileAlt,
   linkText = ctaConfig.linkText,
-  calLink = ctaConfig.calLink,
+  emailAddress = ctaConfig.emailAddress,
   preText = ctaConfig.preText,
 }: CallToActionProps) {
   const { triggerHaptic, isMobile } = useHapticFeedback();
-  const [showCalPopup, setShowCalPopup] = useState(false);
-
-  useEffect(() => {
-    const cal = async () => {
-      try {
-        const calApi = await getCalApi();
-        if (calApi) {
-          calApi("on", {
-            action: "bookingSuccessful",
-            callback: () => {
-              setShowCalPopup(false);
-            },
-          });
-        }
-      } catch (error) {
-        console.error("Failed to initialize Cal API:", error);
-      }
-    };
-    cal();
-  }, []);
 
   const handleButtonClick = () => {
     if (isMobile()) {
       triggerHaptic("medium");
     }
-    setShowCalPopup(true);
+    window.location.href = `mailto:${emailAddress}`;
   };
 
   return (
@@ -113,30 +84,6 @@ export default function CTA({
           </div>
         </Container>
       </FadeIn>
-
-      {/* Cal.com Dialog */}
-      <Dialog open={showCalPopup} onOpenChange={setShowCalPopup}>
-        <DialogContent className="max-h-[90vh] max-w-[calc(100vw-2rem)] overflow-hidden sm:max-w-[calc(100vw-4rem)] md:max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>Book a Meeting</DialogTitle>
-            <DialogDescription>
-              Schedule a time to connect and discuss opportunities
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="max-h-[calc(90vh-220px)] overflow-y-auto rounded-lg">
-            <Cal
-              calLink={calLink}
-              config={{
-                name: "Portfolio Visitor",
-                email: "",
-                notes: "Booked from portfolio website",
-              }}
-              className="h-[500px] w-full rounded-lg"
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
