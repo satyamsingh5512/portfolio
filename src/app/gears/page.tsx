@@ -25,14 +25,14 @@ export const metadata: Metadata = {
 
 export default function GearsPage() {
   return (
-    <Container className="py-16">
-      <div className="space-y-8">
+    <Container className="py-10 sm:py-16">
+      <div className="space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="space-y-4 text-center">
-          <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">
+        <div className="space-y-3 text-center sm:space-y-4">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
             Gears
           </h1>
-          <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
+          <p className="text-muted-foreground mx-auto max-w-2xl text-sm sm:text-lg">
             My gears and tools I use to get my work done.
           </p>
         </div>
@@ -40,7 +40,7 @@ export default function GearsPage() {
 
         {/* Devices Section */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold">Devices</h2>
+          <h2 className="text-xl font-semibold sm:text-2xl">Devices</h2>
           <div className="flex flex-col flex-wrap gap-4">
             {devices.map((device) => (
               <div key={device.name} className="flex items-center gap-4">
@@ -56,12 +56,14 @@ export default function GearsPage() {
         </div>
 
         {/* Web Extensions Section */}
-        <div className="space-y-4 pt-10">
+        <div className="space-y-4 pt-8 sm:pt-10">
           <div className="flex items-center gap-4">
             <div className="bg-muted flex items-center justify-center rounded-md border border-black/10 p-2 text-[#736F70] dark:border-white/10">
               <Puzzle className="size-4" />
             </div>
-            <h2 className="text-2xl font-semibold">Web Extensions</h2>
+            <h2 className="text-xl font-semibold sm:text-2xl">
+              Web Extensions
+            </h2>
           </div>
           <div className="mt-8 flex flex-col flex-wrap gap-4">
             {webExtensions.map((extension, index) => (
@@ -83,12 +85,12 @@ export default function GearsPage() {
         </div>
 
         {/* Software Section */}
-        <div className="space-y-4 pt-10">
+        <div className="space-y-4 pt-8 sm:pt-10">
           <div className="flex items-center gap-4">
             <div className="bg-muted flex items-center justify-center rounded-md border border-black/10 p-2 text-[#736F70] dark:border-white/10">
               <Monitor className="size-4" />
             </div>
-            <h2 className="text-2xl font-semibold">Software</h2>
+            <h2 className="text-xl font-semibold sm:text-2xl">Software</h2>
           </div>
           <div className="mt-8 flex flex-col flex-wrap gap-4">
             {software.map((app, index) => (

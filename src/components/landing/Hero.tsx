@@ -76,7 +76,7 @@ export default function Hero() {
   }, [description.template, skills]);
 
   return (
-    <Container className="mx-auto max-w-5xl px-4 sm:px-6">
+    <Container className="px-4 sm:px-6">
       <motion.div
         variants={containerVariants}
         initial="hidden"

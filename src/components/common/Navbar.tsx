@@ -34,7 +34,7 @@ export default function Navbar() {
               const isActive = pathname === item.href;
               return (
                 <Link
-                  className="relative px-2 py-1 text-sm transition-colors duration-300 sm:text-base"
+                  className="relative px-1.5 py-1 text-xs transition-colors duration-300 sm:px-2 sm:text-sm"
                   key={item.label}
                   href={item.href}
                 >

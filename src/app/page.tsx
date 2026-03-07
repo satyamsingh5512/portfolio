@@ -11,7 +11,7 @@ import React from "react";
 
 export default function page() {
   return (
-    <main className="min-h-screen py-16">
+    <main className="min-h-screen overflow-x-hidden py-16">
       <Hero />
       <Experience />
       <Work />

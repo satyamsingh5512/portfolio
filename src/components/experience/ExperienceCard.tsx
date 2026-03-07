@@ -60,7 +60,7 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
               </div>
             </div>
           </div>
-          <div className="text-muted-foreground ml-13 flex-shrink-0 text-left text-xs sm:ml-0 sm:text-right sm:text-sm">
+          <div className="text-muted-foreground mt-1 flex-shrink-0 text-left text-xs sm:mt-0 sm:ml-0 sm:text-right sm:text-sm">
             <div>
               {experience.startDate} - {experience.endDate}
             </div>

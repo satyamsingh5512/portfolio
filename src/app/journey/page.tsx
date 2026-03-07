@@ -1,14 +1,14 @@
-import Container from '@/components/common/Container';
-import { Separator } from '@/components/ui/separator';
-import { generateMetadata as getMetadata } from '@/config/Meta';
-import { Metadata } from 'next';
-import React from 'react';
-import { getJourneyContent } from '@/lib/journey';
-import { MDXRemote } from 'next-mdx-remote/rsc';
-import { BlogComponents } from '@/components/blog/BlogComponents';
+import { BlogComponents } from "@/components/blog/BlogComponents";
+import Container from "@/components/common/Container";
+import { Separator } from "@/components/ui/separator";
+import { generateMetadata as getMetadata } from "@/config/Meta";
+import { getJourneyContent } from "@/lib/journey";
+import { Metadata } from "next";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import React from "react";
 
 export const metadata: Metadata = {
-  ...getMetadata('/journey'),
+  ...getMetadata("/journey"),
   robots: { index: true, follow: true },
 };
 
@@ -17,13 +17,13 @@ export default function JourneyPage() {
 
   if (!data) {
     return (
-      <Container className="py-8 md:py-16">
-        <div className="space-y-6 md:space-y-8">
-          <div className="space-y-3 md:space-y-4 text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+      <Container className="py-10 sm:py-16">
+        <div className="space-y-6 sm:space-y-8">
+          <div className="space-y-3 text-center sm:space-y-4">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
               Journey
             </h1>
-            <p className="mx-auto max-w-2xl text-base md:text-lg text-muted-foreground px-4">
+            <p className="text-muted-foreground mx-auto max-w-2xl text-sm sm:text-lg">
               No journey content found. Add `src/data/journey/journey.mdx` to
               display content here.
             </p>
@@ -35,19 +35,19 @@ export default function JourneyPage() {
   }
 
   return (
-    <Container className="py-8 md:py-16">
-      <div className="space-y-6 md:space-y-8">
-        <div className="space-y-3 md:space-y-4 text-center">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+    <Container className="py-10 sm:py-16">
+      <div className="space-y-6 sm:space-y-8">
+        <div className="space-y-3 text-center sm:space-y-4">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
             Journey
           </h1>
-          <p className="mx-auto max-w-2xl text-base md:text-lg text-muted-foreground px-4">
+          <p className="text-muted-foreground mx-auto max-w-2xl text-sm sm:text-lg">
             A timeline of my learning, projects, and milestones.
           </p>
         </div>
         <Separator />
 
-        <div className="prose prose-neutral max-w-none dark:prose-invert">
+        <div className="prose prose-neutral dark:prose-invert max-w-none min-w-0 break-words [&_img]:h-auto [&_img]:max-w-full [&_pre]:max-w-full [&_pre]:overflow-x-auto">
           <MDXRemote source={data.content} components={BlogComponents} />
         </div>
       </div>

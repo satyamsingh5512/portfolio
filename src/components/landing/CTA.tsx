@@ -64,7 +64,7 @@ export default function CTA({
     <>
       <FadeIn>
         <Container className="mt-12 rounded-md border border-dashed border-black/20 py-6 sm:mt-20 sm:py-8 dark:border-white/10">
-          <div className="mt-4 flex w-full flex-col px-4 pb-6 sm:mt-6 sm:flex-row sm:items-center sm:justify-between sm:px-12 sm:pb-8">
+          <div className="mt-4 flex w-full flex-col px-2 pb-6 sm:mt-6 sm:flex-row sm:items-center sm:justify-between sm:px-4 sm:pb-8">
             <p className="mb-4 text-center text-sm opacity-50 sm:mb-3 sm:text-left sm:text-base md:text-xl">
               {preText}
             </p>

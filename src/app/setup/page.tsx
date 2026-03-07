@@ -25,14 +25,14 @@ export const metadata: Metadata = {
 
 export default function SetupPage() {
   return (
-    <Container className="py-8 md:py-16">
-      <div className="space-y-6 md:space-y-8">
+    <Container className="py-10 sm:py-16">
+      <div className="space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="space-y-3 text-center md:space-y-4">
-          <h1 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">
+        <div className="space-y-3 text-center sm:space-y-4">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
             Setup
           </h1>
-          <p className="text-muted-foreground mx-auto max-w-2xl px-4 text-base md:text-lg">
+          <p className="text-muted-foreground mx-auto max-w-2xl text-sm sm:text-lg">
             Complete guide to setting up VS Code with my preferred
             configuration, extensions, and fonts.
           </p>
@@ -40,7 +40,7 @@ export default function SetupPage() {
         <Separator />
 
         {/* Steps */}
-        <div className="space-y-8 md:space-y-12">
+        <div className="space-y-8 sm:space-y-12">
           {steps.map((step) => (
             <div key={step.id} className="space-y-4 md:space-y-6">
               {/* Step Header */}
