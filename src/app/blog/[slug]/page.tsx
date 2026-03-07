@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { siteConfig } from "@/config/Meta";
 import BlogPostModel, { IBlogPost } from "@/lib/models/BlogPost";
+import BlogViewModel from "@/lib/models/BlogView";
 import { connectToDatabase } from "@/lib/mongodb";
 import { BlogPostPreview } from "@/types/blog";
 import { Metadata } from "next";
@@ -98,6 +99,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }).lean<MongoPost>();
   if (!post) notFound();
 
+  const initialViews = await BlogViewModel.countDocuments({ slug });
+
   // Related posts — same tags, excluding current
   const currentTags = post.tags.map((t) => t.toLowerCase());
   const relatedDocs = await BlogPostModel.find({
@@ -127,7 +130,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
 
           {/* Blog Content */}
-          <TipTapBlogContent post={post} />
+          <TipTapBlogContent
+            post={post}
+            slug={slug}
+            initialViews={initialViews}
+          />
 
           {/* Related Posts */}
           {relatedPosts.length > 0 && (

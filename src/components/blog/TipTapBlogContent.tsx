@@ -5,12 +5,19 @@ import { Clock } from "lucide-react";
 import Image from "next/image";
 
 import Calender from "../svgs/Calender";
+import { BlogViewCounter } from "./BlogViewCounter";
 
 interface TipTapBlogContentProps {
   post: IBlogPost & { createdAt: Date; updatedAt: Date };
+  slug: string;
+  initialViews?: number;
 }
 
-export function TipTapBlogContent({ post }: TipTapBlogContentProps) {
+export function TipTapBlogContent({
+  post,
+  slug,
+  initialViews = 0,
+}: TipTapBlogContentProps) {
   const {
     title,
     description,
@@ -87,6 +94,7 @@ export function TipTapBlogContent({ post }: TipTapBlogContentProps) {
                 <span>{readingTime} min read</span>
               </div>
             )}
+            <BlogViewCounter slug={slug} initialViews={initialViews} />
           </div>
 
           {/* Author */}
