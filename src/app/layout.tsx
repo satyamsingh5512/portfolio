@@ -44,6 +44,21 @@ export default function RootLayout({
                 <LazyComponents />
                 <Footer />
                 <SearchPalette />
+                {/* Google Analytics */}
+                <script
+                  async
+                  src="https://www.googletagmanager.com/gtag/js?id=G-ZE4NNL98WC"
+                />
+                <script
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                      window.dataLayer = window.dataLayer || [];
+                      function gtag(){dataLayer.push(arguments);}
+                      gtag('js', new Date());
+                      gtag('config', 'G-ZE4NNL98WC');
+                    `,
+                  }}
+                />
                 <UmamiAnalytics />
                 <Analytics />
               </ReactLenis>
