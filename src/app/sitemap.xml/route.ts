@@ -19,43 +19,43 @@ export async function GET() {
 
     const links = [
       {
-        url: "/",
+        url: "https://satym.in/",
         changefreq: "daily",
         priority: 1.0,
         lastmod: formatDate(new Date()),
       },
       {
-        url: "/blog",
+        url: "https://satym.in/blog",
         changefreq: "daily",
         priority: 0.8,
         lastmod: formatDate(new Date()),
       },
       {
-        url: "/projects",
+        url: "https://satym.in/projects",
         changefreq: "weekly",
         priority: 0.7,
         lastmod: formatDate(new Date()),
       },
       {
-        url: "/work-experience",
+        url: "https://satym.in/work-experience",
         changefreq: "monthly",
         priority: 0.6,
         lastmod: formatDate(new Date()),
       },
       {
-        url: "/resume",
+        url: "https://satym.in/resume",
         changefreq: "monthly",
         priority: 0.6,
         lastmod: formatDate(new Date()),
       },
       {
-        url: "/contact",
+        url: "https://satym.in/contact",
         changefreq: "monthly",
         priority: 0.6,
         lastmod: formatDate(new Date()),
       },
       ...posts.map((post) => ({
-        url: `/blog/${post.slug}`,
+        url: `https://satym.in/blog/${post.slug}`,
         changefreq: "weekly",
         priority: 0.8,
         lastmod: formatDate(post.createdAt),
