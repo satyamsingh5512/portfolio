@@ -30,14 +30,21 @@ export async function GET() {
       })),
     ];
 
-    const stream = new SitemapStream({
-      hostname: "https://satym.in",
-      pretty: true,
-    });
+    const stream = new SitemapStream({ hostname: "https://satym.in" });
     const data = Readable.from(links);
     const result = await streamToPromise(data.pipe(stream));
 
-    return new Response(result.toString(), {
+    // Format XML with proper indentation
+    const xmlString = result.toString();
+    const formattedXml = xmlString
+      .replace(/</g, "\n<")
+      .replace(/\n\s*\n/g, "\n")
+      .replace(/><>/g, ">\n<>")
+      .replace(/>\s*</g, ">\n<")
+      .replace(/\n\s*\n/g, "\n")
+      .trim();
+
+    return new Response(formattedXml, {
       headers: {
         "Content-Type": "application/xml",
         "Cache-Control": "no-cache",
