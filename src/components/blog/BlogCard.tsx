@@ -49,7 +49,8 @@ export function BlogCard({ post }: BlogCardProps) {
         </div>
       </CardContent>
       <CardFooter className="p-3 pt-0 sm:p-4 md:p-6">
-        <div className="flex w-full flex-col space-y-2 sm:space-y-3">
+        <div className="flex w-full flex-col gap-2 sm:gap-3">
+          {/* Tags - can wrap to multiple lines */}
           <div className="flex flex-wrap gap-1 sm:gap-1.5">
             {tags.slice(0, 3).map((tag) => (
               <Badge
@@ -69,7 +70,8 @@ export function BlogCard({ post }: BlogCardProps) {
               </Badge>
             )}
           </div>
-          <div className="mt-2 flex items-center justify-between gap-2 sm:mt-3 sm:gap-3">
+          {/* Date and Read More - on separate line */}
+          <div className="flex items-center justify-between gap-2 sm:gap-3">
             <time
               className="text-secondary flex items-center gap-1 text-[10px] sm:text-xs md:text-sm"
               dateTime={date}
