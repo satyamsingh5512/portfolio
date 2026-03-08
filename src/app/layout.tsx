@@ -15,6 +15,7 @@ import {
 import { Analytics } from "@vercel/analytics/next";
 import ReactLenis from "lenis/react";
 import { ViewTransitions } from "next-view-transitions";
+import Script from "next/script";
 
 import "./globals.css";
 
@@ -45,11 +46,13 @@ export default function RootLayout({
                 <Footer />
                 <SearchPalette />
                 {/* Google Analytics */}
-                <script
-                  async
+                <Script
                   src="https://www.googletagmanager.com/gtag/js?id=G-ZE4NNL98WC"
+                  strategy="afterInteractive"
                 />
-                <script
+                <Script
+                  id="google-analytics"
+                  strategy="afterInteractive"
                   dangerouslySetInnerHTML={{
                     __html: `
                       window.dataLayer = window.dataLayer || [];
