@@ -81,25 +81,25 @@ export function BlogPageClient({
   };
 
   return (
-    <Container className="py-8 sm:py-12 lg:py-16">
-      <div className="space-y-6 sm:space-y-8">
+    <Container className="py-6 sm:py-8 md:py-12 lg:py-16">
+      <div className="space-y-4 sm:space-y-6 md:space-y-8">
         {/* Header */}
-        <div className="space-y-3 text-center sm:space-y-4">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+        <div className="space-y-2 text-center sm:space-y-3">
+          <h1 className="text-xl font-bold tracking-tight sm:text-2xl md:text-3xl lg:text-4xl">
             Blogs
           </h1>
-          <p className="text-muted-foreground mx-auto max-w-2xl text-sm sm:text-lg">
+          <p className="text-muted-foreground mx-auto max-w-2xl text-xs sm:text-sm md:text-base">
             Thoughts, tutorials, and insights on engineering, and programming.
           </p>
         </div>
 
-        <Separator />
+        <Separator className="my-4 sm:my-6" />
 
         {/* Tags */}
         {initialTags.length > 0 && (
           <div className="space-y-3 sm:space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-base font-semibold sm:text-lg">
+              <h2 className="text-sm font-semibold sm:text-base md:text-lg">
                 Popular Tags
               </h2>
               {selectedTag && (
@@ -111,7 +111,7 @@ export function BlogPageClient({
                 </button>
               )}
             </div>
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
+            <div className="flex flex-wrap gap-1 sm:gap-1.5">
               {initialTags.map((tag) => {
                 const postCount = getTagPostCount(tag);
                 const isSelected = selectedTag === tag;
@@ -123,7 +123,7 @@ export function BlogPageClient({
                   >
                     <Badge
                       variant={isSelected ? "default" : "outline"}
-                      className="hover:bg-accent hover:text-accent-foreground tag-inner-shadow cursor-pointer text-[10px] capitalize sm:text-xs"
+                      className="hover:bg-accent hover:text-accent-foreground tag-inner-shadow cursor-pointer text-[9px] capitalize sm:text-[10px]"
                     >
                       {tag} ({postCount})
                     </Badge>
@@ -135,12 +135,12 @@ export function BlogPageClient({
         )}
 
         {/* Regular Blog Posts */}
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-3 sm:space-y-4 md:space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="min-w-0 text-lg leading-tight font-semibold break-words sm:text-xl lg:text-2xl">
+            <h2 className="min-w-0 text-base leading-tight font-semibold break-words sm:text-lg md:text-xl">
               {selectedTag ? `Posts tagged "${selectedTag}"` : "Latest Posts"}
               {filteredPosts.length > 0 && (
-                <span className="text-muted-foreground ml-2 inline-block text-xs font-normal sm:text-sm">
+                <span className="text-muted-foreground ml-2 inline-block text-xs font-normal">
                   ({filteredPosts.length}{" "}
                   {filteredPosts.length === 1 ? "post" : "posts"})
                 </span>
@@ -153,16 +153,16 @@ export function BlogPageClient({
 
         {/* External Blogs Section */}
         {externalBlogs.length > 0 && !selectedTag && (
-          <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-4 sm:space-y-6 md:space-y-8">
             <Separator />
 
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-xl font-semibold sm:text-2xl">
+              <h2 className="text-lg font-semibold sm:text-xl md:text-2xl">
                 External Articles
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
               {externalBlogs.map((blog) => (
                 <a
                   key={blog.id}
@@ -172,18 +172,18 @@ export function BlogPageClient({
                   className="block h-full"
                 >
                   <Card className="hover:bg-muted/50 h-full transition-colors">
-                    <CardContent className="flex h-full flex-col gap-2 p-6">
-                      <h3 className="line-clamp-2 text-lg leading-tight font-semibold">
+                    <CardContent className="flex h-full flex-col gap-2 p-4 sm:p-5 md:p-6">
+                      <h3 className="line-clamp-2 text-sm leading-tight font-semibold sm:text-base md:text-lg">
                         {blog.title}
                       </h3>
-                      <p className="text-muted-foreground line-clamp-3 text-sm">
+                      <p className="text-muted-foreground line-clamp-3 text-xs sm:text-sm md:text-base">
                         {blog.description}
                       </p>
-                      <div className="mt-auto flex min-w-0 items-center pt-2 text-xs font-medium text-blue-500">
+                      <div className="mt-auto flex min-w-0 items-center pt-2 text-[10px] font-medium text-blue-500 sm:text-xs">
                         <span className="min-w-0 break-all">
                           Read on {new URL(blog.url).hostname}
                         </span>{" "}
-                        <ExternalLink className="ml-1 h-3 w-3" />
+                        <ExternalLink className="ml-1 h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       </div>
                     </CardContent>
                   </Card>

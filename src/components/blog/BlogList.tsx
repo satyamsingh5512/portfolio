@@ -23,7 +23,7 @@ export function BlogList({ posts, className = "" }: BlogListProps) {
 
   return (
     <div
-      className={`grid grid-cols-1 items-stretch gap-4 sm:gap-6 lg:grid-cols-2 ${className}`}
+      className={`grid grid-cols-1 items-stretch gap-3 sm:gap-4 md:gap-5 lg:grid-cols-2 ${className}`}
     >
       {posts.map((post) => (
         <BlogCard key={post.slug} post={post} />

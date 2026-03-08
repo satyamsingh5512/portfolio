@@ -117,13 +117,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <>
-      <Container className="py-16">
-        <div className="space-y-12">
+      <Container className="py-8 sm:py-12 md:py-16">
+        <div className="space-y-8 sm:space-y-10 md:space-y-12">
           {/* Back Button */}
           <div>
             <Button variant="ghost" asChild className="group">
-              <Link href="/blog" className="flex items-center space-x-2">
-                <ArrowLeft className="size-4" />
+              <Link
+                href="/blog"
+                className="flex items-center space-x-2 text-sm sm:text-base"
+              >
+                <ArrowLeft className="size-3.5 sm:size-4" />
                 <span>Back to Blog</span>
               </Link>
             </Button>
@@ -138,10 +141,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Related Posts */}
           {relatedPosts.length > 0 && (
-            <div className="space-y-6">
-              <Separator />
-              <div className="space-y-6">
-                <h2 className="text-2xl font-semibold">Related Posts</h2>
+            <div className="space-y-4 sm:space-y-6 md:space-y-8">
+              <Separator className="my-6 sm:my-8" />
+              <div className="space-y-4 sm:space-y-6">
+                <h2 className="text-xl font-semibold sm:text-2xl">
+                  Related Posts
+                </h2>
                 <BlogList posts={relatedPosts} />
               </div>
             </div>
@@ -149,8 +154,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Back to Blog CTA */}
           <div className="text-center">
-            <Separator className="mb-8" />
-            <Button asChild size="lg">
+            <Separator className="mb-6 sm:mb-8" />
+            <Button asChild size="lg" className="w-full sm:w-auto">
               <Link href="/blog">View All Blogs</Link>
             </Button>
           </div>

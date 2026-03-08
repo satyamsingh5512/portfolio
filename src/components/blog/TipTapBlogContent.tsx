@@ -46,11 +46,11 @@ export function TipTapBlogContent({
       : null;
 
   return (
-    <article className="mx-auto w-full max-w-4xl min-w-0">
+    <article className="mx-auto w-full max-w-3xl min-w-0 sm:max-w-4xl">
       {/* Hero Section */}
-      <header className="mb-8 space-y-5 sm:space-y-6">
+      <header className="mb-6 space-y-4 sm:mb-8 sm:space-y-5">
         {image && (
-          <div className="relative aspect-video overflow-hidden rounded-lg">
+          <div className="relative aspect-[16/9] overflow-hidden rounded-lg sm:aspect-video sm:rounded-xl">
             <Image
               src={image}
               alt={title}
@@ -61,36 +61,40 @@ export function TipTapBlogContent({
           </div>
         )}
 
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {tags.map((tag) => (
-              <Badge key={tag} variant="secondary">
+              <Badge
+                key={tag}
+                variant="secondary"
+                className="text-xs sm:text-sm"
+              >
                 {tag}
               </Badge>
             ))}
           </div>
 
-          <h1 className="text-2xl leading-tight font-bold sm:text-3xl lg:text-5xl">
+          <h1 className="text-xl leading-tight font-bold sm:text-2xl md:text-3xl lg:text-4xl">
             {title}
           </h1>
 
           {description && (
-            <p className="text-muted-foreground text-base sm:text-lg">
+            <p className="text-muted-foreground text-sm sm:text-base md:text-lg">
               {description}
             </p>
           )}
 
-          <div className="text-muted-foreground flex flex-wrap items-center gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <Calender className="size-5" />
+          <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-xs sm:gap-3 sm:text-sm">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Calender className="size-4 sm:size-5" />
               <time dateTime={createdAt.toISOString()}>{formattedDate}</time>
             </div>
             {formattedUpdatedAt && (
               <span className="text-xs">(Updated: {formattedUpdatedAt})</span>
             )}
             {readingTime !== undefined && (
-              <div className="flex items-center gap-2">
-                <Clock className="size-4" />
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Clock className="size-3.5 sm:size-4" />
                 <span>{readingTime} min read</span>
               </div>
             )}
@@ -99,20 +103,22 @@ export function TipTapBlogContent({
 
           {/* Author */}
           {author && (
-            <div className="flex items-center gap-4 pt-4">
-              <div className="flex-1">
-                <p className="font-medium">{author.name}</p>
+            <div className="flex items-center gap-3 pt-3 sm:gap-4 sm:pt-4">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium sm:text-base">
+                  {author.name}
+                </p>
               </div>
             </div>
           )}
         </div>
 
-        <Separator />
+        <Separator className="my-4 sm:my-5" />
       </header>
 
       {/* TipTap-rendered HTML */}
       <div
-        className="prose prose-neutral dark:prose-invert max-w-none min-w-0 break-words [&_img]:h-auto [&_img]:max-w-full [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto"
+        className="prose prose-neutral dark:prose-invert max-w-none min-w-0 text-sm break-words sm:text-base [&_img]:h-auto [&_img]:max-w-full [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto"
         dangerouslySetInnerHTML={{ __html: contentHTML ?? "" }}
       />
     </article>
