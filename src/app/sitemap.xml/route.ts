@@ -30,7 +30,10 @@ export async function GET() {
       })),
     ];
 
-    const stream = new SitemapStream({ hostname: "https://satym.in" });
+    const stream = new SitemapStream({
+      hostname: "https://satym.in",
+      pretty: true,
+    });
     const data = Readable.from(links);
     const result = await streamToPromise(data.pipe(stream));
 
