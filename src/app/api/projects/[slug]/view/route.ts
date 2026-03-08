@@ -1,7 +1,6 @@
-import BlogPostModel from "@/lib/models/BlogPost";
-import BlogViewModel from "@/lib/models/BlogView";
 import PortfolioViewModel from "@/lib/models/PortfolioView";
 import { connectToDatabase } from "@/lib/mongodb";
+import { getProjectCaseStudyBySlug } from "@/lib/project";
 import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -31,17 +30,16 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
     const { slug } = await params;
     await connectToDatabase();
 
-    const postExists = await BlogPostModel.exists({ slug, isPublished: true });
-    if (!postExists) {
-      return NextResponse.json({ error: "Post not found" }, { status: 404 });
-    }
+    const views = await PortfolioViewModel.countDocuments({
+      contentType: "project",
+      slug,
+    });
 
-    const views = await BlogViewModel.countDocuments({ slug });
     return NextResponse.json({ views });
   } catch (error) {
-    console.error("GET /api/blog/[slug]/view error:", error);
+    console.error("GET /api/projects/[slug]/view error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch blog views" },
+      { error: "Failed to fetch project views" },
       { status: 500 },
     );
   }
@@ -50,12 +48,14 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const { slug } = await params;
-    await connectToDatabase();
 
-    const postExists = await BlogPostModel.exists({ slug, isPublished: true });
-    if (!postExists) {
-      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    // Validate that the project actually exists
+    const project = getProjectCaseStudyBySlug(slug);
+    if (!project || !project.frontmatter.isPublished) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
+
+    await connectToDatabase();
 
     // Prefer the client-supplied visitorId (session UUID) for deduplication.
     // Fall back to IP hash when visitorId is absent (e.g. direct API calls).
@@ -71,31 +71,24 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       ipHash = hashIP(getClientIP(request));
     }
 
-    const result = await BlogViewModel.updateOne(
-      { slug, ipHash },
-      { $setOnInsert: { slug, ipHash } },
-      { upsert: true },
-    );
-
-    // Blog views also count towards the portfolio view total.
-    // Use the same ipHash so the same session is deduplicated across both collections.
-    await PortfolioViewModel.updateOne(
-      { contentType: "blog", slug, ipHash },
-      { $setOnInsert: { contentType: "blog", slug, ipHash } },
+    // Project views count ONLY towards the portfolio total, not the blog count.
+    const result = await PortfolioViewModel.updateOne(
+      { contentType: "project", slug, ipHash },
+      { $setOnInsert: { contentType: "project", slug, ipHash } },
       { upsert: true },
     );
 
     const isNewUniqueView = result.upsertedCount > 0;
-    const views = await BlogViewModel.countDocuments({ slug });
-
-    return NextResponse.json({
-      views,
-      counted: isNewUniqueView,
+    const views = await PortfolioViewModel.countDocuments({
+      contentType: "project",
+      slug,
     });
+
+    return NextResponse.json({ views, counted: isNewUniqueView });
   } catch (error) {
-    console.error("POST /api/blog/[slug]/view error:", error);
+    console.error("POST /api/projects/[slug]/view error:", error);
     return NextResponse.json(
-      { error: "Failed to update blog views" },
+      { error: "Failed to update project views" },
       { status: 500 },
     );
   }
