@@ -1,6 +1,7 @@
 "use client";
 
 import { Eye } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 
 interface BlogViewCounterProps {
@@ -14,6 +15,7 @@ export function BlogViewCounter({
 }: BlogViewCounterProps) {
   const [views, setViews] = useState(initialViews);
   const hasRequested = useRef(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (!slug || hasRequested.current) return;
@@ -46,6 +48,11 @@ export function BlogViewCounter({
 
     void syncViews();
   }, [slug]);
+
+  // Only show view count for admin users
+  if (!session || session.user.role !== "admin") {
+    return null;
+  }
 
   return (
     <div className="flex items-center gap-2">
