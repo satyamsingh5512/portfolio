@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -6,8 +8,10 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { BlogPostPreview } from "@/types/blog";
+import { Eye } from "lucide-react";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 import ArrowRight from "../svgs/ArrowRight";
 import Calender from "../svgs/Calender";
@@ -20,6 +24,16 @@ export function BlogCard({ post }: BlogCardProps) {
   const { slug, frontmatter } = post;
   const { title, description, image, tags, date } = frontmatter;
   const imageSrc = image?.trim() ? image : "/meta/blogs.png";
+  const [views, setViews] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/blog/${encodeURIComponent(slug)}/view`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data: { views?: number } | null) => {
+        if (data && typeof data.views === "number") setViews(data.views);
+      })
+      .catch(() => {});
+  }, [slug]);
 
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
@@ -72,13 +86,21 @@ export function BlogCard({ post }: BlogCardProps) {
           </div>
           {/* Date and Read More - on separate line */}
           <div className="flex items-center justify-between gap-2 sm:gap-3">
-            <time
-              className="text-secondary flex items-center gap-1 text-[10px] sm:text-xs md:text-sm"
-              dateTime={date}
-            >
-              <Calender className="size-2.5 sm:size-3 md:size-4" />{" "}
-              {formattedDate}
-            </time>
+            <div className="text-secondary flex items-center gap-2 text-[10px] sm:text-xs md:text-sm">
+              <time
+                className="flex items-center gap-1"
+                dateTime={date}
+              >
+                <Calender className="size-2.5 sm:size-3 md:size-4" />{" "}
+                {formattedDate}
+              </time>
+              {views !== null && (
+                <span className="flex items-center gap-1">
+                  <Eye className="size-2.5 sm:size-3 md:size-4" />
+                  {views} {views === 1 ? "view" : "views"}
+                </span>
+              )}
+            </div>
             <Link
               href={`/blog/${slug}`}
               className="text-secondary flex items-center justify-end gap-1 text-[10px] underline-offset-4 hover:underline sm:text-xs md:text-sm"
