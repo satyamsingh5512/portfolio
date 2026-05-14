@@ -24,7 +24,16 @@ interface DBProjectCardProps {
 
 export function DBProjectCard({ project }: DBProjectCardProps) {
   return (
-    <Card className="group h-full w-full overflow-hidden border-gray-100 p-0 shadow-none transition-all dark:border-gray-800">
+    <Card className="group relative h-full w-full overflow-hidden border-gray-100 p-0 shadow-none transition-all dark:border-gray-800">
+      {(project.liveUrl || project.githubUrl) && (
+        <Link
+          href={project.liveUrl || project.githubUrl || "#"}
+          className="absolute inset-0 z-0"
+          target="_blank"
+        >
+          <span className="sr-only">View {project.title}</span>
+        </Link>
+      )}
       <CardHeader className="p-0">
         <div className="group relative aspect-video overflow-hidden">
           {project.image ? (
@@ -61,7 +70,7 @@ export function DBProjectCard({ project }: DBProjectCardProps) {
             <div className="flex shrink-0 items-center gap-2">
               {project.liveUrl && (
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger className="relative z-10">
                     <Link
                       className="text-secondary hover:text-primary flex size-5 items-center justify-center transition-colors sm:size-6"
                       href={project.liveUrl}
@@ -77,7 +86,7 @@ export function DBProjectCard({ project }: DBProjectCardProps) {
               )}
               {project.githubUrl && (
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger className="relative z-10">
                     <Link
                       className="text-secondary hover:text-primary flex size-5 items-center justify-center transition-colors sm:size-6"
                       href={project.githubUrl}
@@ -108,7 +117,7 @@ export function DBProjectCard({ project }: DBProjectCardProps) {
               <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {project.technologies.map((tech, index) => (
                   <Tooltip key={index}>
-                    <TooltipTrigger>
+                    <TooltipTrigger className="relative z-10">
                       <TechnologyIcon
                         name={tech}
                         className="size-5 transition-all duration-300 hover:scale-120 hover:cursor-pointer sm:size-6"
@@ -139,7 +148,7 @@ export function DBProjectCard({ project }: DBProjectCardProps) {
       <CardFooter className="flex-row items-center justify-between px-4 pt-2 pb-4 sm:px-6 sm:pb-6">
         {(project.liveUrl || project.githubUrl) && (
           <Link
-            className="text-primary flex items-center gap-1 text-sm hover:underline sm:text-base"
+            className="text-primary relative z-10 flex items-center gap-1 text-sm hover:underline sm:text-base"
             href={project.liveUrl || project.githubUrl || "#"}
             target="_blank"
           >
