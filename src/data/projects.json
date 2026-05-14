@@ -1,18 +1,5 @@
 [
   {
-    "id": "10",
-    "title": "Jagah",
-    "description": "A highly secure, pure client-side application to manage AWS S3 buckets with zero backend. Built with a premium, responsive \"B2B SaaS\" UI aesthetic.",
-    "image": "https://res.cloudinary.com/dnuxivxnu/image/upload/v1778786449/portfolio/blog/rspwknf9xjwz6jb6x4zo.jpg",
-    "link": "https://jagah.satym.in/",
-    "github": "https://github.com/satyamsingh5512/jagah-s3",
-    "live": "https://jagah.satym.in/",
-    "technologies": ["React", "TypeScript", "AWS SDK v3", "Vanilla CSS"],
-    "isWorking": true,
-    "projectDetailsPageSlug": "/projects/jagah",
-    "createdAt": "2024-10-01T00:00:00.000Z"
-  },
-  {
     "id": "1",
     "title": "Formlytics",
     "description": "Google Forms–style form builder with a minimal black-and-white design. Features drag-and-drop form creation, quiz builder, response analytics with Recharts, NextAuth.js authentication, and Prisma ORM with MongoDB for scalable data storage",

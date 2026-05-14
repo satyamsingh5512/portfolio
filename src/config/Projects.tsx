@@ -12,26 +12,6 @@ import { Project } from "@/types/project";
 
 export const projects: Project[] = [
   {
-    title: "Jagah",
-    description:
-      'A highly secure, pure client-side application to manage AWS S3 buckets with zero backend. Built with a premium, responsive "B2B SaaS" UI aesthetic.',
-    image:
-      "https://res.cloudinary.com/dnuxivxnu/image/upload/v1778786449/portfolio/blog/rspwknf9xjwz6jb6x4zo.jpg",
-    link: "https://jagah.satym.in/",
-    technologies: [
-      { name: "React", icon: <ReactIcon key="react" /> },
-      { name: "TypeScript", icon: <TypeScript key="typescript" /> },
-      { name: "AWS SDK v3", icon: <NodeJs key="aws" /> },
-      { name: "Vanilla CSS", icon: <TailwindCss key="css" /> },
-    ],
-    github: "https://github.com/satyamsingh5512/jagah-s3",
-    live: "https://jagah.satym.in/",
-    details: true,
-    projectDetailsPageSlug: "/projects/jagah",
-    isWorking: true,
-    order: 0,
-  },
-  {
     title: "Formlytics",
     description:
       "Google Forms–style form builder with a minimal black-and-white design. Features drag-and-drop form creation, quiz builder, response analytics with Recharts, NextAuth.js authentication, and Prisma ORM with MongoDB for scalable data storage",
