@@ -36,15 +36,6 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
 
   return (
     <Card className="group relative h-full w-full overflow-hidden border-gray-100 p-0 shadow-none transition-all dark:border-gray-800">
-      {(project.projectDetailsPageSlug || project.link) && (
-        <Link
-          href={project.projectDetailsPageSlug || project.link || "#"}
-          className="absolute inset-0 z-0"
-          target={!project.projectDetailsPageSlug ? "_blank" : undefined}
-        >
-          <span className="sr-only">View {project.title} details</span>
-        </Link>
-      )}
       <CardHeader className="p-0">
         <div className="group relative aspect-video overflow-hidden">
           <Image
@@ -58,7 +49,7 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
           {project.video && (
             <Dialog open={dialogOpen} onOpenChange={handleDialogChange}>
               <DialogTrigger asChild>
-                <div className="absolute inset-0 z-10 flex cursor-pointer items-center justify-center bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:backdrop-blur-xs">
+                <div className="absolute inset-0 z-20 flex cursor-pointer items-center justify-center bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:backdrop-blur-xs">
                   <button className="flex size-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors duration-200 group-hover:cursor-pointer hover:bg-white/30">
                     <PlayCircle />
                   </button>
@@ -88,7 +79,7 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
             {project.projectDetailsPageSlug ? (
               <Link
                 href={project.projectDetailsPageSlug}
-                className="relative z-10"
+                className="relative z-20"
               >
                 <h3 className="group-hover:text-primary text-base leading-tight font-semibold hover:cursor-pointer sm:text-xl">
                   {project.title}
@@ -103,7 +94,7 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
               <Tooltip>
                 <TooltipTrigger>
                   <Link
-                    className="text-secondary hover:text-primary relative z-10 flex size-5 items-center justify-center transition-colors sm:size-6"
+                    className="text-secondary hover:text-primary relative z-20 flex size-5 items-center justify-center transition-colors sm:size-6"
                     href={project.link}
                     target="_blank"
                   >
@@ -118,7 +109,7 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
                 <TooltipTrigger>
                   {project.github && (
                     <Link
-                      className="text-secondary hover:text-primary relative z-10 flex size-5 items-center justify-center transition-colors sm:size-6"
+                      className="text-secondary hover:text-primary relative z-20 flex size-5 items-center justify-center transition-colors sm:size-6"
                       href={project.github}
                       target="_blank"
                     >
@@ -146,7 +137,7 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {project.technologies.map((technology, index) => (
                 <Tooltip key={index}>
-                  <TooltipTrigger className="relative z-10">
+                  <TooltipTrigger className="relative z-20">
                     <div className="size-5 transition-all duration-300 hover:scale-120 hover:cursor-pointer sm:size-6">
                       {technology.icon}
                     </div>
@@ -185,12 +176,22 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
           {project.projectDetailsPageSlug && (
             <Link
               href={project.projectDetailsPageSlug}
-              className="text-secondary hover:text-primary relative z-10 flex items-center gap-1 text-xs underline-offset-4 transition-colors hover:underline sm:gap-2 sm:text-sm"
+              className="text-secondary hover:text-primary relative z-20 flex items-center gap-1 text-xs underline-offset-4 transition-colors hover:underline sm:gap-2 sm:text-sm"
             >
               View Details <ArrowRight className="size-3 sm:size-4" />
             </Link>
           )}
         </CardFooter>
+      )}
+
+      {(project.projectDetailsPageSlug || project.link) && (
+        <Link
+          href={project.projectDetailsPageSlug || project.link || "#"}
+          className="absolute inset-0 z-10"
+          target={!project.projectDetailsPageSlug ? "_blank" : undefined}
+        >
+          <span className="sr-only">View {project.title} details</span>
+        </Link>
       )}
     </Card>
   );
