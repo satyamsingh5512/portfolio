@@ -137,23 +137,21 @@ export function DBProjectCard({ project }: DBProjectCardProps) {
       </CardContent>
 
       <CardFooter className="flex-row items-center justify-between px-4 pt-2 pb-4 sm:px-6 sm:pb-6">
-        {(project.liveUrl || project.githubUrl) && (
+        {project.projectDetailsPageSlug && (
           <Link
             className="text-primary relative z-20 flex items-center gap-1 text-sm hover:underline sm:text-base"
-            href={project.liveUrl || project.githubUrl || "#"}
-            target="_blank"
+            href={project.projectDetailsPageSlug}
           >
-            <span>View Project</span>
+            <span>View Details</span>
             <ArrowRight />
           </Link>
         )}
       </CardFooter>
 
-      {(project.liveUrl || project.githubUrl) && (
+      {project.projectDetailsPageSlug && (
         <Link
-          href={project.liveUrl || project.githubUrl || "#"}
+          href={project.projectDetailsPageSlug}
           className="absolute inset-0 z-10"
-          target="_blank"
         >
           <span className="sr-only">View {project.title}</span>
         </Link>

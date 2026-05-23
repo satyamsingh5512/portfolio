@@ -184,11 +184,10 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
         </CardFooter>
       )}
 
-      {(project.projectDetailsPageSlug || project.link) && (
+      {project.projectDetailsPageSlug && (
         <Link
-          href={project.projectDetailsPageSlug || project.link || "#"}
+          href={project.projectDetailsPageSlug}
           className="absolute inset-0 z-10"
-          target={!project.projectDetailsPageSlug ? "_blank" : undefined}
         >
           <span className="sr-only">View {project.title} details</span>
         </Link>

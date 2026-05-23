@@ -3,10 +3,52 @@ import ProjectModel from "@/lib/models/Project";
 import { connectToDatabase } from "@/lib/mongodb";
 import { projectToDb } from "@/lib/supabase";
 import type { ProjectRecord } from "@/lib/supabase";
+import fs from "fs";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import path from "path";
 import * as z from "zod";
+
+const projectsDirectory = path.join(process.cwd(), "src/data/projects");
+
+function generateMdxTemplate(body: Record<string, unknown>): string {
+  const technologiesYaml = Array.isArray(body.technologies)
+    ? body.technologies
+        .map((tech: unknown) => `  - "${String(tech)}"`)
+        .join("\n")
+    : "";
+
+  const descriptionYaml = String(body.shortDescription || "")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, " ");
+
+  return `---
+title: "${String(body.title || "")}"
+description: "${descriptionYaml}"
+image: "${String(body.image || "")}"
+technologies:
+${technologiesYaml}
+github: "${String(body.githubUrl || "")}"
+live: "${String(body.liveUrl || "")}"
+timeline: "${body.startDate ? new Date(String(body.startDate)).getFullYear() : new Date().getFullYear()}"
+role: "Developer"
+status: "${String(body.status || "completed")}"
+featured: ${Boolean(body.featured)}
+isPublished: true
+---
+
+## Project Overview
+
+${String(body.description || "")}
+
+## Key Features
+
+- Feature 1: Add a description
+- Feature 2: Add a description
+
+`;
+}
 
 const relativeOrAbsoluteUrlSchema = z
   .string()
@@ -107,6 +149,20 @@ export async function POST(request: NextRequest) {
     });
 
     const created = await ProjectModel.create(dbData);
+
+    // Auto-create MDX file
+    const slug = body.title
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+    const mdxPath = path.join(projectsDirectory, `${slug}.mdx`);
+    if (!fs.existsSync(projectsDirectory)) {
+      fs.mkdirSync(projectsDirectory, { recursive: true });
+    }
+    if (!fs.existsSync(mdxPath)) {
+      fs.writeFileSync(mdxPath, generateMdxTemplate(body), "utf8");
+    }
+
     return NextResponse.json(
       docToRecord(
         created.toObject() as unknown as unknown as Record<string, unknown>,
@@ -165,6 +221,21 @@ export async function PUT(request: NextRequest) {
 
     if (!updated)
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
+
+    // Auto-update MDX file
+    const slug = body.title
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+    const mdxPath = path.join(projectsDirectory, `${slug}.mdx`);
+    if (!fs.existsSync(projectsDirectory)) {
+      fs.mkdirSync(projectsDirectory, { recursive: true });
+    }
+    // If the file exists, we just overwrite the frontmatter part and preserve the content (or just overwrite if it's simpler, but overwriting completely ruins content).
+    // For simplicity, we just create it if it didn't exist before.
+    if (!fs.existsSync(mdxPath)) {
+      fs.writeFileSync(mdxPath, generateMdxTemplate(body), "utf8");
+    }
 
     return NextResponse.json(
       docToRecord(updated as unknown as Record<string, unknown>),

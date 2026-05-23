@@ -3,9 +3,8 @@
  * All Supabase references have been replaced with MongoDB equivalents.
  * Types and helper functions are preserved so existing imports continue to work.
  */
-
-import { connectToDatabase } from "@/lib/mongodb";
 import SiteSetting from "@/lib/models/SiteSetting";
+import { connectToDatabase } from "@/lib/mongodb";
 
 // ============================================
 // PROJECTS TYPES
@@ -47,6 +46,7 @@ export interface ProjectRecord {
   orderIndex: number;
   createdAt: string;
   updatedAt: string;
+  projectDetailsPageSlug?: string;
 }
 
 export function projectFromDb(record: ProjectDBRecord): ProjectRecord {
@@ -67,6 +67,10 @@ export function projectFromDb(record: ProjectDBRecord): ProjectRecord {
     orderIndex: record.order_index,
     createdAt: record.created_at,
     updatedAt: record.updated_at,
+    projectDetailsPageSlug: `/projects/${record.title
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")}`,
   };
 }
 
@@ -113,7 +117,14 @@ export interface AboutSettings {
 export interface SocialLink {
   name: string;
   href: string;
-  icon: "linkedin" | "github" | "email" | "twitter" | "instagram" | "youtube" | "website";
+  icon:
+    | "linkedin"
+    | "github"
+    | "email"
+    | "twitter"
+    | "instagram"
+    | "youtube"
+    | "website";
 }
 
 export interface ContactSettings {
@@ -148,7 +159,8 @@ export const defaultSiteSettings: SiteSettings = {
   hero: {
     name: "Satyam",
     title: "Full Stack Developer",
-    avatar: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
+    avatar:
+      "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
     description:
       "I am a <b>Full Stack Software Engineer</b> focused on designing and building scalable, production-ready systems.",
     resumeUrl: "/assets/resume.pdf",
@@ -164,21 +176,39 @@ export const defaultSiteSettings: SiteSettings = {
   },
   about: {
     name: "Satyam",
-    description: "Hey, I'm Satyam. I'm a 3rd-year B.Tech Computer Science student and a Full-Stack Developer with strong Machine Learning expertise.",
-    skills: ["React", "TypeScript", "Node.js", "PostgreSQL", "MongoDB", "Next.js"],
+    description:
+      "Hey, I'm Satyam. I'm a 3rd-year B.Tech Computer Science student and a Full-Stack Developer with strong Machine Learning expertise.",
+    skills: [
+      "React",
+      "TypeScript",
+      "Node.js",
+      "PostgreSQL",
+      "MongoDB",
+      "Next.js",
+    ],
   },
   socialLinks: [
-    { name: "LinkedIn", href: "https://www.linkedin.com/in/satym5512/", icon: "linkedin" },
-    { name: "Github", href: "https://github.com/satyamsingh5512", icon: "github" },
+    {
+      name: "LinkedIn",
+      href: "https://www.linkedin.com/in/satym5512/",
+      icon: "linkedin",
+    },
+    {
+      name: "Github",
+      href: "https://github.com/satyamsingh5512",
+      icon: "github",
+    },
     { name: "Email", href: "mailto:satyamssinghpx@gmail.com", icon: "email" },
   ],
   contact: {
     title: "Contact",
-    description: "Get in touch with me. I will get back to you as soon as possible.",
+    description:
+      "Get in touch with me. I will get back to you as soon as possible.",
     email: "satyamssinghpx@gmail.com",
   },
   cta: {
-    profileImage: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
+    profileImage:
+      "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
     preText: "Hey, you scrolled this far, let's talk.",
     linkText: "Book a Free Call",
     calLink: "satyamsinghpx/meeting",
@@ -198,7 +228,9 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   try {
     await connectToDatabase();
     const rows = await SiteSetting.find({
-      key: { $in: ["hero", "about", "socialLinks", "contact", "cta", "footer"] },
+      key: {
+        $in: ["hero", "about", "socialLinks", "contact", "cta", "footer"],
+      },
     }).lean();
 
     const settings: SiteSettings = { ...defaultSiteSettings };
