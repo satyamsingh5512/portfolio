@@ -6,9 +6,8 @@
  *
  * Run with:  bun run scripts/seed-mongodb.ts
  */
-
-import mongoose from "mongoose";
 import fs from "fs";
+import mongoose from "mongoose";
 import path from "path";
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -72,10 +71,16 @@ const BlogSchema = new mongoose.Schema(
 
 // ─── Models ─────────────────────────────────────────────────────────────────
 
-const Project = mongoose.models.Project || mongoose.model("Project", ProjectSchema);
-const SiteSetting = mongoose.models.SiteSetting || mongoose.model("SiteSetting", SiteSettingSchema);
-const Achievement = mongoose.models.Achievement || mongoose.model("Achievement", AchievementSchema);
-const Experience = mongoose.models.Experience || mongoose.model("Experience", ExperienceSchema);
+const Project =
+  mongoose.models.Project || mongoose.model("Project", ProjectSchema);
+const SiteSetting =
+  mongoose.models.SiteSetting ||
+  mongoose.model("SiteSetting", SiteSettingSchema);
+const Achievement =
+  mongoose.models.Achievement ||
+  mongoose.model("Achievement", AchievementSchema);
+const Experience =
+  mongoose.models.Experience || mongoose.model("Experience", ExperienceSchema);
 const Blog = mongoose.models.Blog || mongoose.model("Blog", BlogSchema);
 
 // ─── Data ───────────────────────────────────────────────────────────────────
@@ -118,18 +123,23 @@ interface RawExperience {
 }
 
 const rawProjects = readJson<RawProject[]>("src/data/projects.json");
-const rawAchievements = readJson<RawAchievement[]>("src/data/achievements.json");
+const rawAchievements = readJson<RawAchievement[]>(
+  "src/data/achievements.json",
+);
 const rawExperiences = readJson<RawExperience[]>("src/data/experiences.json");
 
 const projectDocs = rawProjects.map((p, i) => ({
   title: p.title,
-  short_description: p.description.length > 200
-    ? p.description.slice(0, 200) + "…"
-    : p.description,
+  short_description:
+    p.description.length > 200
+      ? p.description.slice(0, 200) + "…"
+      : p.description,
   description: p.description,
   technologies: p.technologies,
-  github_url: p.github ?? (p.link?.startsWith("https://github") ? p.link : null),
-  live_url: p.live ?? (p.link && !p.link.startsWith("https://github") ? p.link : null),
+  github_url:
+    p.github ?? (p.link?.startsWith("https://github") ? p.link : null),
+  live_url:
+    p.live ?? (p.link && !p.link.startsWith("https://github") ? p.link : null),
   image: p.image ?? null,
   featured: p.isWorking,
   status: "completed" as const,
@@ -201,17 +211,26 @@ const siteSettingsDocs = [
   {
     key: "socialLinks",
     value: [
-      { name: "LinkedIn", href: "https://www.linkedin.com/in/satym5512/", icon: "linkedin" },
-      { name: "Github", href: "https://github.com/satyamsingh5512", icon: "github" },
-      { name: "Email", href: "mailto:satyamssinghpx@gmail.com", icon: "email" },
+      {
+        name: "LinkedIn",
+        href: "https://www.linkedin.com/in/satym5512/",
+        icon: "linkedin",
+      },
+      {
+        name: "Github",
+        href: "https://github.com/satyamsingh5512",
+        icon: "github",
+      },
+      { name: "Email", href: "mailto:satyamsinghpx@gmail.com", icon: "email" },
     ],
   },
   {
     key: "contact",
     value: {
       title: "Contact",
-      description: "Get in touch with me. I will get back to you as soon as possible.",
-      email: "satyamssinghpx@gmail.com",
+      description:
+        "Get in touch with me. I will get back to you as soon as possible.",
+      email: "satyamsinghpx@gmail.com",
     },
   },
   {
@@ -237,7 +256,10 @@ const siteSettingsDocs = [
 
 async function seed() {
   console.log("🔌  Connecting to MongoDB…");
-  await mongoose.connect(MONGODB_URI!, { dbName: "portfolio", bufferCommands: false });
+  await mongoose.connect(MONGODB_URI!, {
+    dbName: "portfolio",
+    bufferCommands: false,
+  });
   console.log("✅  Connected.");
 
   // ── Clear all collections ──────────────────────────────────────────────────
@@ -264,7 +286,10 @@ async function seed() {
 
   // Site settings (upsert by key)
   for (const s of siteSettingsDocs) {
-    await SiteSetting.findOneAndUpdate({ key: s.key }, s, { upsert: true, returnDocument: "after" });
+    await SiteSetting.findOneAndUpdate({ key: s.key }, s, {
+      upsert: true,
+      returnDocument: "after",
+    });
   }
   console.log(`   site_settings  → ${siteSettingsDocs.length} keys`);
 

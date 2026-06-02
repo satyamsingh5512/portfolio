@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 interface Stats {
@@ -13,7 +12,6 @@ export default function VisitorCount() {
   const [visitors, setVisitors] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchVisitorCount = async () => {
@@ -38,11 +36,6 @@ export default function VisitorCount() {
 
     fetchVisitorCount();
   }, []);
-
-  // Only show visitor count for admin users
-  if (!session || session.user.role !== "admin") {
-    return null;
-  }
 
   if (loading) {
     return <span className="text-secondary text-xs">Loading visitors...</span>;

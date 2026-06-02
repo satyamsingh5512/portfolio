@@ -13,7 +13,7 @@ export const ctaConfig = {
 
   // CTA button settings
   linkText: "Book a Free Call",
-  emailAddress: "satyamssinghpx@gmail.com",
+  emailAddress: "satyamsinghpx@gmail.com",
 
   // Pre-text message
   preText: "Hey, you scrolled this far, let's talk.",

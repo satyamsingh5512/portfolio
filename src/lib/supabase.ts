@@ -198,13 +198,13 @@ export const defaultSiteSettings: SiteSettings = {
       href: "https://github.com/satyamsingh5512",
       icon: "github",
     },
-    { name: "Email", href: "mailto:satyamssinghpx@gmail.com", icon: "email" },
+    { name: "Email", href: "mailto:satyamsinghpx@gmail.com", icon: "email" },
   ],
   contact: {
     title: "Contact",
     description:
       "Get in touch with me. I will get back to you as soon as possible.",
-    email: "satyamssinghpx@gmail.com",
+    email: "satyamsinghpx@gmail.com",
   },
   cta: {
     profileImage:
