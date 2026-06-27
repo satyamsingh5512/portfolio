@@ -21,8 +21,10 @@ export async function GET() {
       `https://api.umami.is/v1/websites/${umamiId}/stats?startAt=${startDate.getTime()}&endAt=${endDate.getTime()}`,
       {
         headers: {
-          Authorization: `Bearer ${umamiApiKey}`,
-          "Content-Type": "application/json",
+          // Umami Cloud authenticates via a custom header, not Bearer auth.
+          // Bearer is only for self-hosted login tokens.
+          "x-umami-api-key": umamiApiKey,
+          Accept: "application/json",
         },
       },
     );
