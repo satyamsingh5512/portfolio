@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
+  // Pin the file-tracing root to this project. A stray lockfile in a parent
+  // directory otherwise makes Next.js infer the wrong workspace root.
+  outputFileTracingRoot: path.join(__dirname),
   images: {
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",

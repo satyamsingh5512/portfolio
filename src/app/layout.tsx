@@ -1,3 +1,4 @@
+import UmamiAnalytics from "@/components/analytics/UmamiAnalytics";
 import Footer from "@/components/common/Footer";
 import LazyComponents from "@/components/common/LazyComponents";
 import Navbar from "@/components/common/Navbar";
@@ -61,6 +62,7 @@ export default function RootLayout({
                     `,
                   }}
                 />
+                <UmamiAnalytics />
                 <Analytics />
               </ReactLenis>
             </ThemeProvider>
