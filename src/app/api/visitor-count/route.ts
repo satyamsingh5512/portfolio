@@ -1,67 +1,99 @@
-import { NextResponse } from "next/server";
+import SiteVisitorModel from "@/lib/models/SiteVisitor";
+import { connectToDatabase } from "@/lib/mongodb";
+import { createHash } from "crypto";
+import { NextRequest, NextResponse } from "next/server";
 
+function getClientIP(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  const realIP = request.headers.get("x-real-ip");
+  const cfConnectingIP = request.headers.get("cf-connecting-ip");
+
+  if (forwarded) return forwarded.split(",")[0].trim();
+  if (realIP) return realIP;
+  if (cfConnectingIP) return cfConnectingIP;
+
+  return "unknown";
+}
+
+function hashIP(ip: string): string {
+  const salt = process.env.BLOG_VIEW_SALT || process.env.NEXTAUTH_SECRET || "";
+  return createHash("sha256").update(`${ip}:${salt}`).digest("hex");
+}
+
+// GET -> unique visitor count (one per IP) + a list of recent visitors.
 export async function GET() {
-  const umamiId = process.env.NEXT_PUBLIC_UMAMI_ID;
-  const umamiApiKey = process.env.UMAMI_API_KEY;
+  try {
+    await connectToDatabase();
 
-  if (!umamiId || !umamiApiKey) {
+    const visitorCount = await SiteVisitorModel.countDocuments({});
+
+    const recent = await SiteVisitorModel.find({})
+      .sort({ updatedAt: -1 })
+      .limit(10)
+      .select("path referrer country updatedAt visits -_id")
+      .lean();
+
+    return NextResponse.json({
+      visitors: { value: visitorCount },
+      recent,
+    });
+  } catch (error) {
+    console.error("GET /api/visitor-count error:", error);
     return NextResponse.json(
-      { error: "Umami not configured" },
+      { error: "Failed to fetch visitor count" },
       { status: 500 },
     );
   }
+}
 
+// POST -> record a visit for the current IP. Unique visitors are deduped by
+// IP hash; repeat visits only bump the visit counter and refresh metadata.
+export async function POST(request: NextRequest) {
   try {
-    // Get stats for the last 365 days
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setFullYear(endDate.getFullYear() - 1);
+    await connectToDatabase();
 
-    const response = await fetch(
-      `https://api.umami.is/v1/websites/${umamiId}/stats?startAt=${startDate.getTime()}&endAt=${endDate.getTime()}`,
+    const ipHash = hashIP(getClientIP(request));
+
+    let path: string | undefined;
+    let referrer: string | undefined;
+    try {
+      const body = (await request.json()) as {
+        path?: string;
+        referrer?: string;
+      };
+      path = typeof body.path === "string" ? body.path : undefined;
+      referrer = typeof body.referrer === "string" ? body.referrer : undefined;
+    } catch {
+      // No / invalid body — record the visit without page metadata.
+    }
+
+    const userAgent = request.headers.get("user-agent") ?? undefined;
+    const country =
+      request.headers.get("x-vercel-ip-country") ??
+      request.headers.get("cf-ipcountry") ??
+      undefined;
+
+    const result = await SiteVisitorModel.updateOne(
+      { ipHash },
       {
-        headers: {
-          // Umami Cloud authenticates via a custom header, not Bearer auth.
-          // Bearer is only for self-hosted login tokens.
-          "x-umami-api-key": umamiApiKey,
-          Accept: "application/json",
-        },
+        $inc: { visits: 1 },
+        $set: { path, referrer, userAgent, country },
+        $setOnInsert: { ipHash },
       },
+      { upsert: true },
     );
 
-    if (!response.ok) {
-      throw new Error(`Umami API error: ${response.status}`);
-    }
+    const isNewVisitor = result.upsertedCount > 0;
+    const visitorCount = await SiteVisitorModel.countDocuments({});
 
-    const data = await response.json();
-
-    // Prefer unique visitors so refreshes do not inflate the displayed count
-    let visitorCount = data.visitors?.value;
-    if (typeof visitorCount !== "number") {
-      visitorCount = data.visitors;
-    }
-    if (typeof visitorCount !== "number") {
-      visitorCount = data.uniques?.value;
-    }
-    if (typeof visitorCount !== "number") {
-      visitorCount = data.uniques;
-    }
-    if (typeof visitorCount !== "number") {
-      visitorCount = data.total;
-    }
-
-    if (typeof visitorCount !== "number") {
-      return NextResponse.json(
-        { error: "Invalid response structure from Umami" },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json({ visitors: { value: visitorCount } });
+    return NextResponse.json({
+      visitors: { value: visitorCount },
+      counted: isNewVisitor,
+    });
   } catch (error) {
-    console.error("Error fetching visitor count:", error);
+    console.error("POST /api/visitor-count error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch visitor count" },
+      { error: "Failed to record visitor" },
       { status: 500 },
     );
   }
