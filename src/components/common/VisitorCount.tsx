@@ -14,9 +14,25 @@ export default function VisitorCount() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchVisitorCount = async () => {
+    const recordVisit = async () => {
       try {
-        const response = await fetch("/api/visitor-count");
+        // Dedupe refreshes within a browser session with a stable id.
+        let visitorId = sessionStorage.getItem("site_visitor_id");
+        if (!visitorId) {
+          visitorId = crypto.randomUUID();
+          sessionStorage.setItem("site_visitor_id", visitorId);
+        }
+
+        const response = await fetch("/api/visitor-count", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            visitorId,
+            path: window.location.pathname,
+            referrer: document.referrer || undefined,
+          }),
+        });
+
         if (response.ok) {
           const data: Stats = await response.json();
           setVisitors(data.visitors.value);
@@ -27,14 +43,14 @@ export default function VisitorCount() {
           setError(errorData.error || "Failed to fetch visitor count");
         }
       } catch (error) {
-        console.error("Failed to fetch visitor count:", error);
+        console.error("Failed to record visitor:", error);
         setError("Network error");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchVisitorCount();
+    recordVisit();
   }, []);
 
   if (loading) {
