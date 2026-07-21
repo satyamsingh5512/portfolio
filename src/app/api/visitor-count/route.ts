@@ -37,8 +37,9 @@ export async function GET() {
   // previous handler permanently return 500 if the public ID was unavailable
   // at build time. Keep the website ID in a server runtime variable instead.
   const umamiId =
-    process.env.UMAMI_WEBSITE_ID ?? process.env.NEXT_PUBLIC_UMAMI_ID;
-  const umamiApiKey = process.env.UMAMI_API_KEY;
+    process.env.UMAMI_WEBSITE_ID?.trim() ||
+    process.env.NEXT_PUBLIC_UMAMI_ID?.trim();
+  const umamiApiKey = process.env.UMAMI_API_KEY?.trim();
 
   if (!umamiId || !umamiApiKey) {
     console.error(
