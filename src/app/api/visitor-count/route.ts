@@ -1,68 +1,100 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+const UMAMI_STATS_API = "https://api.umami.is/v1";
+const UPSTREAM_TIMEOUT_MS = 10_000;
+const NO_STORE_HEADERS = { "Cache-Control": "no-store, max-age=0" };
+
+type UmamiStats = {
+  visitors?: number | { value?: number };
+  uniques?: number | { value?: number };
+  total?: number;
+};
+
+function getVisitorCount(stats: UmamiStats): number | null {
+  const candidates = [stats.visitors, stats.uniques, stats.total];
+
+  for (const candidate of candidates) {
+    const value =
+      typeof candidate === "number"
+        ? candidate
+        : typeof candidate?.value === "number"
+          ? candidate.value
+          : null;
+
+    if (value !== null && Number.isFinite(value) && value >= 0) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
 export async function GET() {
-  const umamiId = process.env.NEXT_PUBLIC_UMAMI_ID;
+  // NEXT_PUBLIC_* values are substituted during `next build`, which made the
+  // previous handler permanently return 500 if the public ID was unavailable
+  // at build time. Keep the website ID in a server runtime variable instead.
+  const umamiId =
+    process.env.UMAMI_WEBSITE_ID ?? process.env.NEXT_PUBLIC_UMAMI_ID;
   const umamiApiKey = process.env.UMAMI_API_KEY;
 
   if (!umamiId || !umamiApiKey) {
+    console.error(
+      "Visitor count is not configured: set UMAMI_WEBSITE_ID and UMAMI_API_KEY.",
+    );
     return NextResponse.json(
-      { error: "Umami not configured" },
-      { status: 500 },
+      { error: "Visitor analytics is not configured" },
+      { status: 503, headers: NO_STORE_HEADERS },
     );
   }
 
   try {
-    // Get stats for the last 365 days
     const endDate = new Date();
-    const startDate = new Date();
-    startDate.setFullYear(endDate.getFullYear() - 1);
+    const startDate = new Date(endDate);
+    startDate.setFullYear(startDate.getFullYear() - 1);
 
     const response = await fetch(
-      `https://api.umami.is/v1/websites/${umamiId}/stats?startAt=${startDate.getTime()}&endAt=${endDate.getTime()}`,
+      `${UMAMI_STATS_API}/websites/${encodeURIComponent(umamiId)}/stats?startAt=${startDate.getTime()}&endAt=${endDate.getTime()}`,
       {
+        cache: "no-store",
         headers: {
-          // Umami Cloud authenticates via a custom header, not Bearer auth.
-          // Bearer is only for self-hosted login tokens.
           "x-umami-api-key": umamiApiKey,
           Accept: "application/json",
         },
+        signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
       },
     );
 
     if (!response.ok) {
-      throw new Error(`Umami API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    // Prefer unique visitors so refreshes do not inflate the displayed count
-    let visitorCount = data.visitors?.value;
-    if (typeof visitorCount !== "number") {
-      visitorCount = data.visitors;
-    }
-    if (typeof visitorCount !== "number") {
-      visitorCount = data.uniques?.value;
-    }
-    if (typeof visitorCount !== "number") {
-      visitorCount = data.uniques;
-    }
-    if (typeof visitorCount !== "number") {
-      visitorCount = data.total;
-    }
-
-    if (typeof visitorCount !== "number") {
+      console.error(`Umami visitor-count request failed: ${response.status}`);
       return NextResponse.json(
-        { error: "Invalid response structure from Umami" },
-        { status: 500 },
+        { error: "Visitor analytics service is unavailable" },
+        { status: 502, headers: NO_STORE_HEADERS },
       );
     }
 
-    return NextResponse.json({ visitors: { value: visitorCount } });
-  } catch (error) {
-    console.error("Error fetching visitor count:", error);
+    const visitorCount = getVisitorCount((await response.json()) as UmamiStats);
+    if (visitorCount === null) {
+      console.error(
+        "Umami visitor-count response did not contain a valid count.",
+      );
+      return NextResponse.json(
+        { error: "Visitor analytics returned an invalid response" },
+        { status: 502, headers: NO_STORE_HEADERS },
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to fetch visitor count" },
-      { status: 500 },
+      { visitors: { value: visitorCount } },
+      { headers: NO_STORE_HEADERS },
+    );
+  } catch (error) {
+    console.error("Error fetching Umami visitor count:", error);
+    return NextResponse.json(
+      { error: "Visitor analytics service is unavailable" },
+      { status: 502, headers: NO_STORE_HEADERS },
     );
   }
 }
