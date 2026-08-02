@@ -1,4 +1,5 @@
 import ShortLinkModel, { type ShortLinkKind } from "@/lib/models/ShortLink";
+import { SITE_URL } from "@/lib/site-url";
 import { randomInt } from "crypto";
 
 /**
@@ -111,21 +112,18 @@ export function validateDestination(raw: string): {
     return { ok: false, error: "Only http and https URLs are supported" };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_URL;
-  if (siteUrl) {
-    try {
-      const site = new URL(siteUrl);
-      const segments = parsed.pathname.split("/").filter(Boolean);
-      if (
-        parsed.host === site.host &&
-        segments.length === 1 &&
-        CODE_PATTERN.test(segments[0])
-      ) {
-        return { ok: false, error: "That URL is already a short link" };
-      }
-    } catch {
-      // Ignore a malformed NEXT_PUBLIC_URL and skip the loop check.
+  try {
+    const site = new URL(SITE_URL);
+    const segments = parsed.pathname.split("/").filter(Boolean);
+    if (
+      parsed.host === site.host &&
+      segments.length === 1 &&
+      CODE_PATTERN.test(segments[0])
+    ) {
+      return { ok: false, error: "That URL is already a short link" };
     }
+  } catch {
+    // Ignore a malformed SITE_URL and skip the loop check.
   }
 
   return { ok: true, url: parsed.toString() };

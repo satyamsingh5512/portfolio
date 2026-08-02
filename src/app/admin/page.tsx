@@ -2,7 +2,6 @@ import type { AchievementData } from "@/components/admin/AchievementsTab";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import type { AdminBlogPost } from "@/components/admin/AdminDashboard";
 import type { ExperienceData } from "@/components/admin/ExperiencesTab";
-import { siteConfig } from "@/config/Meta";
 import { authOptions } from "@/lib/auth";
 import { getBlogs } from "@/lib/blog-service";
 import AchievementModel from "@/lib/models/Achievement";
@@ -12,6 +11,7 @@ import ProjectModel from "@/lib/models/Project";
 import ShortLinkModel from "@/lib/models/ShortLink";
 import { connectToDatabase } from "@/lib/mongodb";
 import { type ShortLinkData, docToShortLinkData } from "@/lib/short-links";
+import { SITE_URL } from "@/lib/site-url";
 import { ProjectRecord, getSiteSettings } from "@/lib/supabase";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -157,7 +157,7 @@ export default async function AdminPage() {
       experiences={experiences}
       siteSettings={siteSettings}
       shortLinks={shortLinks}
-      siteUrl={siteConfig.url}
+      siteUrl={SITE_URL}
       user={session.user}
     />
   );

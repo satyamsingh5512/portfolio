@@ -1,3 +1,5 @@
+import { SITE_URL } from "@/lib/site-url";
+
 import { about } from "./About";
 import { heroConfig } from "./Hero";
 
@@ -15,7 +17,7 @@ export const siteConfig = {
   title: "Sleek Portfolio",
   description:
     "Full Stack Developer - Satyam Portfolio | NIST University | Web Development Expert",
-  url: process.env.NEXT_PUBLIC_URL || "http://localhost:3000",
+  url: SITE_URL,
   icon: "/assets/satyam-avatar.png",
   ogImage:
     "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768661/portfolio/meta/file.png",
