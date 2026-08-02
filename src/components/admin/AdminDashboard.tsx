@@ -13,6 +13,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Blog } from "@/lib/blog-service";
+import type { ShortLinkData } from "@/lib/short-links";
 import type { ProjectRecord, SiteSettings } from "@/lib/supabase";
 import { Edit, Eye, FileText, LogOut, Plus, Trash2 } from "lucide-react";
 import { signOut } from "next-auth/react";
@@ -23,9 +24,11 @@ import React from "react";
 import { toast } from "sonner";
 
 import { AchievementData, AchievementsTab } from "./AchievementsTab";
+import { BlogShortLinkButton } from "./BlogShortLinkButton";
 import { ExperienceData, ExperiencesTab } from "./ExperiencesTab";
 import { ExternalBlogsTab } from "./ExternalBlogsTab";
 import { ProjectsTab } from "./ProjectsTab";
+import { ShortLinksTab } from "./ShortLinksTab";
 import { SiteSettingsTab } from "./SiteSettingsTab";
 
 // ─── Admin blog post type (flat — from MongoDB, no frontmatter wrapper) ────────
@@ -48,6 +51,8 @@ interface AdminDashboardProps {
   achievements: AchievementData[];
   experiences: ExperienceData[];
   siteSettings: SiteSettings;
+  shortLinks: ShortLinkData[];
+  siteUrl: string;
   user: {
     name?: string | null;
     email?: string | null;
@@ -59,10 +64,16 @@ const PostCard = React.memo(
     post,
     onDelete,
     isDeleting,
+    siteUrl,
+    shortCode,
+    onShortLinkCreated,
   }: {
     post: AdminBlogPost;
     onDelete: (slug: string) => void;
     isDeleting: boolean;
+    siteUrl: string;
+    shortCode?: string;
+    onShortLinkCreated: (link: ShortLinkData) => void;
   }) => {
     const handleDelete = useCallback(
       () => onDelete(post.slug),
@@ -95,13 +106,28 @@ const PostCard = React.memo(
                   {tag}
                 </Badge>
               ))}
-              <span className="text-muted-foreground text-xs">{formattedDate}</span>
+              <span className="text-muted-foreground text-xs">
+                {formattedDate}
+              </span>
               {post.readingTime !== undefined && (
-                <span className="text-muted-foreground text-xs">{post.readingTime} min read</span>
+                <span className="text-muted-foreground text-xs">
+                  {post.readingTime} min read
+                </span>
+              )}
+              {shortCode && (
+                <code className="bg-muted rounded px-1.5 py-0.5 text-xs">
+                  /{shortCode}
+                </code>
               )}
             </div>
           </div>
           <div className="flex shrink-0 gap-2">
+            <BlogShortLinkButton
+              slug={post.slug}
+              siteUrl={siteUrl}
+              code={shortCode}
+              onCreated={onShortLinkCreated}
+            />
             <Button variant="ghost" size="icon" asChild>
               <Link href={`/blog/${post.slug}`} target="_blank">
                 <Eye className="h-4 w-4" />
@@ -136,10 +162,30 @@ export function AdminDashboard({
   achievements,
   experiences,
   siteSettings,
+  shortLinks,
+  siteUrl,
   user,
 }: AdminDashboardProps) {
   const router = useRouter();
   const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
+  const [links, setLinks] = useState<ShortLinkData[]>(shortLinks);
+
+  /** blog slug -> short code, so each post card knows if it already has one. */
+  const blogCodeBySlug = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const link of links) {
+      if (link.kind === "blog" && link.blogSlug) {
+        map.set(link.blogSlug, link.code);
+      }
+    }
+    return map;
+  }, [links]);
+
+  const handleShortLinkCreated = useCallback((link: ShortLinkData) => {
+    setLinks((prev) =>
+      prev.some((l) => l.id === link.id) ? prev : [link, ...prev],
+    );
+  }, []);
 
   const { publishedPosts, draftPosts } = useMemo(
     () => ({
@@ -201,6 +247,7 @@ export function AdminDashboard({
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="experiences">Experiences</TabsTrigger>
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
+            <TabsTrigger value="short-links">URL Shortener</TabsTrigger>
           </TabsList>
 
           <TabsContent value="settings">
@@ -221,6 +268,14 @@ export function AdminDashboard({
 
           <TabsContent value="achievements">
             <AchievementsTab initialAchievements={achievements} />
+          </TabsContent>
+
+          <TabsContent value="short-links">
+            <ShortLinksTab
+              links={links}
+              onLinksChange={setLinks}
+              siteUrl={siteUrl}
+            />
           </TabsContent>
 
           <TabsContent value="local" className="space-y-8">
@@ -288,6 +343,9 @@ export function AdminDashboard({
                       post={post}
                       onDelete={handleDelete}
                       isDeleting={deletingSlug === post.slug}
+                      siteUrl={siteUrl}
+                      shortCode={blogCodeBySlug.get(post.slug)}
+                      onShortLinkCreated={handleShortLinkCreated}
                     />
                   ))}
                 </div>
