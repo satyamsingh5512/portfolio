@@ -1,14 +1,17 @@
 import type { AchievementData } from "@/components/admin/AchievementsTab";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import type { AdminBlogPost } from "@/components/admin/AdminDashboard";
 import type { ExperienceData } from "@/components/admin/ExperiencesTab";
+import { siteConfig } from "@/config/Meta";
 import { authOptions } from "@/lib/auth";
 import { getBlogs } from "@/lib/blog-service";
-import BlogPostModel, { IBlogPost } from "@/lib/models/BlogPost";
-import type { AdminBlogPost } from "@/components/admin/AdminDashboard";
-import { connectToDatabase } from "@/lib/mongodb";
-import ProjectModel from "@/lib/models/Project";
 import AchievementModel from "@/lib/models/Achievement";
+import BlogPostModel, { IBlogPost } from "@/lib/models/BlogPost";
 import ExperienceModel from "@/lib/models/Experience";
+import ProjectModel from "@/lib/models/Project";
+import ShortLinkModel from "@/lib/models/ShortLink";
+import { connectToDatabase } from "@/lib/mongodb";
+import { type ShortLinkData, docToShortLinkData } from "@/lib/short-links";
 import { ProjectRecord, getSiteSettings } from "@/lib/supabase";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -29,8 +32,12 @@ function mongoToProjectRecord(doc: Record<string, unknown>): ProjectRecord {
     endDate: (doc.end_date as string) || undefined,
     category: (doc.category as string) || undefined,
     orderIndex: Number(doc.order_index ?? 0),
-    createdAt: doc.createdAt ? new Date(doc.createdAt as string).toISOString() : new Date().toISOString(),
-    updatedAt: doc.updatedAt ? new Date(doc.updatedAt as string).toISOString() : new Date().toISOString(),
+    createdAt: doc.createdAt
+      ? new Date(doc.createdAt as string).toISOString()
+      : new Date().toISOString(),
+    updatedAt: doc.updatedAt
+      ? new Date(doc.updatedAt as string).toISOString()
+      : new Date().toISOString(),
   };
 }
 
@@ -38,7 +45,9 @@ async function getProjects(): Promise<ProjectRecord[]> {
   try {
     await connectToDatabase();
     const data = await ProjectModel.find({}).sort({ createdAt: -1 }).lean();
-    return (data as unknown as Record<string, unknown>[]).map(mongoToProjectRecord);
+    return (data as unknown as Record<string, unknown>[]).map(
+      mongoToProjectRecord,
+    );
   } catch (err) {
     console.error("Failed to fetch projects from MongoDB:", err);
     return [];
@@ -55,7 +64,9 @@ async function getAchievements(): Promise<AchievementData[]> {
       issuer: String(doc.issuer ?? ""),
       date: String(doc.date ?? ""),
       file: String(doc.file ?? ""),
-      createdAt: doc.createdAt ? new Date(doc.createdAt as string).toISOString() : new Date().toISOString(),
+      createdAt: doc.createdAt
+        ? new Date(doc.createdAt as string).toISOString()
+        : new Date().toISOString(),
     }));
   } catch (err) {
     console.error("Failed to fetch achievements from MongoDB:", err);
@@ -79,10 +90,25 @@ async function getExperiences(): Promise<ExperienceData[]> {
       location: String(doc.location ?? ""),
       companyUrl: (doc.company_url as string) || undefined,
       logo: (doc.logo as string) || undefined,
-      createdAt: doc.createdAt ? new Date(doc.createdAt as string).toISOString() : new Date().toISOString(),
+      createdAt: doc.createdAt
+        ? new Date(doc.createdAt as string).toISOString()
+        : new Date().toISOString(),
     }));
   } catch (err) {
     console.error("Failed to fetch experiences from MongoDB:", err);
+    return [];
+  }
+}
+
+async function getShortLinks(): Promise<ShortLinkData[]> {
+  try {
+    await connectToDatabase();
+    const data = await ShortLinkModel.find({}).sort({ createdAt: -1 }).lean();
+    return (data as unknown as Record<string, unknown>[]).map(
+      docToShortLinkData,
+    );
+  } catch (err) {
+    console.error("Failed to fetch short links from MongoDB:", err);
     return [];
   }
 }
@@ -120,6 +146,7 @@ export default async function AdminPage() {
   const siteSettings = await getSiteSettings();
   const achievements = await getAchievements();
   const experiences = await getExperiences();
+  const shortLinks = await getShortLinks();
 
   return (
     <AdminDashboard
@@ -129,6 +156,8 @@ export default async function AdminPage() {
       achievements={achievements}
       experiences={experiences}
       siteSettings={siteSettings}
+      shortLinks={shortLinks}
+      siteUrl={siteConfig.url}
       user={session.user}
     />
   );
