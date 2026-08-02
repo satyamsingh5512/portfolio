@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import BlogPostModel from "@/lib/models/BlogPost";
+import ShortLinkModel from "@/lib/models/ShortLink";
 import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -126,6 +127,10 @@ export async function DELETE(_req: NextRequest, { params }: RouteParams) {
     if (!deleted) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
+
+    // Drop the post's short code so it can't redirect to a dead page.
+    await ShortLinkModel.deleteMany({ kind: "blog", blogSlug: slug });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("DELETE /api/blog/[slug] error:", error);
