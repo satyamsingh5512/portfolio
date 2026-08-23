@@ -1,5 +1,6 @@
 import BlogPostModel from "@/lib/models/BlogPost";
 import { connectToDatabase } from "@/lib/mongodb";
+import { getPublishedProjectCaseStudies } from "@/lib/project";
 import { NextResponse } from "next/server";
 
 const formatDate = (date: Date) => {
@@ -16,6 +17,8 @@ export async function GET() {
     )
       .sort({ createdAt: -1 })
       .lean();
+
+    const projectCaseStudies = getPublishedProjectCaseStudies();
 
     const links = [
       {
@@ -43,9 +46,21 @@ export async function GET() {
         lastmod: formatDate(new Date()),
       },
       {
-        url: "https://satym.in/resume",
+        url: "https://satym.in/journey",
         changefreq: "monthly",
-        priority: 0.6,
+        priority: 0.5,
+        lastmod: formatDate(new Date()),
+      },
+      {
+        url: "https://satym.in/gears",
+        changefreq: "monthly",
+        priority: 0.4,
+        lastmod: formatDate(new Date()),
+      },
+      {
+        url: "https://satym.in/setup",
+        changefreq: "monthly",
+        priority: 0.4,
         lastmod: formatDate(new Date()),
       },
       {
@@ -54,6 +69,12 @@ export async function GET() {
         priority: 0.6,
         lastmod: formatDate(new Date()),
       },
+      ...projectCaseStudies.map((project) => ({
+        url: `https://satym.in/projects/${project.slug}`,
+        changefreq: "weekly",
+        priority: 0.7,
+        lastmod: formatDate(new Date()),
+      })),
       ...posts.map((post) => ({
         url: `https://satym.in/blog/${post.slug}`,
         changefreq: "weekly",
