@@ -29,20 +29,34 @@ export const siteConfig = {
     email: "satyamsinghpx@gmail.com",
   },
   keywords: [
+    heroConfig.name.toLowerCase(),
+    "satyam",
+    "satyam singh",
     "portfolio",
-    "developer",
-    "full-stack",
+    "full stack developer",
+    "full stack system design engineer",
+    "software engineer",
+    "react developer",
+    "next.js developer",
+    "node.js developer",
     "react",
-    "nextjs",
+    "next.js",
     "nodejs",
+    "express.js",
     "typescript",
     "javascript",
+    "postgresql",
+    "mongodb",
+    "prisma",
+    "bun",
     "web development",
     "backend developer",
     "frontend developer",
+    "system design",
     "database design",
+    "scalable web applications",
+    "api development",
     "nist university",
-    heroConfig.name.toLowerCase(),
   ],
 };
 
@@ -52,10 +66,21 @@ export const pageMetadata: Record<string, PageMeta> = {
     title: `${heroConfig.name} - ${heroConfig.title}`,
     description: `${about.description} Explore my projects, experience, and technical expertise.`,
     keywords: [
+      heroConfig.name.toLowerCase(),
+      "satyam singh",
       "portfolio",
-      "developer",
-      "full-stack",
+      "full stack developer",
+      "full stack system design engineer",
+      "software engineer",
+      "react",
+      "next.js",
+      "node.js",
+      "express",
+      "postgresql",
+      "mongodb",
+      "typescript",
       "web development",
+      "scalable systems",
       "projects",
     ],
     ogImage:
@@ -68,7 +93,15 @@ export const pageMetadata: Record<string, PageMeta> = {
     title: "Contact - Get in Touch",
     description:
       "Get in touch with me for collaborations, projects, or opportunities. I'd love to hear from you!",
-    keywords: ["contact", "hire", "collaboration", "freelance", "developer"],
+    keywords: [
+      "contact satyam",
+      "hire full stack developer",
+      "hire react developer",
+      "collaboration",
+      "freelance developer",
+      "software engineer for hire",
+      "get in touch",
+    ],
     ogImage:
       "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
     twitterCard: "summary",
@@ -81,13 +114,15 @@ export const pageMetadata: Record<string, PageMeta> = {
       "Explore my research experience in Machine Learning and Computer Vision at IIT Mandi, focusing on deep learning and remote sensing applications.",
     keywords: [
       "work experience",
-      "research",
+      "research experience",
       "machine learning",
       "computer vision",
-      "IIT Mandi",
+      "iit mandi",
       "deep learning",
-      "PyTorch",
-      "YOLO",
+      "pytorch",
+      "yolo",
+      "remote sensing",
+      "software engineer experience",
     ],
     ogImage:
       "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768674/portfolio/meta/file.png",
@@ -101,10 +136,15 @@ export const pageMetadata: Record<string, PageMeta> = {
       "Discover my projects and work across different technologies and domains. From web apps to mobile solutions.",
     keywords: [
       "projects",
-      "portfolio",
-      "web development",
-      "applications",
-      "software",
+      "portfolio projects",
+      "web development projects",
+      "full stack projects",
+      "react projects",
+      "next.js projects",
+      "node.js projects",
+      "software applications",
+      "case studies",
+      "open source",
     ],
     ogImage:
       "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768672/portfolio/meta/file.jpg",
@@ -117,32 +157,54 @@ export const pageMetadata: Record<string, PageMeta> = {
     description:
       "Read my thoughts, tutorials, and insights on engineering, programming, and web development.",
     keywords: [
-      "blog",
-      "tutorials",
-      "programming",
-      "web development",
+      "developer blog",
+      "programming tutorials",
+      "web development blog",
+      "software engineering blog",
+      "react tutorials",
+      "next.js tutorials",
+      "typescript tutorials",
       "technical writing",
+      "coding tips",
     ],
     ogImage:
       "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768658/portfolio/meta/file.png",
     twitterCard: "summary_large_image",
   },
 
-  // Resume page
-  "/resume": {
-    title: "Resume - Professional CV",
-    description: `View and download ${heroConfig.name}'s professional resume and CV. Technical skills, experience, and qualifications.`,
+  // Journey page
+  "/journey": {
+    title: "Journey - Timeline & Milestones",
+    description:
+      "A timeline of my learning journey, projects, and career milestones as a full-stack software engineer.",
     keywords: [
-      "resume",
-      "cv",
-      "professional",
-      "skills",
-      "qualifications",
-      "download",
+      "developer journey",
+      "career timeline",
+      "learning journey",
+      "milestones",
+      "software engineer career",
+      "growth story",
     ],
     ogImage:
-      "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768659/portfolio/meta/file.png",
-    twitterCard: "summary",
+      "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768658/portfolio/meta/file.png",
+    twitterCard: "summary_large_image",
+  },
+
+  // Journey certificates page
+  "/journey/certificates": {
+    title: "Certificates & Achievements",
+    description:
+      "A curated list of my professional certificates, courses, and notable achievements.",
+    keywords: [
+      "certificates",
+      "achievements",
+      "certifications",
+      "courses completed",
+      "professional development",
+    ],
+    ogImage:
+      "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768658/portfolio/meta/file.png",
+    twitterCard: "summary_large_image",
   },
 
   // Gears page
@@ -151,11 +213,12 @@ export const pageMetadata: Record<string, PageMeta> = {
     description:
       "Discover the tools, devices, and software I use to get my work done efficiently.",
     keywords: [
-      "setup",
-      "tools",
-      "devices",
-      "software",
-      "productivity",
+      "developer setup",
+      "developer tools",
+      "tech gear",
+      "productivity tools",
+      "hardware setup",
+      "software tools",
       "development environment",
     ],
     ogImage:
@@ -169,12 +232,12 @@ export const pageMetadata: Record<string, PageMeta> = {
     description:
       "Complete guide to setting up VS Code with my preferred configuration, extensions, and fonts for optimal development.",
     keywords: [
-      "vscode",
-      "setup",
-      "configuration",
-      "extensions",
-      "development environment",
-      "guide",
+      "vscode setup",
+      "vscode configuration",
+      "vscode extensions",
+      "developer environment setup",
+      "coding setup guide",
+      "productivity guide",
     ],
     ogImage:
       "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768670/portfolio/meta/file.png",
