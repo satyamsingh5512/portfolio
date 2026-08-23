@@ -86,7 +86,7 @@ export default function Hero() {
         <motion.div variants={itemVariants}>
           <Image
             src={avatar}
-            alt="hero"
+            alt={`${name} - ${title}`}
             width={100}
             height={100}
             className="size-20 rounded-full bg-blue-300 sm:size-24 dark:bg-yellow-300"
