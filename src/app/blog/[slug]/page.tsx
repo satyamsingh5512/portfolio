@@ -62,29 +62,35 @@ export async function generateMetadata({
   const { slug } = await params;
   await connectToDatabase();
   const post = await BlogPostModel.findOne({ slug, isPublished: true })
-    .select("title description image metaImage")
+    .select("title description image metaImage tags")
     .lean<MongoPost>();
 
-  if (!post) return { title: "Post Not Found" };
+  if (!post)
+    return { title: "Post Not Found", robots: { index: false, follow: false } };
 
-  const { title, description, metaImage, image } = post;
+  const { title, description, metaImage, image, tags } = post;
   const ogImage = metaImage || image || "";
 
   return {
     metadataBase: new URL(siteConfig.url),
     title,
     description,
+    keywords: [...(tags ?? []), "blog", "tutorial", "engineering"].join(", "),
     openGraph: {
+      type: "article",
+      url: `${siteConfig.url}/blog/${slug}`,
       title,
       description,
       images: ogImage ? [ogImage] : [],
-      type: "article",
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
       images: ogImage ? [ogImage] : [],
+    },
+    alternates: {
+      canonical: `${siteConfig.url}/blog/${slug}`,
     },
   };
 }
@@ -115,8 +121,39 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const relatedPosts = relatedDocs.map(toPostPreview);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    image: post.metaImage || post.image || undefined,
+    url: `${siteConfig.url}/blog/${slug}`,
+    datePublished: new Date(post.createdAt).toISOString(),
+    dateModified: post.updatedAt
+      ? new Date(post.updatedAt).toISOString()
+      : new Date(post.createdAt).toISOString(),
+    keywords: (post.tags ?? []).join(", "),
+    author: {
+      "@type": "Person",
+      name: post.author?.name || siteConfig.author.name,
+      url: siteConfig.url,
+    },
+    publisher: {
+      "@type": "Person",
+      name: siteConfig.author.name,
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${siteConfig.url}/blog/${slug}`,
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Container className="py-8 sm:py-12 md:py-16">
         <div className="space-y-8 sm:space-y-10 md:space-y-12">
           {/* Back Button */}
