@@ -1,19 +1,32 @@
-import Container from '@/components/common/Container';
-import { PointsTestControls } from '@/components/common/PointsNotification';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { generateMetadata as getMetadata } from '@/config/Meta';
-import type { Metadata } from 'next';
+import Container from "@/components/common/Container";
+import { PointsTestControls } from "@/components/common/PointsNotification";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { generateMetadata as getMetadata } from "@/config/Meta";
+import type { Metadata } from "next";
 
-export const metadata: Metadata = getMetadata('/demo');
+export const metadata: Metadata = {
+  ...getMetadata("/demo"),
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function DemoPage() {
   return (
     <Container className="min-h-screen py-16">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="text-center space-y-4">
+      <div className="mx-auto max-w-4xl space-y-8">
+        <div className="space-y-4 text-center">
           <h1 className="text-3xl font-bold">User System Demo</h1>
           <p className="text-muted-foreground">
-            Demonstration of the user menu, settings, and real-time points system
+            Demonstration of the user menu, settings, and real-time points
+            system
           </p>
         </div>
 
@@ -26,7 +39,7 @@ export default function DemoPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <ul className="list-disc list-inside space-y-2 text-sm">
+              <ul className="list-inside list-disc space-y-2 text-sm">
                 <li>User avatar and profile information</li>
                 <li>Real-time points display with animations</li>
                 <li>Settings option (opens modal)</li>
@@ -44,9 +57,10 @@ export default function DemoPage() {
             </CardHeader>
             <CardContent>
               <PointsTestControls />
-              <p className="text-xs text-muted-foreground mt-4">
-                Click the buttons above to see real-time points updates in the navbar user menu.
-                The points will update instantly without requiring a page refresh.
+              <p className="text-muted-foreground mt-4 text-xs">
+                Click the buttons above to see real-time points updates in the
+                navbar user menu. The points will update instantly without
+                requiring a page refresh.
               </p>
             </CardContent>
           </Card>
@@ -59,16 +73,28 @@ export default function DemoPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <ul className="list-disc list-inside space-y-2 text-sm">
+              <ul className="list-inside list-disc space-y-2 text-sm">
                 <li>Profile management with avatar upload</li>
                 <li>Notification preferences</li>
                 <li>Theme switching integration</li>
                 <li>Privacy and security settings</li>
                 <li>Auto-save functionality</li>
-                <li><strong>Keyboard shortcuts:</strong> Press <kbd className="px-1 py-0.5 text-xs font-mono bg-muted border rounded">Enter</kbd> to save, <kbd className="px-1 py-0.5 text-xs font-mono bg-muted border rounded">Esc</kbd> to close</li>
+                <li>
+                  <strong>Keyboard shortcuts:</strong> Press{" "}
+                  <kbd className="bg-muted rounded border px-1 py-0.5 font-mono text-xs">
+                    Enter
+                  </kbd>{" "}
+                  to save,{" "}
+                  <kbd className="bg-muted rounded border px-1 py-0.5 font-mono text-xs">
+                    Esc
+                  </kbd>{" "}
+                  to close
+                </li>
               </ul>
-              <p className="text-xs text-muted-foreground">
-                Click on your avatar in the navbar and select &ldquo;Settings&rdquo; to open the modal. Try using Enter key to save!
+              <p className="text-muted-foreground text-xs">
+                Click on your avatar in the navbar and select
+                &ldquo;Settings&rdquo; to open the modal. Try using Enter key to
+                save!
               </p>
             </CardContent>
           </Card>
@@ -81,12 +107,26 @@ export default function DemoPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <ul className="list-disc list-inside space-y-2 text-sm">
-                <li><strong>Real-time Updates:</strong> Uses custom events for instant points updates</li>
-                <li><strong>Smooth Animations:</strong> 60fps transitions for theme switching and UI interactions</li>
-                <li><strong>Accessibility:</strong> Full keyboard navigation and screen reader support</li>
-                <li><strong>Responsive Design:</strong> Works seamlessly on all device sizes</li>
-                <li><strong>Type Safety:</strong> Full TypeScript implementation</li>
+              <ul className="list-inside list-disc space-y-2 text-sm">
+                <li>
+                  <strong>Real-time Updates:</strong> Uses custom events for
+                  instant points updates
+                </li>
+                <li>
+                  <strong>Smooth Animations:</strong> 60fps transitions for
+                  theme switching and UI interactions
+                </li>
+                <li>
+                  <strong>Accessibility:</strong> Full keyboard navigation and
+                  screen reader support
+                </li>
+                <li>
+                  <strong>Responsive Design:</strong> Works seamlessly on all
+                  device sizes
+                </li>
+                <li>
+                  <strong>Type Safety:</strong> Full TypeScript implementation
+                </li>
               </ul>
             </CardContent>
           </Card>
