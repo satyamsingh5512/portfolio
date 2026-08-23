@@ -43,26 +43,38 @@ export async function generateMetadata({
   if (!caseStudy || !caseStudy.frontmatter.isPublished) {
     return {
       title: "Project Not Found",
+      robots: { index: false, follow: false },
     };
   }
 
-  const { title, description, image } = caseStudy.frontmatter;
+  const { title, description, image, technologies } = caseStudy.frontmatter;
 
   return {
     metadataBase: new URL(siteConfig.url),
     title: `${title} - Project Case Study`,
     description,
+    keywords: [
+      title,
+      "project case study",
+      ...technologies,
+      "portfolio",
+      "software engineering",
+    ].join(", "),
     openGraph: {
+      type: "article",
+      url: `${siteConfig.url}/projects/${slug}`,
       title: `${title} - Project Case Study`,
       description,
       images: [image],
-      type: "article",
     },
     twitter: {
       card: "summary_large_image",
       title: `${title} - Project Case Study`,
       description,
       images: [image],
+    },
+    alternates: {
+      canonical: `${siteConfig.url}/projects/${slug}`,
     },
   };
 }
@@ -80,6 +92,24 @@ export default async function ProjectCaseStudyPage({
   const navigation = await getProjectNavigation(slug);
   const relatedProjects = await getRelatedProjectCaseStudies(slug, 2);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: caseStudy.frontmatter.title,
+    description: caseStudy.frontmatter.description,
+    image: caseStudy.frontmatter.image,
+    url: `${siteConfig.url}/projects/${slug}`,
+    author: {
+      "@type": "Person",
+      name: siteConfig.author.name,
+      url: siteConfig.url,
+    },
+    keywords: caseStudy.frontmatter.technologies.join(", "),
+    ...(caseStudy.frontmatter.live && {
+      sameAs: [caseStudy.frontmatter.live],
+    }),
+  };
+
   // Fetch initial portfolio view count from MongoDB
   let initialViews = 0;
   try {
@@ -94,6 +124,10 @@ export default async function ProjectCaseStudyPage({
 
   return (
     <Container className="py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="space-y-12">
         {/* Back Button */}
         <div>
