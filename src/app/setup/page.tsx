@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function SetupPage() {
   return (
-    <Container className="py-10 sm:py-16">
+    <Container as="main" className="py-10 sm:py-16">
       <div className="space-y-6 sm:space-y-8">
         {/* Header */}
         <div className="space-y-3 text-center sm:space-y-4">
@@ -132,7 +132,12 @@ export default function SetupPage() {
                     Copy
                   </button>
                 </div>
-                <div className="overflow-x-auto">
+                <div
+                  className="overflow-x-auto"
+                  role="region"
+                  aria-label="settings.json"
+                  tabIndex={0}
+                >
                   <pre className="min-w-full p-3 text-xs md:p-4">
                     <code className="language-json text-secondary block font-mono leading-relaxed whitespace-pre">
                       {settingsJson.split("\n").map((line, index) => {
@@ -141,7 +146,7 @@ export default function SetupPage() {
                           return (
                             <div
                               key={index}
-                              className="text-muted-foreground/60 italic"
+                              className="text-muted-foreground italic"
                             >
                               {line}
                             </div>
