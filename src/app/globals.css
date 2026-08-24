@@ -65,7 +65,7 @@
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: oklch(0.45 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -99,7 +99,7 @@
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
+  --muted-foreground: oklch(0.75 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
@@ -141,12 +141,9 @@
   }
 }
 
+/* WCAG AA (>= 4.5:1) against both page and card backgrounds in each theme. */
 .text-secondary {
-  @apply text-[#909092] dark:text-[#909092];
-}
-
-.font-hanken-grotesk {
-  font-family: var(--font-hanken-grotesk);
+  @apply text-[#5f6062] dark:text-[#a4a4a7];
 }
 
 .font-hanken-grotesk-italic {
@@ -175,11 +172,56 @@
   }
 }
 
-.animate-fade-in-blur {
-  animation: fadeInBlur 0.5s ease-out forwards;
-  animation-delay: 0.3s;
-  opacity: 0.4;
-  filter: blur(3px);
+/* Entrance animation for above-the-fold content.
+   Deliberately animates transform only. Animating opacity would mean the text
+   is partially transparent for as long as the animation is unfinished — and a
+   browser freezes the animation clock while a tab is hidden, which would leave
+   the hero sitting at a fraction of its opacity (and failing contrast) until
+   the tab is looked at. Transform-only is immune to that, and it also keeps the
+   element a largest-contentful-paint candidate from the very first frame. */
+@keyframes riseIn {
+  from {
+    transform: translate3d(0, 14px, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-rise-in {
+  animation: riseIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform;
+}
+
+/* Scroll-triggered reveal used by <FadeIn>. Driven entirely by scroll position,
+   so it needs no JavaScript and stays on the compositor. Transform-only for the
+   same reason as above. Content already in the viewport renders in place. */
+@keyframes reveal {
+  from {
+    transform: translate3d(var(--reveal-x, 0), var(--reveal-y, 20px), 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal 1s linear both;
+      animation-timeline: view();
+      animation-range: entry var(--reveal-start, 0%) entry
+        calc(var(--reveal-start, 0%) + 55%);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise-in {
+    animation: none;
+  }
 }
 
 /* Optimized interactive elements only */
