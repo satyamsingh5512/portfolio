@@ -78,7 +78,9 @@ function getQuickResponse(message: string): string | null {
   return null;
 }
 
-const ChatBubble: React.FC = () => {
+const ChatBubble: React.FC<{ defaultOpen?: boolean }> = ({
+  defaultOpen = false,
+}) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -312,13 +314,14 @@ const ChatBubble: React.FC = () => {
       className="mt-4 ml-4 max-h-[95vh] max-w-[calc(100vw-2rem)] hover:cursor-pointer sm:max-w-[calc(100vw-4rem)] md:max-w-xl"
       position="bottom-right"
       size="lg"
+      defaultOpen={defaultOpen}
       icon={<ChatBubbleIcon className="h-6 w-6" />}
     >
       <ExpandableChatHeader>
         <div className="flex items-center space-x-3">
           <Avatar className="border-primary h-8 w-8 border-2 bg-blue-300 dark:bg-yellow-300">
             <AvatarImage
-              src="https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg"
+              src="https://res.cloudinary.com/dnuxivxnu/image/upload/f_auto,q_auto,w_64,h_64,c_fill/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg"
               alt="Assistant"
             />
             <AvatarFallback>AI</AvatarFallback>
@@ -354,7 +357,7 @@ const ChatBubble: React.FC = () => {
                   {message.sender === "bot" && (
                     <Avatar className="border-primary h-6 w-6 border-2 bg-blue-300 dark:bg-yellow-300">
                       <AvatarImage
-                        src="https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg"
+                        src="https://res.cloudinary.com/dnuxivxnu/image/upload/f_auto,q_auto,w_64,h_64,c_fill/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg"
                         alt="Assistant"
                       />
                       <AvatarFallback>AI</AvatarFallback>
@@ -470,12 +473,16 @@ const ChatBubble: React.FC = () => {
           <Button
             size="sm"
             onClick={handleSendMessage}
+            aria-label="Send message"
             disabled={!newMessage.trim() || isLoading}
           >
             {isLoading ? (
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              <span
+                aria-hidden="true"
+                className="block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+              />
             ) : (
-              <SendIcon className="h-4 w-4" />
+              <SendIcon aria-hidden="true" className="h-4 w-4" />
             )}
           </Button>
         </div>
