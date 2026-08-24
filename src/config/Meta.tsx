@@ -18,7 +18,7 @@ export const siteConfig = {
   description:
     "Full Stack Developer - Satyam Portfolio | NIST University | Web Development Expert",
   url: SITE_URL,
-  icon: "/assets/satyam-avatar.png",
+  icon: "/meta/icon-192.png",
   ogImage:
     "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768661/portfolio/meta/file.png",
   author: {
@@ -291,9 +291,16 @@ export function generateMetadata(pathname: string) {
       canonical: `${siteConfig.url}${pathname}`,
     },
     icons: {
-      icon: siteConfig.icon,
-      shortcut: siteConfig.icon,
-      apple: siteConfig.icon,
+      icon: [
+        { url: "/meta/icon-32.png", sizes: "32x32", type: "image/png" },
+        { url: "/meta/icon-192.png", sizes: "192x192", type: "image/png" },
+      ],
+      shortcut: "/meta/icon-32.png",
+      apple: {
+        url: "/meta/apple-icon-180.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
     },
   };
 }
