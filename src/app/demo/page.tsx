@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function DemoPage() {
   return (
-    <Container className="min-h-screen py-16">
+    <Container as="main" className="min-h-screen py-16">
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="space-y-4 text-center">
           <h1 className="text-3xl font-bold">User System Demo</h1>
