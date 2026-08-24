@@ -26,8 +26,10 @@ export default function Experience() {
       {experiences.length > 2 && (
         <FadeIn delay={0.3} direction="up" distance={10}>
           <div className="mt-6 flex justify-center sm:mt-8">
-            <Button variant="outline" className="text-sm">
-              <Link href="/work-experience">Show all work experiences</Link>
+            <Button asChild variant="outline" className="min-h-11 text-sm">
+              <Link href="/work-experience" prefetch={false}>
+                Show all work experiences
+              </Link>
             </Button>
           </div>
         </FadeIn>
