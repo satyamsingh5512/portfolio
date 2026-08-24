@@ -81,7 +81,7 @@ export function BlogPageClient({
   };
 
   return (
-    <Container className="py-6 sm:py-8 md:py-12 lg:py-16">
+    <Container as="main" className="py-6 sm:py-8 md:py-12 lg:py-16">
       <div className="space-y-4 sm:space-y-6 md:space-y-8">
         {/* Header */}
         <div className="space-y-2 text-center sm:space-y-3">
