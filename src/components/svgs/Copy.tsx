@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default function Copy({ className }: { className?: string }) {
   return (
@@ -8,7 +8,7 @@ export default function Copy({ className }: { className?: string }) {
       fill="currentColor"
       viewBox="0 0 256 256"
     >
-      <path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"></path>
+      <path d="M216 32H88a8 8 0 0 0-8 8v40H40a8 8 0 0 0-8 8v128a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-40h40a8 8 0 0 0 8-8V40a8 8 0 0 0-8-8m-56 176H48V96h112Zm48-48h-32V88a8 8 0 0 0-8-8H96V48h112Z" />
     </svg>
   );
 }
