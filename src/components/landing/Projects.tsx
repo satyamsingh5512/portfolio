@@ -42,8 +42,10 @@ export default async function Projects() {
 
       <FadeIn delay={0.2} direction="up" distance={10}>
         <div className="mt-6 flex justify-center sm:mt-8">
-          <Button variant="outline" className="text-sm">
-            <Link href="/projects">Show all projects</Link>
+          <Button asChild variant="outline" className="min-h-11 text-sm">
+            <Link href="/projects" prefetch={false}>
+              Show all projects
+            </Link>
           </Button>
         </div>
       </FadeIn>
