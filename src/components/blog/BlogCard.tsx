@@ -28,7 +28,7 @@ export function BlogCard({ post }: BlogCardProps) {
 
   useEffect(() => {
     fetch(`/api/blog/${encodeURIComponent(slug)}/view`)
-      .then((r) => r.ok ? r.json() : null)
+      .then((r) => (r.ok ? r.json() : null))
       .then((data: { views?: number } | null) => {
         if (data && typeof data.views === "number") setViews(data.views);
       })
@@ -45,14 +45,25 @@ export function BlogCard({ post }: BlogCardProps) {
     <Card className="group h-full w-full overflow-hidden border-gray-100 p-0 shadow-none transition-all dark:border-gray-800">
       <CardHeader className="p-0">
         <div className="relative aspect-[16/9] overflow-hidden sm:aspect-video">
-          <Link href={`/blog/${slug}`}>
-            <Image src={imageSrc} alt={title} fill className="object-cover" />
+          <Link
+            href={`/blog/${slug}`}
+            tabIndex={-1}
+            aria-hidden="true"
+            prefetch={false}
+          >
+            <Image
+              src={imageSrc}
+              alt={title}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+            />
           </Link>
         </div>
       </CardHeader>
       <CardContent className="px-3 sm:px-4 md:px-6">
         <div className="space-y-2 sm:space-y-3">
-          <Link href={`/blog/${slug}`}>
+          <Link href={`/blog/${slug}`} prefetch={false}>
             <h3 className="group-hover:text-primary line-clamp-2 text-sm leading-tight font-semibold sm:text-base md:text-lg lg:text-xl">
               {title}
             </h3>
@@ -87,10 +98,7 @@ export function BlogCard({ post }: BlogCardProps) {
           {/* Date and Read More - on separate line */}
           <div className="flex items-center justify-between gap-2 sm:gap-3">
             <div className="text-secondary flex items-center gap-2 text-[10px] sm:text-xs md:text-sm">
-              <time
-                className="flex items-center gap-1"
-                dateTime={date}
-              >
+              <time className="flex items-center gap-1" dateTime={date}>
                 <Calender className="size-2.5 sm:size-3 md:size-4" />{" "}
                 {formattedDate}
               </time>
@@ -103,9 +111,14 @@ export function BlogCard({ post }: BlogCardProps) {
             </div>
             <Link
               href={`/blog/${slug}`}
-              className="text-secondary flex items-center justify-end gap-1 text-[10px] underline-offset-4 hover:underline sm:text-xs md:text-sm"
+              className="text-secondary flex min-h-11 items-center justify-end gap-1 text-[10px] whitespace-nowrap underline-offset-4 hover:underline sm:text-xs md:text-sm"
+              prefetch={false}
             >
-              Read More <ArrowRight className="size-2.5 sm:size-3 md:size-4" />
+              Read More<span className="sr-only"> about {title}</span>
+              <ArrowRight
+                aria-hidden="true"
+                className="size-2.5 sm:size-3 md:size-4"
+              />
             </Link>
           </div>
         </div>
