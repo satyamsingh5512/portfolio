@@ -2,6 +2,14 @@
   "name": "sleek-portfolio",
   "version": "0.1.0",
   "private": true,
+  "browserslist": [
+    "chrome >= 111",
+    "edge >= 111",
+    "firefox >= 128",
+    "safari >= 16.4",
+    "ios_saf >= 16.4",
+    "not dead"
+  ],
   "scripts": {
     "dev": "next dev --turbopack -p 5512",
     "build": "next build",
@@ -14,7 +22,8 @@
     "prepare": "husky",
     "knip": "knip",
     "test-telegram": "node --loader ts-node/esm src/validate/testTelegram.ts",
-    "seed": "bun --env-file=.env.local scripts/seed-mongodb.ts"
+    "seed": "bun --env-file=.env.local scripts/seed-mongodb.ts",
+    "optimize:icons": "node scripts/optimize-icon-svgs.mjs --write"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -137,6 +146,7 @@
     "lint-staged": "^16.2.7",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.13",
+    "svgo": "3.3.4",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "tw-animate-css": "^1.3.4",
