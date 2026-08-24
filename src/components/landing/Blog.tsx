@@ -65,8 +65,10 @@ export default async function Blog() {
       </div>
       <FadeIn delay={0.4} direction="up" distance={10}>
         <div className="mt-6 flex justify-center sm:mt-8">
-          <Button variant="outline" className="text-sm">
-            <Link href="/blog">Show all blogs</Link>
+          <Button asChild variant="outline" className="min-h-11 text-sm">
+            <Link href="/blog" prefetch={false}>
+              Show all blogs
+            </Link>
           </Button>
         </div>
       </FadeIn>
