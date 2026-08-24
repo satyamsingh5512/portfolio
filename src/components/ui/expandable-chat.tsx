@@ -36,6 +36,7 @@ interface ExpandableChatProps extends React.HTMLAttributes<HTMLDivElement> {
   position?: ChatPosition;
   size?: ChatSize;
   icon?: React.ReactNode;
+  defaultOpen?: boolean;
 }
 
 const ExpandableChat: React.FC<ExpandableChatProps> = ({
@@ -43,10 +44,11 @@ const ExpandableChat: React.FC<ExpandableChatProps> = ({
   position = "bottom-right",
   size = "md",
   icon,
+  defaultOpen = false,
   children,
   ...props
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const chatRef = useRef<HTMLDivElement>(null);
 
   const toggleChat = () => setIsOpen(!isOpen);
@@ -143,6 +145,8 @@ const ExpandableChatToggle: React.FC<ExpandableChatToggleProps> = ({
     <Button
       variant="default"
       onClick={handleToggle}
+      aria-expanded={isOpen}
+      aria-label={isOpen ? "Close the chat" : "Open the chat"}
       className={cn(
         "flex h-14 w-14 items-center justify-center rounded-full shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-black/30",
         className,
@@ -150,9 +154,9 @@ const ExpandableChatToggle: React.FC<ExpandableChatToggleProps> = ({
       {...props}
     >
       {isOpen ? (
-        <X className="h-6 w-6" />
+        <X aria-hidden="true" className="h-6 w-6" />
       ) : (
-        icon || <MessageCircle className="h-6 w-6" />
+        icon || <MessageCircle aria-hidden="true" className="h-6 w-6" />
       )}
     </Button>
   );
