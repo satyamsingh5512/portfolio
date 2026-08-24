@@ -35,7 +35,7 @@ export default async function ProjectsPage() {
   const hasDBProjects = dbProjects.length > 0;
 
   return (
-    <Container className="py-10 sm:py-16">
+    <Container as="main" className="py-10 sm:py-16">
       <div className="space-y-6 sm:space-y-8">
         {/* Header */}
         <div className="space-y-3 text-center sm:space-y-4">
