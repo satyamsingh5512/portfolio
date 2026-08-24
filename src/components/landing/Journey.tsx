@@ -17,7 +17,7 @@ export default function Journey() {
       <div className="mt-8 flex flex-col gap-4">
         {journeyItems.map((item, index) => (
           <FadeIn key={item.name} delay={index * 0.1 + 0.2} direction="left">
-            <Link className="group" href={item.href}>
+            <Link className="group" href={item.href} prefetch={false}>
               <Card className="hover:bg-muted/50 flex flex-row items-center justify-between gap-4 px-4 py-2 transition-all duration-300">
                 <div className="bg-muted flex items-center justify-center rounded-md p-2">
                   {(() => {
