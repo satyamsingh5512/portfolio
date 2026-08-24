@@ -5,10 +5,10 @@ export interface NavItem {
 
 export const navbarConfig = {
   logo: {
-    src: "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
-    alt: "logo",
-    width: 100,
-    height: 100,
+    src: "/assets/avatar-96.webp",
+    alt: "Satyam",
+    width: 96,
+    height: 96,
   },
   navItems: [
     {
