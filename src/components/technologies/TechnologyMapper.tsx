@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 
 import AWS from "./AWS";
@@ -137,11 +135,20 @@ export function mapTechnologiesToIcons(
 interface TechnologyIconProps {
   name: string;
   className?: string;
+  "aria-hidden"?: boolean | "true" | "false";
 }
 
 /**
  * Component that renders a technology icon by name
  */
-export function TechnologyIcon({ name, className }: TechnologyIconProps) {
-  return <div className={className}>{getTechnologyIcon(name)}</div>;
+export function TechnologyIcon({
+  name,
+  className,
+  ...rest
+}: TechnologyIconProps) {
+  return (
+    <div className={className} {...rest}>
+      {getTechnologyIcon(name)}
+    </div>
+  );
 }
