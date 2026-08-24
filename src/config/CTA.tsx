@@ -8,7 +8,7 @@
 export const ctaConfig = {
   // Profile image settings
   profileImage:
-    "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
+    "https://res.cloudinary.com/dnuxivxnu/image/upload/f_auto,q_auto,w_40,h_40,c_fill/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
   profileAlt: "Profile",
 
   // CTA button settings
