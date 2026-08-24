@@ -21,7 +21,7 @@ import ArrowRight from "../svgs/ArrowRight";
 import Github from "../svgs/Github";
 import PlayCircle from "../svgs/PlayCircle";
 import Website from "../svgs/Website";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { Hint } from "../ui/hint";
 
 interface ProjectCardProps {
   project: Project;
@@ -44,16 +44,21 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
             alt={project.title}
             width={1920}
             height={1080}
+            sizes="(max-width: 768px) 100vw, 50vw"
             loading="lazy"
           />
           {project.video && (
             <Dialog open={dialogOpen} onOpenChange={handleDialogChange}>
-              <DialogTrigger asChild>
-                <div className="absolute inset-0 z-20 flex cursor-pointer items-center justify-center bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:backdrop-blur-xs">
-                  <button className="flex size-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors duration-200 group-hover:cursor-pointer hover:bg-white/30">
-                    <PlayCircle />
-                  </button>
-                </div>
+              <DialogTrigger
+                aria-label={`Play the ${project.title} demo video`}
+                className="absolute inset-0 z-20 flex cursor-pointer items-center justify-center bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:backdrop-blur-xs"
+              >
+                <span
+                  aria-hidden="true"
+                  className="flex size-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm transition-colors duration-200 hover:bg-white/30"
+                >
+                  <PlayCircle />
+                </span>
               </DialogTrigger>
               <DialogContent className="w-full max-w-4xl border-0 p-0">
                 <div className="aspect-video w-full">
@@ -80,6 +85,7 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
               <Link
                 href={project.projectDetailsPageSlug}
                 className="relative z-20"
+                prefetch={false}
               >
                 <h3 className="group-hover:text-primary text-base leading-tight font-semibold hover:cursor-pointer sm:text-xl">
                   {project.title}
@@ -90,37 +96,35 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
                 {project.title}
               </h3>
             )}
-            <div className="flex flex-shrink-0 items-center gap-2">
-              <Tooltip>
-                <TooltipTrigger>
-                  <Link
-                    className="text-secondary hover:text-primary relative z-20 flex size-5 items-center justify-center transition-colors sm:size-6"
-                    href={project.link}
-                    target="_blank"
-                  >
+            <div className="flex flex-shrink-0 items-center gap-1">
+              <Hint label="View Website">
+                <Link
+                  className="text-secondary hover:text-primary relative z-20 inline-flex size-11 items-center justify-center transition-colors"
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Open the ${project.title} website in a new tab`}
+                >
+                  <span aria-hidden="true" className="size-5 sm:size-6">
                     <Website />
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>View Website</p>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger>
-                  {project.github && (
-                    <Link
-                      className="text-secondary hover:text-primary relative z-20 flex size-5 items-center justify-center transition-colors sm:size-6"
-                      href={project.github}
-                      target="_blank"
-                    >
+                  </span>
+                </Link>
+              </Hint>
+              {project.github && (
+                <Hint label="View GitHub">
+                  <Link
+                    className="text-secondary hover:text-primary relative z-20 inline-flex size-11 items-center justify-center transition-colors"
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`View the ${project.title} source code on GitHub`}
+                  >
+                    <span aria-hidden="true" className="size-5 sm:size-6">
                       <Github />
-                    </Link>
-                  )}
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>View GitHub</p>
-                </TooltipContent>
-              </Tooltip>
+                    </span>
+                  </Link>
+                </Hint>
+              )}
             </div>
           </div>
 
@@ -136,16 +140,14 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
             </h4>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {project.technologies.map((technology, index) => (
-                <Tooltip key={index}>
-                  <TooltipTrigger className="relative z-20">
-                    <div className="size-5 transition-all duration-300 hover:scale-120 hover:cursor-pointer sm:size-6">
-                      {technology.icon}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{technology.name}</p>
-                  </TooltipContent>
-                </Tooltip>
+                <Hint key={index} label={technology.name} srOnlyLabel>
+                  <span
+                    aria-hidden="true"
+                    className="block size-5 transition-transform duration-300 hover:scale-120 sm:size-6"
+                  >
+                    {technology.icon}
+                  </span>
+                </Hint>
               ))}
             </div>
           </div>
@@ -176,9 +178,12 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
           {project.projectDetailsPageSlug && (
             <Link
               href={project.projectDetailsPageSlug}
-              className="text-secondary hover:text-primary relative z-20 flex items-center gap-1 text-xs underline-offset-4 transition-colors hover:underline sm:gap-2 sm:text-sm"
+              aria-label={`View details of ${project.title}`}
+              className="text-secondary hover:text-primary relative z-20 flex min-h-11 items-center gap-1 text-xs whitespace-nowrap underline-offset-4 transition-colors hover:underline sm:gap-2 sm:text-sm"
+              prefetch={false}
             >
-              View Details <ArrowRight className="size-3 sm:size-4" />
+              View Details{" "}
+              <ArrowRight aria-hidden="true" className="size-3 sm:size-4" />
             </Link>
           )}
         </CardFooter>
@@ -188,6 +193,9 @@ function ProjectCardComponent({ project }: ProjectCardProps) {
         <Link
           href={project.projectDetailsPageSlug}
           className="absolute inset-0 z-10"
+          tabIndex={-1}
+          aria-hidden="true"
+          prefetch={false}
         >
           <span className="sr-only">View {project.title} details</span>
         </Link>
