@@ -60,7 +60,7 @@ function toPostPreview(
 
 function BlogPageLoading() {
   return (
-    <Container className="py-16">
+    <Container as="main" className="py-16">
       <div className="space-y-8">
         {/* Header Skeleton */}
         <div className="space-y-4 text-center">
