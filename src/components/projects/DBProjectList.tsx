@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Card,
   CardContent,
@@ -16,7 +14,7 @@ import Github from "../svgs/Github";
 import Website from "../svgs/Website";
 import { TechnologyIcon } from "../technologies/TechnologyMapper";
 import { Badge } from "../ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { Hint } from "../ui/hint";
 
 interface DBProjectCardProps {
   project: ProjectRecord;
@@ -34,6 +32,7 @@ export function DBProjectCard({ project }: DBProjectCardProps) {
               alt={project.title}
               width={1920}
               height={1080}
+              sizes="(max-width: 768px) 100vw, 50vw"
               loading="lazy"
             />
           ) : (
@@ -58,38 +57,36 @@ export function DBProjectCard({ project }: DBProjectCardProps) {
             <h3 className="text-base leading-tight font-semibold sm:text-xl">
               {project.title}
             </h3>
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1">
               {project.liveUrl && (
-                <Tooltip>
-                  <TooltipTrigger className="relative z-20">
-                    <Link
-                      className="text-secondary hover:text-primary flex size-5 items-center justify-center transition-colors sm:size-6"
-                      href={project.liveUrl}
-                      target="_blank"
-                    >
+                <Hint label="View Website">
+                  <Link
+                    className="text-secondary hover:text-primary relative z-20 inline-flex size-11 items-center justify-center rounded-md transition-colors"
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Open the ${project.title} website in a new tab`}
+                  >
+                    <span aria-hidden="true" className="size-5 sm:size-6">
                       <Website />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>View Website</p>
-                  </TooltipContent>
-                </Tooltip>
+                    </span>
+                  </Link>
+                </Hint>
               )}
               {project.githubUrl && (
-                <Tooltip>
-                  <TooltipTrigger className="relative z-20">
-                    <Link
-                      className="text-secondary hover:text-primary flex size-5 items-center justify-center transition-colors sm:size-6"
-                      href={project.githubUrl}
-                      target="_blank"
-                    >
+                <Hint label="View GitHub">
+                  <Link
+                    className="text-secondary hover:text-primary relative z-20 inline-flex size-11 items-center justify-center rounded-md transition-colors"
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`View the ${project.title} source code on GitHub`}
+                  >
+                    <span aria-hidden="true" className="size-5 sm:size-6">
                       <Github />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>View GitHub</p>
-                  </TooltipContent>
-                </Tooltip>
+                    </span>
+                  </Link>
+                </Hint>
               )}
             </div>
           </div>
@@ -107,17 +104,13 @@ export function DBProjectCard({ project }: DBProjectCardProps) {
               </h4>
               <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {project.technologies.map((tech, index) => (
-                  <Tooltip key={index}>
-                    <TooltipTrigger className="relative z-20">
-                      <TechnologyIcon
-                        name={tech}
-                        className="size-5 transition-all duration-300 hover:scale-120 hover:cursor-pointer sm:size-6"
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{tech}</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <Hint key={index} label={tech} srOnlyLabel>
+                    <TechnologyIcon
+                      name={tech}
+                      aria-hidden="true"
+                      className="size-5 transition-transform duration-300 hover:scale-120 sm:size-6"
+                    />
+                  </Hint>
                 ))}
               </div>
             </div>
@@ -139,11 +132,13 @@ export function DBProjectCard({ project }: DBProjectCardProps) {
       <CardFooter className="flex-row items-center justify-between px-4 pt-2 pb-4 sm:px-6 sm:pb-6">
         {project.projectDetailsPageSlug && (
           <Link
-            className="text-primary relative z-20 flex items-center gap-1 text-sm hover:underline sm:text-base"
+            className="text-primary relative z-20 flex min-h-11 items-center gap-1 text-sm whitespace-nowrap hover:underline sm:text-base"
             href={project.projectDetailsPageSlug}
+            aria-label={`View details of ${project.title}`}
+            prefetch={false}
           >
             <span>View Details</span>
-            <ArrowRight />
+            <ArrowRight aria-hidden="true" />
           </Link>
         )}
       </CardFooter>
@@ -152,6 +147,9 @@ export function DBProjectCard({ project }: DBProjectCardProps) {
         <Link
           href={project.projectDetailsPageSlug}
           className="absolute inset-0 z-10"
+          tabIndex={-1}
+          aria-hidden="true"
+          prefetch={false}
         >
           <span className="sr-only">View {project.title}</span>
         </Link>
