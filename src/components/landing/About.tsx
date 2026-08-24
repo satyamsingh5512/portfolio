@@ -1,13 +1,10 @@
-"use client";
-
 import { about, mySkills } from "@/config/About";
-import { motion } from "motion/react";
 import React from "react";
 
 import FadeIn from "../animations/FadeIn";
 import Container from "../common/Container";
 import SectionHeading from "../common/SectionHeading";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { Hint } from "../ui/hint";
 
 export default function About() {
   return (
@@ -55,17 +52,22 @@ export default function About() {
             </FadeIn>
             <ul className="space-y-2">
               {about.expertise?.map((skill, index) => (
-                <FadeIn
+                <li
                   key={index}
-                  delay={0.05 * index + 0.5}
-                  direction="left"
-                  distance={10}
+                  className="text-secondary flex items-start text-xs sm:text-sm"
                 >
-                  <li className="text-secondary flex items-start text-xs sm:text-sm">
-                    <span className="text-primary mt-1 mr-2">•</span>
+                  <FadeIn
+                    delay={0.05 * index + 0.5}
+                    direction="left"
+                    distance={10}
+                    className="flex items-start"
+                  >
+                    <span aria-hidden="true" className="text-primary mt-1 mr-2">
+                      •
+                    </span>
                     {skill}
-                  </li>
-                </FadeIn>
+                  </FadeIn>
+                </li>
               ))}
             </ul>
           </div>
@@ -75,40 +77,21 @@ export default function About() {
               Skills
             </p>
           </FadeIn>
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.05,
-                  delayChildren: 0.7,
-                },
-              },
-            }}
-            className="flex flex-wrap justify-center gap-2 md:justify-start"
-          >
-            {mySkills.map((skill) => (
-              <Tooltip key={skill.key}>
-                <TooltipTrigger asChild>
-                  <motion.div
-                    variants={{
-                      hidden: { opacity: 0, scale: 0.8 },
-                      visible: { opacity: 1, scale: 1 },
-                    }}
-                    whileHover={{ scale: 1.2, rotate: 5 }}
-                    className="mt-3 size-5 hover:cursor-pointer sm:mt-4 sm:size-6"
-                  >
+          <div className="mt-3 flex flex-wrap justify-center gap-3 sm:mt-4 md:justify-start">
+            {mySkills.map((skill, index) => (
+              <Hint key={skill.key} label={String(skill.key)} srOnlyLabel>
+                <FadeIn
+                  delay={0.05 * index + 0.7}
+                  direction="none"
+                  className="flex size-5 items-center justify-center sm:size-6"
+                >
+                  <span aria-hidden="true" className="block size-5 sm:size-6">
                     {skill}
-                  </motion.div>
-                </TooltipTrigger>
-                <TooltipContent>{skill.key}</TooltipContent>
-              </Tooltip>
+                  </span>
+                </FadeIn>
+              </Hint>
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     </Container>
