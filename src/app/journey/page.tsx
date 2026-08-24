@@ -17,7 +17,7 @@ export default function JourneyPage() {
 
   if (!data) {
     return (
-      <Container className="py-10 sm:py-16">
+      <Container as="main" className="py-10 sm:py-16">
         <div className="space-y-6 sm:space-y-8">
           <div className="space-y-3 text-center sm:space-y-4">
             <h1 className="text-2xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
@@ -35,7 +35,7 @@ export default function JourneyPage() {
   }
 
   return (
-    <Container className="py-10 sm:py-16">
+    <Container as="main" className="py-10 sm:py-16">
       <div className="space-y-6 sm:space-y-8">
         <div className="space-y-3 text-center sm:space-y-4">
           <h1 className="text-2xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
