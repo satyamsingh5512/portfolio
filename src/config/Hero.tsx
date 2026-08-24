@@ -56,8 +56,10 @@ export const heroConfig = {
   // Personal Information
   name: "Satyam",
   title: "Full Stack System Design Engineer",
-  avatar:
-    "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
+  // Self-hosted and already sized for its largest rendered size (96px @2x).
+  // Serving it from our own origin removes a cross-origin round trip from the
+  // largest-contentful-paint path.
+  avatar: "/assets/avatar-192.webp",
 
   // Skills Configuration
   skills: [
@@ -114,16 +116,19 @@ export const heroConfig = {
 export const socialLinks = [
   {
     name: "LinkedIn",
+    label: "Satyam on LinkedIn",
     href: "https://www.linkedin.com/in/satym5512/",
     icon: <LinkedIn />,
   },
   {
     name: "Github",
+    label: "Satyam on GitHub",
     href: "https://github.com/satyamsingh5512",
     icon: <Github />,
   },
   {
     name: "Email",
+    label: "Email Satyam",
     href: "mailto:satyamsinghpx@gmail.com",
     icon: <Mail />,
   },
