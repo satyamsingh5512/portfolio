@@ -1,3 +1,4 @@
+import { SessionProvider } from "@/components/providers/SessionProvider";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,5 +14,5 @@ export default function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return children;
+  return <SessionProvider>{children}</SessionProvider>;
 }
