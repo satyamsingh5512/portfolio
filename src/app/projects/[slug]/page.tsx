@@ -123,7 +123,7 @@ export default async function ProjectCaseStudyPage({
   }
 
   return (
-    <Container className="py-16">
+    <Container as="main" className="py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
