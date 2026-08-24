@@ -26,6 +26,7 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
                   src={experience.logo}
                   alt={`${experience.company} logo`}
                   fill
+                  sizes="48px"
                   className="object-contain p-1"
                 />
               </div>
@@ -47,10 +48,11 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
                     href={experience.companyUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary flex items-center gap-1 text-sm transition-colors sm:text-base"
+                    aria-label={`${experience.company} website (opens in a new tab)`}
+                    className="text-muted-foreground hover:text-primary flex min-h-11 items-center gap-1 text-sm transition-colors sm:text-base"
                   >
                     {experience.company}
-                    <ExternalLink className="h-3 w-3" />
+                    <ExternalLink aria-hidden="true" className="h-3 w-3" />
                   </Link>
                 ) : (
                   <span className="text-muted-foreground text-sm sm:text-base">
@@ -120,16 +122,22 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
           {/* Expand/Collapse Button */}
           {experience.description.length > 1 && (
             <button
+              type="button"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="text-primary hover:text-primary/80 mt-2 flex items-center gap-2 text-sm font-medium transition-colors"
+              aria-expanded={isExpanded}
+              className="text-primary hover:text-primary/80 mt-2 flex min-h-11 items-center gap-2 text-sm font-medium transition-colors"
             >
               {isExpanded ? (
                 <>
-                  Show Less <ChevronUp className="h-4 w-4" />
+                  Show Less
+                  <span className="sr-only"> about {experience.position}</span>
+                  <ChevronUp aria-hidden="true" className="h-4 w-4" />
                 </>
               ) : (
                 <>
-                  Show More <ChevronDown className="h-4 w-4" />
+                  Show More
+                  <span className="sr-only"> about {experience.position}</span>
+                  <ChevronDown aria-hidden="true" className="h-4 w-4" />
                 </>
               )}
             </button>
