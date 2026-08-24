@@ -1,12 +1,12 @@
 export default function NextJs() {
   return (
     <svg viewBox="0 0 128 128">
-      <circle cx="64" cy="64" r="64"></circle>
+      <circle cx="64" cy="64" r="64" />
       <path
         fill="url(#a)"
-        d="M106.317 112.014 49.167 38.4H38.4v51.179h8.614v-40.24l52.54 67.884a64.216 64.216 0 0 0 6.763-5.209z"
-      ></path>
-      <path fill="url(#b)" d="M81.778 38.4h8.533v51.2h-8.533z"></path>
+        d="M106.32 112.01 49.17 38.4H38.4v51.18h8.61V49.34l52.54 67.88a64 64 0 0 0 6.77-5.2"
+      />
+      <path fill="url(#b)" d="M81.78 38.4h8.53v51.2h-8.53z" />
       <defs>
         <linearGradient
           id="a"
@@ -17,20 +17,20 @@ export default function NextJs() {
           gradientTransform="scale(.71111)"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#fff"></stop>
-          <stop offset="1" stopColor="#fff" stopOpacity="0"></stop>
+          <stop stopColor="#fff" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
         </linearGradient>
         <linearGradient
           id="b"
           x1="121"
-          x2="120.799"
+          x2="120.8"
           y1="54"
-          y2="106.875"
+          y2="106.88"
           gradientTransform="scale(.71111)"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#fff"></stop>
-          <stop offset="1" stopColor="#fff" stopOpacity="0"></stop>
+          <stop stopColor="#fff" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
         </linearGradient>
       </defs>
     </svg>
