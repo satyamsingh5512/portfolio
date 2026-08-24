@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "motion/react";
 import { useTheme } from "next-themes";
 import React, { useCallback, useEffect, useState } from "react";
 
@@ -166,17 +165,13 @@ export const ThemeToggleButton = ({
       aria-label="Toggle theme"
     >
       <span className="sr-only">Toggle theme</span>
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={isDark ? "dark" : "light"}
-          initial={{ y: -20, opacity: 0, rotate: -90 }}
-          animate={{ y: 0, opacity: 1, rotate: 0 }}
-          exit={{ y: 20, opacity: 0, rotate: 90 }}
-          transition={{ duration: 0.2 }}
-        >
-          {isDark ? <Moon className="size-4" /> : <Sun className="size-4" />}
-        </motion.div>
-      </AnimatePresence>
+      <span
+        key={isDark ? "dark" : "light"}
+        aria-hidden="true"
+        className="animate-in fade-in zoom-in-75 flex items-center justify-center duration-200"
+      >
+        {isDark ? <Moon className="size-4" /> : <Sun className="size-4" />}
+      </span>
     </Button>
   );
 };
