@@ -1,5 +1,6 @@
 "use client";
 
+import { scheduleWhenIdle } from "@/lib/schedule-idle";
 import { useEffect, useState } from "react";
 
 interface Stats {
@@ -50,7 +51,11 @@ export default function VisitorCount() {
       }
     };
 
-    recordVisit();
+    // Deferred to idle: this is a footer counter, it should never compete with
+    // page load for bandwidth or main-thread time.
+    return scheduleWhenIdle(() => {
+      void recordVisit();
+    }, 4000);
   }, []);
 
   if (loading) {
