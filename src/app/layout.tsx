@@ -1,22 +1,16 @@
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import UmamiAnalytics from "@/components/analytics/UmamiAnalytics";
 import Footer from "@/components/common/Footer";
 import LazyComponents from "@/components/common/LazyComponents";
 import Navbar from "@/components/common/Navbar";
 import SearchPalette from "@/components/common/SearchPalette";
+import SmoothScroll from "@/components/common/SmoothScroll";
 import StructuredData from "@/components/common/StructuredData";
 import { ThemeProvider } from "@/components/common/ThemeProviders";
-import { SessionProvider } from "@/components/providers/SessionProvider";
 import { generateMetadata as getMetadata } from "@/config/Meta";
-import {
-  bricolageGrotesque,
-  geistMono,
-  geistSans,
-  hankenGrotesk,
-} from "@/config/fonts";
+import { bricolageGrotesque, geistMono, geistSans } from "@/config/fonts";
 import { Analytics } from "@vercel/analytics/next";
-import ReactLenis from "lenis/react";
 import { ViewTransitions } from "next-view-transitions";
-import Script from "next/script";
 
 import "./globals.css";
 
@@ -31,44 +25,26 @@ export default function RootLayout({
     <ViewTransitions>
       <html lang="en" suppressHydrationWarning>
         <body
-          className={`${hankenGrotesk.variable} ${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} font-sans antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} font-sans antialiased`}
         >
           <StructuredData />
-          <SessionProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="dark"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <ReactLenis root>
-                <Navbar />
-                {children}
-                <LazyComponents />
-                <Footer />
-                <SearchPalette />
-                {/* Google Analytics */}
-                <Script
-                  src="https://www.googletagmanager.com/gtag/js?id=G-ZE4NNL98WC"
-                  strategy="afterInteractive"
-                />
-                <Script
-                  id="google-analytics"
-                  strategy="afterInteractive"
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                      window.dataLayer = window.dataLayer || [];
-                      function gtag(){dataLayer.push(arguments);}
-                      gtag('js', new Date());
-                      gtag('config', 'G-ZE4NNL98WC');
-                    `,
-                  }}
-                />
-                <UmamiAnalytics />
-                <Analytics />
-              </ReactLenis>
-            </ThemeProvider>
-          </SessionProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SmoothScroll>
+              <Navbar />
+              {children}
+              <LazyComponents />
+              <Footer />
+              <SearchPalette />
+              <GoogleAnalytics />
+              <UmamiAnalytics />
+              <Analytics />
+            </SmoothScroll>
+          </ThemeProvider>
         </body>
       </html>
     </ViewTransitions>
