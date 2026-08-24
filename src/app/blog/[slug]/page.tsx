@@ -154,7 +154,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Container className="py-8 sm:py-12 md:py-16">
+      <Container as="main" className="py-8 sm:py-12 md:py-16">
         <div className="space-y-8 sm:space-y-10 md:space-y-12">
           {/* Back Button */}
           <div>
