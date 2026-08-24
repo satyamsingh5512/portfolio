@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default function Motion({ className }: { className?: string }) {
   return (
@@ -8,7 +8,7 @@ export default function Motion({ className }: { className?: string }) {
       className={className}
       fill="currentColor"
     >
-      <path d="M22.684 0h84.253v42.667H64.81L22.684 0Zm0 42.667H64.81l42.127 42.666H64.81V128L22.684 85.333V42.667Z"></path>
+      <path d="M22.68 0h84.26v42.67H64.8zm0 42.67h42.13l42.13 42.66H64.8V128L22.68 85.33z" />
     </svg>
   );
 }
