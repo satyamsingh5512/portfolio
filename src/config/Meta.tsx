@@ -243,6 +243,22 @@ export const pageMetadata: Record<string, PageMeta> = {
       "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771768670/portfolio/meta/file.png",
     twitterCard: "summary_large_image",
   },
+
+  // StudyBuddy downloads page
+  "/study-buddy-files": {
+    title: "StudyBuddy - Download for Linux & Android",
+    description:
+      "Download StudyBuddy for Linux (.deb) and Android (.apk). Both builds are hosted on GitHub.",
+    keywords: [
+      "studybuddy",
+      "studybuddy download",
+      "studybuddy linux",
+      "studybuddy android",
+      "studybuddy apk",
+      "studybuddy deb",
+    ],
+    twitterCard: "summary_large_image",
+  },
 };
 
 // Helper function to get metadata for a specific page
