@@ -69,6 +69,12 @@ export async function GET() {
         priority: 0.6,
         lastmod: formatDate(new Date()),
       },
+      {
+        url: "https://satym.in/study-buddy-files",
+        changefreq: "weekly",
+        priority: 0.7,
+        lastmod: formatDate(new Date()),
+      },
       ...projectCaseStudies.map((project) => ({
         url: `https://satym.in/projects/${project.slug}`,
         changefreq: "weekly",
