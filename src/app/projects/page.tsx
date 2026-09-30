@@ -4,7 +4,7 @@ import { ProjectList } from "@/components/projects/ProjectList";
 import { Separator } from "@/components/ui/separator";
 import { generateMetadata as getMetadata } from "@/config/Meta";
 import { projects } from "@/config/Projects";
-import { getProjectsFromDB } from "@/lib/projects-db";
+import { getSiteProjects } from "@/lib/content";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -23,16 +23,15 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  // Fetch projects from Supabase
-  const dbProjects = await getProjectsFromDB();
+  // DB (managed from /admin → Projects) wins; `null` means never used → config.
+  const siteProjects = await getSiteProjects();
+  const hasDBProjects = siteProjects !== null;
+  const dbProjects = siteProjects ?? [];
 
   // Sort config projects by order
   const sortedProjects = [...projects].sort(
     (a, b) => (a.order || 999) - (b.order || 999),
   );
-
-  // Use DB projects if available, otherwise fallback to config
-  const hasDBProjects = dbProjects.length > 0;
 
   return (
     <Container as="main" className="py-10 sm:py-16">
@@ -49,7 +48,7 @@ export default async function ProjectsPage() {
 
         <Separator />
 
-        {/* Projects from Supabase */}
+        {/* Projects from MongoDB */}
         {hasDBProjects ? (
           <div className="space-y-4 sm:space-y-6">
             <div className="flex items-center justify-between">
