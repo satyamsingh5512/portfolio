@@ -40,7 +40,25 @@ export async function addBlog(blog: Omit<Blog, "id" | "date">): Promise<Blog> {
   return docToBlog(created.toObject() as unknown as Record<string, unknown>);
 }
 
-export async function deleteBlog(id: string): Promise<void> {
+/** Returns false when no blog with that id existed. */
+export async function deleteBlog(id: string): Promise<boolean> {
   await connectToDatabase();
-  await BlogModel.findByIdAndDelete(id);
+  return Boolean(await BlogModel.findByIdAndDelete(id));
+}
+
+export async function updateBlog(
+  id: string,
+  blog: Omit<Blog, "id" | "date">,
+): Promise<Blog | null> {
+  await connectToDatabase();
+  const updated = await BlogModel.findByIdAndUpdate(
+    id,
+    {
+      $set: { title: blog.title, description: blog.description, url: blog.url },
+    },
+    { returnDocument: "after", runValidators: true },
+  ).lean();
+  return updated
+    ? docToBlog(updated as unknown as Record<string, unknown>)
+    : null;
 }
