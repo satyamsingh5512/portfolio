@@ -1,54 +1,24 @@
+import { getObjectIdOrNull, validationError } from "@/lib/admin-api";
 import { authOptions } from "@/lib/auth";
+import {
+  getAllProjectRecords,
+  markCollectionManaged,
+  projectFromDoc,
+} from "@/lib/content";
 import ProjectModel from "@/lib/models/Project";
 import { connectToDatabase } from "@/lib/mongodb";
+import { revalidatePublicSite } from "@/lib/revalidate";
 import { projectToDb } from "@/lib/supabase";
-import type { ProjectRecord } from "@/lib/supabase";
-import fs from "fs";
-import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
 import * as z from "zod";
 
-const projectsDirectory = path.join(process.cwd(), "src/data/projects");
-
-function generateMdxTemplate(body: Record<string, unknown>): string {
-  const technologiesYaml = Array.isArray(body.technologies)
-    ? body.technologies
-        .map((tech: unknown) => `  - "${String(tech)}"`)
-        .join("\n")
-    : "";
-
-  const descriptionYaml = String(body.shortDescription || "")
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, " ");
-
-  return `---
-title: "${String(body.title || "")}"
-description: "${descriptionYaml}"
-image: "${String(body.image || "")}"
-technologies:
-${technologiesYaml}
-github: "${String(body.githubUrl || "")}"
-live: "${String(body.liveUrl || "")}"
-timeline: "${body.startDate ? new Date(String(body.startDate)).getFullYear() : new Date().getFullYear()}"
-role: "Developer"
-status: "${String(body.status || "completed")}"
-featured: ${Boolean(body.featured)}
-isPublished: true
----
-
-## Project Overview
-
-${String(body.description || "")}
-
-## Key Features
-
-- Feature 1: Add a description
-- Feature 2: Add a description
-
-`;
-}
+/*
+ * Project detail pages (/projects/<slug>) render from MongoDB when there is no
+ * hand-written src/data/projects/<slug>.mdx, and overlay the DB fields on top
+ * of it when there is — so nothing needs to be written to the filesystem here
+ * (which would fail on a read-only serverless deployment anyway).
+ */
 
 const relativeOrAbsoluteUrlSchema = z
   .string()
@@ -62,57 +32,40 @@ const relativeOrAbsoluteUrlSchema = z
 const projectSchema = z.object({
   title: z.string().trim().min(1).max(200),
   shortDescription: z.string().trim().min(1).max(500),
-  description: z.string().trim().min(1).max(5000),
+  description: z.string().trim().min(1).max(20000),
   technologies: z.array(z.string().trim().min(1).max(60)).max(50),
-  githubUrl: z.string().url().optional().or(z.literal("")),
-  liveUrl: z.string().url().optional().or(z.literal("")),
+  githubUrl: z.string().trim().url().optional().or(z.literal("")),
+  liveUrl: z.string().trim().url().optional().or(z.literal("")),
   image: relativeOrAbsoluteUrlSchema.optional().default(""),
   featured: z.boolean().default(false),
   status: z.enum(["completed", "in-progress", "archived"]).default("completed"),
-  startDate: z.string().optional().or(z.literal("")),
-  endDate: z.string().optional().or(z.literal("")),
+  startDate: z.string().trim().max(50).optional().or(z.literal("")),
+  endDate: z.string().trim().max(50).optional().or(z.literal("")),
   category: z.string().trim().max(120).optional().or(z.literal("")),
   orderIndex: z.number().int().min(0).max(100000).default(0),
 });
 
-function getObjectIdOrNull(id: string | null): mongoose.Types.ObjectId | null {
-  if (!id || !mongoose.Types.ObjectId.isValid(id)) return null;
-  return new mongoose.Types.ObjectId(id);
+/** Maps the form payload to DB fields; cleared optionals become `null`. */
+function toDb(body: z.infer<typeof projectSchema>) {
+  return projectToDb({
+    ...body,
+    githubUrl: body.githubUrl || undefined,
+    liveUrl: body.liveUrl || undefined,
+    image: body.image || undefined,
+    startDate: body.startDate || undefined,
+    endDate: body.endDate || undefined,
+    category: body.category || undefined,
+  });
 }
 
-function docToRecord(doc: Record<string, unknown>): ProjectRecord {
-  return {
-    id: String(doc._id),
-    title: String(doc.title ?? ""),
-    shortDescription: String(doc.short_description ?? ""),
-    description: String(doc.description ?? ""),
-    technologies: (doc.technologies as string[]) || [],
-    githubUrl: (doc.github_url as string) || undefined,
-    liveUrl: (doc.live_url as string) || undefined,
-    image: (doc.image as string) || undefined,
-    featured: Boolean(doc.featured),
-    status: (doc.status as ProjectRecord["status"]) || "completed",
-    startDate: (doc.start_date as string) || undefined,
-    endDate: (doc.end_date as string) || undefined,
-    category: (doc.category as string) || undefined,
-    orderIndex: Number(doc.order_index ?? 0),
-    createdAt: doc.createdAt
-      ? new Date(doc.createdAt as string).toISOString()
-      : new Date().toISOString(),
-    updatedAt: doc.updatedAt
-      ? new Date(doc.updatedAt as string).toISOString()
-      : new Date().toISOString(),
-  };
+async function requireAdmin() {
+  const session = await getServerSession(authOptions);
+  return session && session.user.role === "admin" ? session : null;
 }
 
 export async function GET() {
   try {
-    await connectToDatabase();
-    const data = await ProjectModel.find({}).sort({ order_index: 1 }).lean();
-    const projects = (data as unknown as Record<string, unknown>[]).map(
-      docToRecord,
-    );
-    return NextResponse.json(projects);
+    return NextResponse.json(await getAllProjectRecords());
   } catch (err) {
     console.error("Failed to fetch projects:", err);
     return NextResponse.json(
@@ -123,50 +76,21 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    await connectToDatabase();
     const parsed = projectSchema.safeParse(await request.json());
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Invalid project payload", details: parsed.error.flatten() },
-        { status: 400 },
-      );
-    }
-    const body = parsed.data;
-    const dbData = projectToDb({
-      ...body,
-      githubUrl: body.githubUrl || undefined,
-      liveUrl: body.liveUrl || undefined,
-      image: body.image || undefined,
-      startDate: body.startDate || undefined,
-      endDate: body.endDate || undefined,
-      category: body.category || undefined,
-    });
+    if (!parsed.success) return validationError("project", parsed.error);
 
-    const created = await ProjectModel.create(dbData);
-
-    // Auto-create MDX file
-    const slug = body.title
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "");
-    const mdxPath = path.join(projectsDirectory, `${slug}.mdx`);
-    if (!fs.existsSync(projectsDirectory)) {
-      fs.mkdirSync(projectsDirectory, { recursive: true });
-    }
-    if (!fs.existsSync(mdxPath)) {
-      fs.writeFileSync(mdxPath, generateMdxTemplate(body), "utf8");
-    }
+    await connectToDatabase();
+    const created = await ProjectModel.create(toDb(parsed.data));
+    await markCollectionManaged("projects");
+    revalidatePublicSite();
 
     return NextResponse.json(
-      docToRecord(
-        created.toObject() as unknown as unknown as Record<string, unknown>,
-      ),
+      projectFromDoc(created.toObject() as unknown as Record<string, unknown>),
       { status: 201 },
     );
   } catch (err) {
@@ -179,15 +103,14 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    await connectToDatabase();
-    const { searchParams } = new URL(request.url);
-    const objectId = getObjectIdOrNull(searchParams.get("id"));
+    const objectId = getObjectIdOrNull(
+      new URL(request.url).searchParams.get("id"),
+    );
     if (!objectId) {
       return NextResponse.json(
         { error: "Valid project ID required" },
@@ -196,49 +119,24 @@ export async function PUT(request: NextRequest) {
     }
 
     const parsed = projectSchema.safeParse(await request.json());
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Invalid project payload", details: parsed.error.flatten() },
-        { status: 400 },
-      );
-    }
-    const body = parsed.data;
-    const dbData = projectToDb({
-      ...body,
-      githubUrl: body.githubUrl || undefined,
-      liveUrl: body.liveUrl || undefined,
-      image: body.image || undefined,
-      startDate: body.startDate || undefined,
-      endDate: body.endDate || undefined,
-      category: body.category || undefined,
-    });
+    if (!parsed.success) return validationError("project", parsed.error);
 
+    await connectToDatabase();
+    // Nullable fields are set to null (not left untouched) when cleared.
     const updated = await ProjectModel.findByIdAndUpdate(
       objectId,
-      { $set: dbData },
-      { new: true },
+      { $set: toDb(parsed.data) },
+      { returnDocument: "after", runValidators: true },
     ).lean();
 
-    if (!updated)
+    if (!updated) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
-
-    // Auto-update MDX file
-    const slug = body.title
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "");
-    const mdxPath = path.join(projectsDirectory, `${slug}.mdx`);
-    if (!fs.existsSync(projectsDirectory)) {
-      fs.mkdirSync(projectsDirectory, { recursive: true });
     }
-    // If the file exists, we just overwrite the frontmatter part and preserve the content (or just overwrite if it's simpler, but overwriting completely ruins content).
-    // For simplicity, we just create it if it didn't exist before.
-    if (!fs.existsSync(mdxPath)) {
-      fs.writeFileSync(mdxPath, generateMdxTemplate(body), "utf8");
-    }
+    await markCollectionManaged("projects");
+    revalidatePublicSite();
 
     return NextResponse.json(
-      docToRecord(updated as unknown as Record<string, unknown>),
+      projectFromDoc(updated as unknown as Record<string, unknown>),
     );
   } catch (err) {
     console.error("Failed to update project:", err);
@@ -250,15 +148,14 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    await connectToDatabase();
-    const { searchParams } = new URL(request.url);
-    const objectId = getObjectIdOrNull(searchParams.get("id"));
+    const objectId = getObjectIdOrNull(
+      new URL(request.url).searchParams.get("id"),
+    );
     if (!objectId) {
       return NextResponse.json(
         { error: "Valid project ID required" },
@@ -266,7 +163,14 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await ProjectModel.findByIdAndDelete(objectId);
+    await connectToDatabase();
+    const deleted = await ProjectModel.findByIdAndDelete(objectId);
+    if (!deleted) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+    await markCollectionManaged("projects");
+    revalidatePublicSite();
+
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Failed to delete project:", err);
