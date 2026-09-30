@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { type Experience } from "@/config/Experience";
+import { canOptimizeImage } from "@/lib/image";
 import { ChevronDown, ChevronUp, ExternalLink, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,6 +11,18 @@ import React, { useState } from "react";
 
 interface ExperienceCardProps {
   experience: Experience;
+}
+
+/**
+ * Bullet points are written by the admin with `**bold**` markdown (see
+ * src/config/Experience.tsx). Escape everything else, then render bold.
+ */
+function renderBullet(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
 }
 
 export function ExperienceCard({ experience }: ExperienceCardProps) {
@@ -24,6 +37,7 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
               <div className="bg-muted relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg sm:h-12 sm:w-12">
                 <Image
                   src={experience.logo}
+                  unoptimized={!canOptimizeImage(experience.logo)}
                   alt={`${experience.company} logo`}
                   fill
                   sizes="48px"
@@ -84,7 +98,9 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
           <div className="prose prose-sm max-w-none">
             <p className="text-muted-foreground text-sm leading-relaxed sm:text-base">
               <span
-                dangerouslySetInnerHTML={{ __html: experience.description[0] }}
+                dangerouslySetInnerHTML={{
+                  __html: renderBullet(experience.description[0] ?? ""),
+                }}
               />
             </p>
           </div>
@@ -95,7 +111,9 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
               <ul className="text-muted-foreground space-y-1.5 text-sm sm:space-y-2 sm:text-base">
                 {experience.description.slice(1).map((item, index) => (
                   <li key={index} className="leading-relaxed">
-                    <span dangerouslySetInnerHTML={{ __html: item }} />
+                    <span
+                      dangerouslySetInnerHTML={{ __html: renderBullet(item) }}
+                    />
                   </li>
                 ))}
               </ul>
