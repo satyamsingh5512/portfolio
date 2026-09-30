@@ -1,7 +1,25 @@
+import { getObjectIdOrNull, validationError } from "@/lib/admin-api";
 import { authOptions } from "@/lib/auth";
-import { addBlog, deleteBlog, getBlogs } from "@/lib/blog-service";
+import { addBlog, deleteBlog, getBlogs, updateBlog } from "@/lib/blog-service";
+import { revalidatePublicSite } from "@/lib/revalidate";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import * as z from "zod";
+
+const externalBlogSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  description: z.string().trim().min(1).max(1000),
+  url: z
+    .string()
+    .trim()
+    .url()
+    .refine((value) => /^https?:\/\//i.test(value), "Must be an http(s) URL"),
+});
+
+async function isAdmin(): Promise<boolean> {
+  const session = await getServerSession(authOptions);
+  return Boolean(session && session.user.role === "admin");
+}
 
 export async function GET() {
   const blogs = await getBlogs();
@@ -9,26 +27,19 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session || session.user.role !== "admin") {
+  if (!(await isAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const body = await request.json();
-    const { title, description, url } = body;
+    const parsed = externalBlogSchema.safeParse(await request.json());
+    if (!parsed.success) return validationError("blog", parsed.error);
 
-    if (!title || !description || !url) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 },
-      );
-    }
-
-    const newBlog = await addBlog({ title, description, url });
+    const newBlog = await addBlog(parsed.data);
+    revalidatePublicSite();
     return NextResponse.json(newBlog, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("Failed to create external blog:", err);
     return NextResponse.json(
       { error: "Failed to create blog" },
       { status: 500 },
@@ -36,24 +47,59 @@ export async function POST(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session || session.user.role !== "admin") {
+export async function PUT(request: Request) {
+  if (!(await isAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-
-    if (!id) {
-      return NextResponse.json({ error: "Missing blog ID" }, { status: 400 });
+    const id = new URL(request.url).searchParams.get("id");
+    if (!getObjectIdOrNull(id)) {
+      return NextResponse.json(
+        { error: "Valid blog ID required" },
+        { status: 400 },
+      );
     }
 
-    await deleteBlog(id);
+    const parsed = externalBlogSchema.safeParse(await request.json());
+    if (!parsed.success) return validationError("blog", parsed.error);
+
+    const updated = await updateBlog(id!, parsed.data);
+    if (!updated) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
+    revalidatePublicSite();
+    return NextResponse.json(updated);
+  } catch (err) {
+    console.error("Failed to update external blog:", err);
+    return NextResponse.json(
+      { error: "Failed to update blog" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  if (!(await isAdmin())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const id = new URL(request.url).searchParams.get("id");
+    if (!getObjectIdOrNull(id)) {
+      return NextResponse.json(
+        { error: "Valid blog ID required" },
+        { status: 400 },
+      );
+    }
+
+    if (!(await deleteBlog(id!))) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
+    revalidatePublicSite();
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (err) {
+    console.error("Failed to delete external blog:", err);
     return NextResponse.json(
       { error: "Failed to delete blog" },
       { status: 500 },
