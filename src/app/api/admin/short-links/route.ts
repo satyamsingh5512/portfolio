@@ -1,3 +1,4 @@
+import { toUpdate } from "@/lib/admin-api";
 import { authOptions } from "@/lib/auth";
 import ShortLinkModel from "@/lib/models/ShortLink";
 import { connectToDatabase } from "@/lib/mongodb";
@@ -230,17 +231,16 @@ export async function PUT(request: NextRequest) {
 
     const updated = await ShortLinkModel.findByIdAndUpdate(
       objectId,
-      {
-        $set: {
-          code,
-          url: destinationUrl,
-          title: body.title,
-          description: body.description,
-          tags: body.tags ?? [],
-          isActive: body.isActive ?? true,
-          expiresAt,
-        },
-      },
+      // Cleared title/description are $unset, not silently kept.
+      toUpdate({
+        code,
+        url: destinationUrl,
+        title: body.title,
+        description: body.description,
+        tags: body.tags ?? [],
+        isActive: body.isActive ?? true,
+        expiresAt,
+      }),
       { returnDocument: "after" },
     ).lean();
 
