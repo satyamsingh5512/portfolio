@@ -1,14 +1,16 @@
 import Container from "@/components/common/Container";
 import SectionHeading from "@/components/common/SectionHeading";
 import { ExperienceList } from "@/components/experience/ExperienceList";
-import { experiences } from "@/config/Experience";
 import { generateMetadata } from "@/config/Meta";
+import { getSiteExperiences } from "@/lib/content";
 import type { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = generateMetadata("/work-experience");
 
-export default function WorkExperiencePage() {
+export default async function WorkExperiencePage() {
+  const experiences = await getSiteExperiences();
+
   return (
     <Container as="main" className="min-h-screen py-10 sm:py-16">
       <SectionHeading
