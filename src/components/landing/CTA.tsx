@@ -2,6 +2,7 @@
 
 import { ctaConfig } from "@/config/CTA";
 import { useHapticFeedback } from "@/hooks/use-haptic-feedback";
+import { canOptimizeImage } from "@/lib/image";
 import Image from "next/image";
 
 import FadeIn from "../animations/FadeIn";
@@ -13,6 +14,14 @@ interface CallToActionProps {
   linkText?: string;
   emailAddress?: string;
   preText?: string;
+  /** Cal.com path (`user/event`) or full booking URL. Empty = email instead. */
+  calLink?: string;
+}
+
+function toBookingUrl(calLink: string): string {
+  return /^https?:\/\//.test(calLink)
+    ? calLink
+    : `https://cal.com/${calLink.replace(/^\/+/, "")}`;
 }
 
 export default function CTA({
@@ -21,12 +30,17 @@ export default function CTA({
   linkText = ctaConfig.linkText,
   emailAddress = ctaConfig.emailAddress,
   preText = ctaConfig.preText,
+  calLink = "",
 }: CallToActionProps) {
   const { triggerHaptic, isMobile } = useHapticFeedback();
 
   const handleButtonClick = () => {
     if (isMobile()) {
       triggerHaptic("medium");
+    }
+    if (calLink) {
+      window.open(toBookingUrl(calLink), "_blank", "noopener,noreferrer");
+      return;
     }
     window.location.href = `mailto:${emailAddress}`;
   };
@@ -42,21 +56,28 @@ export default function CTA({
             <div className="mt-3 flex w-full justify-center sm:mt-0 sm:w-auto sm:justify-end">
               <button
                 type="button"
-                aria-label={`${linkText} — email ${emailAddress}`}
+                aria-label={
+                  calLink
+                    ? `${linkText} (opens in a new tab)`
+                    : `${linkText} — email ${emailAddress}`
+                }
                 className="group inline-flex min-h-11 cursor-pointer items-center self-end rounded-md border border-dashed border-black/20 bg-black/5 px-2 py-1 text-xs text-black shadow-[0_0_5px_rgba(0,0,0,0.1)] transition-all sm:text-sm dark:border-white/30 dark:bg-white/15 dark:text-white dark:shadow-[0_0_5px_rgba(255,255,255,0.1)]"
                 onClick={handleButtonClick}
               >
                 <span className="relative z-20 flex items-center gap-2 transition-all duration-300 group-hover:gap-8">
-                  <span className="block h-5 w-5 flex-shrink-0 overflow-hidden rounded-full">
-                    <Image
-                      alt={profileAlt}
-                      width={20}
-                      height={20}
-                      className="h-full w-full object-cover"
-                      src={profileImage}
-                      style={{ color: "transparent" }}
-                    />
-                  </span>
+                  {profileImage && (
+                    <span className="block h-5 w-5 flex-shrink-0 overflow-hidden rounded-full">
+                      <Image
+                        alt={profileAlt}
+                        width={20}
+                        height={20}
+                        className="h-full w-full object-cover"
+                        src={profileImage}
+                        unoptimized={!canOptimizeImage(profileImage)}
+                        style={{ color: "transparent" }}
+                      />
+                    </span>
+                  )}
                   <span
                     aria-hidden="true"
                     className="absolute left-[24px] flex -translate-x-full transform items-center gap-0 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
