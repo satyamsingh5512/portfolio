@@ -7,9 +7,13 @@ import Hero from "@/components/landing/Hero";
 import Journey from "@/components/landing/Journey";
 import Work from "@/components/landing/Projects";
 import Setup from "@/components/landing/Setup";
+import { getSiteSettings } from "@/lib/site-settings";
 import React from "react";
 
-export default function page() {
+export default async function page() {
+  // CTA is a client component, so its admin-managed content is passed down.
+  const { cta, contact } = await getSiteSettings();
+
   return (
     <main className="min-h-screen overflow-x-hidden py-16">
       <Hero />
@@ -18,7 +22,13 @@ export default function page() {
       <About />
       <Github />
       <Blog />
-      <CTA />
+      <CTA
+        profileImage={cta.profileImage}
+        preText={cta.preText}
+        linkText={cta.linkText}
+        calLink={cta.calLink}
+        emailAddress={contact.email}
+      />
       <Setup />
       <Journey />
     </main>
