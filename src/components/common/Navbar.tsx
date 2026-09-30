@@ -84,19 +84,31 @@ export default function Navbar() {
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="hover:bg-accent/50 size-10 cursor-pointer sm:hidden"
+                className="hover:bg-accent/50 size-10 cursor-pointer active:scale-90 sm:hidden"
                 aria-label="Open menu"
+                aria-expanded={menuOpen}
               >
-                <Menu className="size-5" aria-hidden="true" />
+                <Menu
+                  className={cn(
+                    "size-5 transition-transform duration-300 ease-out",
+                    menuOpen && "rotate-90",
+                  )}
+                  aria-hidden="true"
+                />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-64 max-w-[80vw] pt-14">
+            <SheetContent
+              side="right"
+              // Spring-like deceleration on open, quicker ease-in on close.
+              className="mobile-menu w-64 max-w-[80vw] pt-14 ease-[cubic-bezier(0.32,0.72,0,1)] data-[state=closed]:duration-250 data-[state=closed]:ease-[cubic-bezier(0.4,0,1,1)] data-[state=open]:duration-450"
+              overlayClassName="mobile-menu-overlay bg-black/40 backdrop-blur-[2px] data-[state=closed]:duration-250 data-[state=open]:duration-300"
+            >
               <SheetTitle className="sr-only">Menu</SheetTitle>
               <SheetDescription className="sr-only">
                 Site navigation
               </SheetDescription>
               <nav aria-label="Mobile" className="flex flex-col px-4">
-                {navbarConfig.navItems.map((item) => {
+                {navbarConfig.navItems.map((item, index) => {
                   const isActive = pathname === item.href;
                   return (
                     <Link
@@ -105,8 +117,10 @@ export default function Navbar() {
                       aria-current={isActive ? "page" : undefined}
                       prefetch={false}
                       onClick={() => setMenuOpen(false)}
+                      // Staggered entrance; see .mobile-menu-item in globals.css.
+                      style={{ "--i": index } as React.CSSProperties}
                       className={cn(
-                        "hover:bg-accent/50 flex min-h-12 items-center rounded-md px-3 text-base transition-colors",
+                        "mobile-menu-item hover:bg-accent/50 flex min-h-12 items-center rounded-md px-3 text-base transition-colors active:scale-[0.98]",
                         isActive && "bg-accent/50 font-medium",
                       )}
                     >
