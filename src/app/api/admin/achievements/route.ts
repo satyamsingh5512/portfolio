@@ -1,59 +1,39 @@
+import { getObjectIdOrNull, validationError } from "@/lib/admin-api";
 import { authOptions } from "@/lib/auth";
+import {
+  achievementFromDoc,
+  getAllAchievementRecords,
+  markCollectionManaged,
+} from "@/lib/content";
 import AchievementModel from "@/lib/models/Achievement";
 import { connectToDatabase } from "@/lib/mongodb";
-import mongoose from "mongoose";
+import { revalidatePublicSite } from "@/lib/revalidate";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import * as z from "zod";
 
 const achievementSchema = z.object({
   title: z.string().trim().min(1).max(200),
-  issuer: z.string().trim().min(1).max(200),
+  issuer: z.string().trim().min(1).max(300),
   date: z.string().trim().min(1).max(50),
   file: z
     .string()
     .trim()
-    .min(1)
+    .min(1, "Certificate image is required")
     .refine(
       (value) => value.startsWith("/") || /^https?:\/\//.test(value),
       "File must be a relative path or an absolute URL",
     ),
 });
 
-function getObjectIdOrNull(id: string | null): mongoose.Types.ObjectId | null {
-  if (!id || !mongoose.Types.ObjectId.isValid(id)) return null;
-  return new mongoose.Types.ObjectId(id);
-}
-
-interface AchievementData {
-  id: string;
-  title: string;
-  issuer: string;
-  date: string;
-  file: string;
-  createdAt: string;
-}
-
-function docToData(doc: Record<string, unknown>): AchievementData {
-  return {
-    id: String(doc._id),
-    title: String(doc.title ?? ""),
-    issuer: String(doc.issuer ?? ""),
-    date: String(doc.date ?? ""),
-    file: String(doc.file ?? ""),
-    createdAt: doc.createdAt
-      ? new Date(doc.createdAt as string).toISOString()
-      : new Date().toISOString(),
-  };
+async function requireAdmin() {
+  const session = await getServerSession(authOptions);
+  return session && session.user.role === "admin" ? session : null;
 }
 
 export async function GET() {
   try {
-    await connectToDatabase();
-    const data = await AchievementModel.find({}).sort({ createdAt: -1 }).lean();
-    return NextResponse.json(
-      (data as unknown as Record<string, unknown>[]).map(docToData),
-    );
+    return NextResponse.json(await getAllAchievementRecords());
   } catch (err) {
     console.error("Failed to fetch achievements:", err);
     return NextResponse.json(
@@ -64,33 +44,22 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    await connectToDatabase();
     const parsed = achievementSchema.safeParse(await request.json());
-    if (!parsed.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid achievement payload",
-          details: parsed.error.flatten(),
-        },
-        { status: 400 },
-      );
-    }
-    const body = parsed.data;
-    const created = await AchievementModel.create({
-      title: body.title,
-      issuer: body.issuer,
-      date: body.date,
-      file: body.file,
-    });
+    if (!parsed.success) return validationError("achievement", parsed.error);
+
+    await connectToDatabase();
+    const created = await AchievementModel.create(parsed.data);
+    await markCollectionManaged("achievements");
+    revalidatePublicSite();
+
     return NextResponse.json(
-      docToData(
-        created.toObject() as unknown as unknown as Record<string, unknown>,
+      achievementFromDoc(
+        created.toObject() as unknown as Record<string, unknown>,
       ),
       { status: 201 },
     );
@@ -104,52 +73,42 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    await connectToDatabase();
-    const { searchParams } = new URL(request.url);
-    const objectId = getObjectIdOrNull(searchParams.get("id"));
-    if (!objectId)
+    const objectId = getObjectIdOrNull(
+      new URL(request.url).searchParams.get("id"),
+    );
+    if (!objectId) {
       return NextResponse.json(
         { error: "Valid achievement ID required" },
         { status: 400 },
       );
+    }
 
     const parsed = achievementSchema.safeParse(await request.json());
-    if (!parsed.success) {
-      return NextResponse.json(
-        {
-          error: "Invalid achievement payload",
-          details: parsed.error.flatten(),
-        },
-        { status: 400 },
-      );
-    }
-    const body = parsed.data;
+    if (!parsed.success) return validationError("achievement", parsed.error);
+
+    await connectToDatabase();
     const updated = await AchievementModel.findByIdAndUpdate(
       objectId,
-      {
-        $set: {
-          title: body.title,
-          issuer: body.issuer,
-          date: body.date,
-          file: body.file,
-        },
-      },
-      { new: true },
+      { $set: parsed.data },
+      { returnDocument: "after", runValidators: true },
     ).lean();
 
-    if (!updated)
+    if (!updated) {
       return NextResponse.json(
         { error: "Achievement not found" },
         { status: 404 },
       );
+    }
+    await markCollectionManaged("achievements");
+    revalidatePublicSite();
+
     return NextResponse.json(
-      docToData(updated as unknown as Record<string, unknown>),
+      achievementFromDoc(updated as unknown as Record<string, unknown>),
     );
   } catch (err) {
     console.error("Failed to update achievement:", err);
@@ -161,22 +120,32 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== "admin") {
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    await connectToDatabase();
-    const { searchParams } = new URL(request.url);
-    const objectId = getObjectIdOrNull(searchParams.get("id"));
-    if (!objectId)
+    const objectId = getObjectIdOrNull(
+      new URL(request.url).searchParams.get("id"),
+    );
+    if (!objectId) {
       return NextResponse.json(
         { error: "Valid achievement ID required" },
         { status: 400 },
       );
+    }
 
-    await AchievementModel.findByIdAndDelete(objectId);
+    await connectToDatabase();
+    const deleted = await AchievementModel.findByIdAndDelete(objectId);
+    if (!deleted) {
+      return NextResponse.json(
+        { error: "Achievement not found" },
+        { status: 404 },
+      );
+    }
+    await markCollectionManaged("achievements");
+    revalidatePublicSite();
+
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Failed to delete achievement:", err);
