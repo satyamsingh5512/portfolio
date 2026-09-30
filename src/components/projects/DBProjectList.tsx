@@ -4,6 +4,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import { canOptimizeImage } from "@/lib/image";
 import type { ProjectRecord } from "@/lib/supabase";
 import { Link } from "next-view-transitions";
 import Image from "next/image";
@@ -34,6 +35,7 @@ export function DBProjectCard({ project }: DBProjectCardProps) {
               height={1080}
               sizes="(max-width: 768px) 100vw, 50vw"
               loading="lazy"
+              unoptimized={!canOptimizeImage(project.image)}
             />
           ) : (
             <div className="from-primary/20 to-primary/5 flex h-full w-full items-center justify-center bg-linear-to-br">
