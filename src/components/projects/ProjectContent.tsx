@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { canOptimizeImage } from "@/lib/image";
 import { ProjectCaseStudyFrontmatter } from "@/types/project";
 import rehypeHighlight from "@shikijs/rehype";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -43,15 +44,18 @@ export function ProjectContent({ frontmatter, content }: ProjectContentProps) {
     <article className="mx-auto max-w-4xl">
       {/* Hero Section */}
       <header className="mb-8 space-y-6">
-        <div className="relative aspect-video overflow-hidden rounded-lg">
-          <Image
-            src={image}
-            alt={title}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
+        {image && (
+          <div className="relative aspect-video overflow-hidden rounded-lg">
+            <Image
+              src={image}
+              alt={title}
+              fill
+              className="object-cover"
+              priority
+              unoptimized={!canOptimizeImage(image)}
+            />
+          </div>
+        )}
 
         <div className="space-y-4">
           {/* Project Status and Technologies */}
