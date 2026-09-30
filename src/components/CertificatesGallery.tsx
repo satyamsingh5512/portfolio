@@ -1,19 +1,20 @@
 "use client";
 
-import { certificates } from "@/config/Achievements";
+import { canOptimizeImage } from "@/lib/image";
 import Image from "next/image";
 import React, { useCallback, useState } from "react";
 
 import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 
+export interface Certificate {
+  file: string;
+  title: string;
+  issuer: string;
+  date: string;
+}
+
 const CertificateCard = React.memo(
-  ({
-    cert,
-    onOpen,
-  }: {
-    cert: (typeof certificates)[0];
-    onOpen: (file: string) => void;
-  }) => {
+  ({ cert, onOpen }: { cert: Certificate; onOpen: (file: string) => void }) => {
     const handleClick = useCallback(
       () => onOpen(cert.file),
       [cert.file, onOpen],
@@ -25,6 +26,7 @@ const CertificateCard = React.memo(
           <Image
             src={cert.file}
             alt={cert.title || "certificate"}
+            unoptimized={!canOptimizeImage(cert.file)}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
             className="object-contain"
@@ -44,7 +46,11 @@ const CertificateCard = React.memo(
 
 CertificateCard.displayName = "CertificateCard";
 
-export default function CertificatesGallery() {
+export default function CertificatesGallery({
+  certificates,
+}: {
+  certificates: Certificate[];
+}) {
   const [active, setActive] = useState<string | null>(null);
 
   const handleOpen = useCallback((file: string) => setActive(file), []);
@@ -53,9 +59,18 @@ export default function CertificatesGallery() {
   return (
     <div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-        {certificates.map((cert) => (
-          <CertificateCard key={cert.file} cert={cert} onOpen={handleOpen} />
+        {certificates.map((cert, index) => (
+          <CertificateCard
+            key={`${cert.file}-${index}`}
+            cert={cert}
+            onOpen={handleOpen}
+          />
         ))}
+        {certificates.length === 0 && (
+          <p className="text-muted-foreground col-span-full text-center text-sm">
+            No certificates yet.
+          </p>
+        )}
       </div>
 
       {/* Fullscreen viewer */}
@@ -74,6 +89,7 @@ export default function CertificatesGallery() {
                 <Image
                   src={active}
                   alt="certificate"
+                  unoptimized={!canOptimizeImage(active)}
                   fill
                   sizes="100vw"
                   className="object-contain"
