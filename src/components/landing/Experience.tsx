@@ -1,4 +1,5 @@
-import { type Experience, experiences } from "@/config/Experience";
+import { type Experience } from "@/config/Experience";
+import { getSiteExperiences } from "@/lib/content";
 import { Link } from "next-view-transitions";
 import React from "react";
 
@@ -8,7 +9,11 @@ import SectionHeading from "../common/SectionHeading";
 import { ExperienceCard } from "../experience/ExperienceCard";
 import { Button } from "../ui/button";
 
-export default function Experience() {
+/** Entries come from /admin → Experiences (config fallback until first edit). */
+export default async function Experience() {
+  const experiences = await getSiteExperiences();
+  if (experiences.length === 0) return null;
+
   return (
     <Container className="mt-12 sm:mt-20">
       <FadeIn>
