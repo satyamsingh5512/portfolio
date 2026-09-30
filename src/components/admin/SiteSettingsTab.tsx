@@ -28,10 +28,21 @@ import type {
   HeroSettings,
   SiteSettings,
   SocialLink,
-} from "@/lib/supabase";
+} from "@/lib/site-settings";
 import { Loader2, Plus, Save, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+
+import { readApiError } from "./ConfigFallbackNotice";
+
+const SECTION_LABELS: Record<keyof SiteSettings, string> = {
+  hero: "Hero",
+  about: "About",
+  socialLinks: "Social links",
+  contact: "Contact",
+  cta: "CTA",
+  footer: "Footer",
+};
 
 interface SiteSettingsTabProps {
   initialSettings: SiteSettings;
@@ -43,19 +54,49 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
 
   const saveSection = async (key: keyof SiteSettings) => {
     setSaving(key);
+    // Drop blank rows the editors leave behind (e.g. empty expertise lines).
+    let payload: unknown = settings[key];
+    if (key === "about") {
+      payload = {
+        ...settings.about,
+        expertise: settings.about.expertise
+          .map((line) => line.trim())
+          .filter(Boolean),
+        highlights: settings.about.highlights.filter(
+          (h) => h.title.trim() || h.description.trim(),
+        ),
+      };
+    } else if (key === "hero") {
+      payload = {
+        ...settings.hero,
+        skills: settings.hero.skills.filter((s) => s.name.trim()),
+      };
+    } else if (key === "socialLinks") {
+      payload = settings.socialLinks.filter(
+        (l) => l.name.trim() || l.href.trim(),
+      );
+    }
+
     try {
       const res = await fetch("/api/admin/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key, value: settings[key] }),
+        body: JSON.stringify({ key, value: payload }),
       });
 
-      if (!res.ok) throw new Error("Failed to save");
-      toast.success(
-        `${key.charAt(0).toUpperCase() + key.slice(1)} settings saved!`,
+      if (!res.ok) {
+        throw new Error(await readApiError(res, "Failed to save settings"));
+      }
+      // Store the normalised (trimmed/defaulted) value the server saved.
+      const { value } = await res.json();
+      if (value !== undefined) {
+        setSettings((prev) => ({ ...prev, [key]: value }));
+      }
+      toast.success(`${SECTION_LABELS[key]} saved — the live site is updated.`);
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to save settings",
       );
-    } catch {
-      toast.error("Failed to save settings");
     } finally {
       setSaving(null);
     }
@@ -87,6 +128,16 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
   // About Settings
   const updateAbout = (updates: Partial<AboutSettings>) => {
     setSettings((prev) => ({ ...prev, about: { ...prev.about, ...updates } }));
+  };
+
+  const updateHighlight = (
+    index: number,
+    field: "title" | "description",
+    value: string,
+  ) => {
+    const highlights = [...settings.about.highlights];
+    highlights[index] = { ...highlights[index], [field]: value };
+    updateAbout({ highlights });
   };
 
   // Social Links
@@ -145,7 +196,8 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Site Settings</h2>
         <p className="text-muted-foreground">
-          Manage your portfolio content. Changes are saved to Supabase.
+          Manage your portfolio content. Each section is saved to MongoDB and
+          published to the live site immediately.
         </p>
       </div>
 
@@ -201,9 +253,12 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="hero-description">
-                  Description (HTML supported)
-                </Label>
+                <Label htmlFor="hero-description">Description</Label>
+                <p className="text-muted-foreground text-xs">
+                  Use <code>&lt;b&gt;bold&lt;/b&gt;</code> for emphasis and{" "}
+                  <code>{"{skills:0}"}</code>, <code>{"{skills:1}"}</code>… to
+                  inline a skill chip from the list below (0-based).
+                </p>
                 <Textarea
                   id="hero-description"
                   value={settings.hero.description}
@@ -215,7 +270,9 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="hero-resume">Resume URL</Label>
+                  <Label htmlFor="hero-resume">
+                    Resume URL (optional — shows a Resume button)
+                  </Label>
                   <Input
                     id="hero-resume"
                     value={settings.hero.resumeUrl}
@@ -224,7 +281,9 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="hero-contact">Contact URL</Label>
+                  <Label htmlFor="hero-contact">
+                    &quot;Get in touch&quot; button link
+                  </Label>
                   <Input
                     id="hero-contact"
                     value={settings.hero.contactUrl}
@@ -236,7 +295,7 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label>Skills</Label>
+                  <Label>Skills (name + link; icon is matched by name)</Label>
                   <Button
                     type="button"
                     variant="outline"
@@ -248,7 +307,10 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
                 </div>
                 <div className="space-y-2">
                   {settings.hero.skills.map((skill, index) => (
-                    <div key={index} className="flex gap-2">
+                    <div key={index} className="flex items-center gap-2">
+                      <code className="text-muted-foreground w-8 shrink-0 text-xs">
+                        {index}
+                      </code>
                       <Input
                         value={skill.name}
                         onChange={(e) =>
@@ -312,7 +374,9 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="about-description">Description</Label>
+                <Label htmlFor="about-description">
+                  Description (line breaks are kept)
+                </Label>
                 <Textarea
                   id="about-description"
                   value={settings.about.description}
@@ -323,7 +387,9 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="about-skills">Skills (comma-separated)</Label>
+                <Label htmlFor="about-skills">
+                  Skills icons (comma-separated technology names)
+                </Label>
                 <Input
                   id="about-skills"
                   value={settings.about.skills.join(", ")}
@@ -344,6 +410,80 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
                     </Badge>
                   ))}
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>&quot;What I Do&quot; highlights</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      updateAbout({
+                        highlights: [
+                          ...settings.about.highlights,
+                          { title: "", description: "" },
+                        ],
+                      })
+                    }
+                  >
+                    <Plus className="mr-1 h-4 w-4" /> Add Highlight
+                  </Button>
+                </div>
+                {settings.about.highlights.map((highlight, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <div className="flex-1 space-y-2">
+                      <Input
+                        aria-label={`Highlight ${index + 1} title`}
+                        value={highlight.title}
+                        onChange={(e) =>
+                          updateHighlight(index, "title", e.target.value)
+                        }
+                        placeholder="Full-Stack Development"
+                      />
+                      <Textarea
+                        aria-label={`Highlight ${index + 1} description`}
+                        value={highlight.description}
+                        onChange={(e) =>
+                          updateHighlight(index, "description", e.target.value)
+                        }
+                        placeholder="What you do, in a sentence or two"
+                        rows={2}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label={`Remove highlight ${index + 1}`}
+                      onClick={() =>
+                        updateAbout({
+                          highlights: settings.about.highlights.filter(
+                            (_, i) => i !== index,
+                          ),
+                        })
+                      }
+                    >
+                      <Trash2 className="text-destructive h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="about-expertise">
+                  &quot;Core Expertise&quot; (one per line)
+                </Label>
+                <Textarea
+                  id="about-expertise"
+                  value={settings.about.expertise.join("\n")}
+                  onChange={(e) =>
+                    updateAbout({ expertise: e.target.value.split("\n") })
+                  }
+                  placeholder="Building scalable web applications"
+                  rows={6}
+                />
               </div>
 
               <Button
@@ -479,7 +619,9 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="contact-email">Email</Label>
+                <Label htmlFor="contact-email">
+                  Email (used by the CTA button when no Cal.com link is set)
+                </Label>
                 <Input
                   id="contact-email"
                   type="email"
@@ -545,7 +687,9 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cta-callink">Cal.com Link</Label>
+                  <Label htmlFor="cta-callink">
+                    Cal.com link (optional, e.g. user/meeting)
+                  </Label>
                   <Input
                     id="cta-callink"
                     value={settings.cta.calLink}
