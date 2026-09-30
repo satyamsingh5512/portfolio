@@ -2,6 +2,7 @@ import { authOptions } from "@/lib/auth";
 import BlogPostModel from "@/lib/models/BlogPost";
 import ShortLinkModel from "@/lib/models/ShortLink";
 import { connectToDatabase } from "@/lib/mongodb";
+import { revalidatePublicSite } from "@/lib/revalidate";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -13,6 +14,15 @@ function extractTextFromTipTap(node: unknown): string {
   if (Array.isArray(n.content))
     return n.content.map(extractTextFromTipTap).join(" ");
   return "";
+}
+
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 }
 
 interface RouteParams {
@@ -73,9 +83,17 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       : undefined;
 
     // Build a safe update object — only fields explicitly managed by the form
+    const nextSlug =
+      typeof body.slug === "string" && body.slug.trim()
+        ? slugify(body.slug)
+        : undefined;
+    if (body.slug !== undefined && !nextSlug) {
+      return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
+    }
+
     const updateFields: Record<string, unknown> = {
       title: body.title,
-      slug: body.slug,
+      slug: nextSlug,
       description: body.description ?? "",
       content: body.content,
       contentHTML: body.contentHTML ?? "",
@@ -96,15 +114,32 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const updated = await BlogPostModel.findOneAndUpdate(
       { slug },
       { $set: updateFields },
-      { new: true, runValidators: false },
+      { returnDocument: "after", runValidators: false },
     ).lean();
 
     if (!updated) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
+
+    // Renamed: keep the post's short code pointing at the new URL.
+    if (nextSlug && nextSlug !== slug) {
+      await ShortLinkModel.updateMany(
+        { kind: "blog", blogSlug: slug },
+        { $set: { blogSlug: nextSlug, url: `/blog/${nextSlug}` } },
+      );
+    }
+
+    revalidatePublicSite();
     return NextResponse.json(updated);
   } catch (error) {
     console.error("PUT /api/blog/[slug] error:", error);
+    const raw = error instanceof Error ? error.message : "";
+    if (raw.includes("E11000")) {
+      return NextResponse.json(
+        { error: "A post with that slug already exists." },
+        { status: 409 },
+      );
+    }
     return NextResponse.json(
       { error: "Failed to update post" },
       { status: 500 },
@@ -131,6 +166,7 @@ export async function DELETE(_req: NextRequest, { params }: RouteParams) {
     // Drop the post's short code so it can't redirect to a dead page.
     await ShortLinkModel.deleteMany({ kind: "blog", blogSlug: slug });
 
+    revalidatePublicSite();
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("DELETE /api/blog/[slug] error:", error);
