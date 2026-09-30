@@ -1,5 +1,5 @@
 import { projects as configProjects } from "@/config/Projects";
-import { getFeaturedProjects } from "@/lib/projects-db";
+import { getSiteProjects } from "@/lib/content";
 import { Link } from "next-view-transitions";
 import React from "react";
 
@@ -11,9 +11,13 @@ import { ProjectList } from "../projects/ProjectList";
 import { Button } from "../ui/button";
 
 export default async function Projects() {
-  // Try to fetch from DB first
-  const dbProjects = await getFeaturedProjects();
-  const hasDBProjects = dbProjects.length > 0;
+  // DB (managed from /admin → Projects) wins; `null` means never used → config.
+  const dbProjects = await getSiteProjects();
+  const hasDBProjects = dbProjects !== null;
+  const featured = dbProjects?.filter((project) => project.featured) ?? [];
+  const landingDBProjects = (
+    featured.length > 0 ? featured : (dbProjects ?? [])
+  ).slice(0, 4);
 
   // Fallback to config projects, sorted by order, show only first 4
   const sortedConfigProjects = [...configProjects]
@@ -30,7 +34,7 @@ export default async function Projects() {
         {hasDBProjects ? (
           <DBProjectList
             className="mt-6 sm:mt-8"
-            projects={dbProjects.slice(0, 4)}
+            projects={landingDBProjects}
           />
         ) : (
           <ProjectList
