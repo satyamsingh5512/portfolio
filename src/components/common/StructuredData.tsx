@@ -1,6 +1,5 @@
-import { about } from "@/config/About";
-import { heroConfig, socialLinks } from "@/config/Hero";
 import { siteConfig } from "@/config/Meta";
+import { getSiteSettings } from "@/lib/site-settings";
 
 /**
  * JSON-LD structured data for the site: a Person schema describing the site
@@ -9,9 +8,10 @@ import { siteConfig } from "@/config/Meta";
  *
  * Rendered once in the root layout so it applies site-wide.
  */
-export default function StructuredData() {
+export default async function StructuredData() {
+  const { hero: heroConfig, about, socialLinks } = await getSiteSettings();
   const sameAs = socialLinks
-    .filter((link) => link.name !== "Email")
+    .filter((link) => link.icon !== "email" && /^https?:\/\//.test(link.href))
     .map((link) => link.href);
 
   const personSchema = {
@@ -22,7 +22,9 @@ export default function StructuredData() {
     jobTitle: heroConfig.title,
     description: about.expertise.join(". "),
     url: siteConfig.url,
-    image: heroConfig.avatar,
+    image: heroConfig.avatar
+      ? new URL(heroConfig.avatar, siteConfig.url).toString()
+      : undefined,
     email: `mailto:${siteConfig.author.email}`,
     sameAs,
     knowsAbout: heroConfig.skills.map((skill) => skill.name),
