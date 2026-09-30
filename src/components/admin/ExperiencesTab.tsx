@@ -15,8 +15,11 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Briefcase, Calendar, Edit, MapPin, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+import { ConfigFallbackNotice, readApiError } from "./ConfigFallbackNotice";
+import { ImageUploadField } from "./ImageUploadField";
 
 export interface ExperienceData {
   id: string;
@@ -35,11 +38,17 @@ export interface ExperienceData {
 
 interface ExperiencesTabProps {
   initialExperiences: ExperienceData[];
+  usingConfigFallback?: boolean;
 }
 
-export function ExperiencesTab({ initialExperiences }: ExperiencesTabProps) {
+export function ExperiencesTab({
+  initialExperiences,
+  usingConfigFallback = false,
+}: ExperiencesTabProps) {
   const [experiences, setExperiences] =
     useState<ExperienceData[]>(initialExperiences);
+  // Pick up fresh server data after router.refresh() (e.g. after an import).
+  useEffect(() => setExperiences(initialExperiences), [initialExperiences]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingExperience, setEditingExperience] =
     useState<ExperienceData | null>(null);
@@ -76,7 +85,7 @@ export function ExperiencesTab({ initialExperiences }: ExperiencesTabProps) {
     setCompany(experience.company);
     setPosition(experience.position);
     setStartDate(experience.startDate);
-    setEndDate(experience.endDate);
+    setEndDate(experience.isCurrent ? "" : experience.endDate);
     setIsCurrent(experience.isCurrent);
     setDescription(experience.description.join("\n"));
     setTechnologies(experience.technologies.join(", "));
@@ -102,8 +111,8 @@ export function ExperiencesTab({ initialExperiences }: ExperiencesTabProps) {
         .map((t) => t.trim())
         .filter(Boolean),
       location,
-      companyUrl: companyUrl || undefined,
-      logo: logo || undefined,
+      companyUrl: companyUrl.trim(),
+      logo: logo.trim(),
     };
 
     try {
@@ -118,26 +127,30 @@ export function ExperiencesTab({ initialExperiences }: ExperiencesTabProps) {
         body: JSON.stringify(experienceData),
       });
 
-      if (!res.ok) throw new Error("Failed to save experience");
+      if (!res.ok) {
+        throw new Error(await readApiError(res, "Failed to save experience"));
+      }
 
       const savedExperience = await res.json();
 
       if (editingExperience) {
-        setExperiences(
-          experiences.map((e) =>
+        setExperiences((prev) =>
+          prev.map((e) =>
             e.id === editingExperience.id ? savedExperience : e,
           ),
         );
         toast.success("Experience updated successfully");
       } else {
-        setExperiences([savedExperience, ...experiences]);
+        setExperiences((prev) => [savedExperience, ...prev]);
         toast.success("Experience added successfully");
       }
 
       setIsDialogOpen(false);
       resetForm();
-    } catch {
-      toast.error("Failed to save experience");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to save experience",
+      );
     } finally {
       setLoading(false);
     }
@@ -150,12 +163,16 @@ export function ExperiencesTab({ initialExperiences }: ExperiencesTabProps) {
       const res = await fetch(`/api/admin/experiences?id=${id}`, {
         method: "DELETE",
       });
-      if (!res.ok) throw new Error("Failed to delete");
+      if (!res.ok) {
+        throw new Error(await readApiError(res, "Failed to delete experience"));
+      }
 
-      setExperiences(experiences.filter((e) => e.id !== id));
+      setExperiences((prev) => prev.filter((e) => e.id !== id));
       toast.success("Experience deleted successfully");
-    } catch {
-      toast.error("Failed to delete experience");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to delete experience",
+      );
     }
   };
 
@@ -268,7 +285,7 @@ export function ExperiencesTab({ initialExperiences }: ExperiencesTabProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="description">
-                  Description (one point per line) *
+                  Description (one point per line, **bold** supported) *
                 </Label>
                 <Textarea
                   id="description"
@@ -293,15 +310,13 @@ export function ExperiencesTab({ initialExperiences }: ExperiencesTabProps) {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="logo">Company Logo Path</Label>
-                <Input
-                  id="logo"
-                  value={logo}
-                  onChange={(e) => setLogo(e.target.value)}
-                  placeholder="/company/company-logo.svg"
-                />
-              </div>
+              <ImageUploadField
+                id="logo"
+                label="Company Logo (upload, or a path like /company/logo.svg)"
+                folder="meta"
+                value={logo}
+                onChange={setLogo}
+              />
 
               <Button type="submit" disabled={loading} className="w-full">
                 {loading
@@ -314,6 +329,10 @@ export function ExperiencesTab({ initialExperiences }: ExperiencesTabProps) {
           </DialogContent>
         </Dialog>
       </div>
+
+      {usingConfigFallback && experiences.length === 0 && (
+        <ConfigFallbackNotice collection="experiences" label="experiences" />
+      )}
 
       <div className="grid gap-4">
         {experiences.map((experience) => (
