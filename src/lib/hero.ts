@@ -1,8 +1,11 @@
-import { heroConfig } from '@/config/Hero';
+export interface TemplateSkill {
+  name: string;
+  href: string;
+}
 
-export const parseTemplate = (
+export const parseTemplate = <S extends TemplateSkill>(
   template: string,
-  skills: typeof heroConfig.skills,
+  skills: S[],
 ) => {
   const parts = template.split(/(\{skills:\d+\})/);
 
@@ -14,7 +17,7 @@ export const parseTemplate = (
         const skill = skills[skillIndex];
         if (skill) {
           return {
-            type: 'skill',
+            type: "skill",
             skill: skill,
             key: index,
           };
@@ -23,15 +26,15 @@ export const parseTemplate = (
 
       const boldParts = part.split(/(<b>.*?<\/b>)/);
       return boldParts.map((boldPart, boldIndex) => {
-        if (boldPart.startsWith('<b>') && boldPart.endsWith('</b>')) {
+        if (boldPart.startsWith("<b>") && boldPart.endsWith("</b>")) {
           return {
-            type: 'bold',
+            type: "bold",
             text: boldPart.slice(3, -4),
             key: `${index}-${boldIndex}`,
           };
         }
         return {
-          type: 'text',
+          type: "text",
           text: boldPart,
           key: `${index}-${boldIndex}`,
         };
@@ -43,7 +46,7 @@ export const parseTemplate = (
 export const parseBoldText = (text: string) => {
   const parts = text.split(/(<b>.*?<\/b>)/);
   return parts.map((part, index) => {
-    if (part.startsWith('<b>') && part.endsWith('</b>')) {
+    if (part.startsWith("<b>") && part.endsWith("</b>")) {
       return {
         text: part.slice(3, -4),
         bold: true,
