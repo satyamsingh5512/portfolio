@@ -13,8 +13,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Award, Edit, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+import { ConfigFallbackNotice, readApiError } from "./ConfigFallbackNotice";
 
 export interface AchievementData {
   id: string;
@@ -27,11 +29,17 @@ export interface AchievementData {
 
 interface AchievementsTabProps {
   initialAchievements: AchievementData[];
+  usingConfigFallback?: boolean;
 }
 
-export function AchievementsTab({ initialAchievements }: AchievementsTabProps) {
+export function AchievementsTab({
+  initialAchievements,
+  usingConfigFallback = false,
+}: AchievementsTabProps) {
   const [achievements, setAchievements] =
     useState<AchievementData[]>(initialAchievements);
+  // Pick up fresh server data after router.refresh() (e.g. after an import).
+  useEffect(() => setAchievements(initialAchievements), [initialAchievements]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAchievement, setEditingAchievement] =
     useState<AchievementData | null>(null);
@@ -83,26 +91,30 @@ export function AchievementsTab({ initialAchievements }: AchievementsTabProps) {
         body: JSON.stringify(achievementData),
       });
 
-      if (!res.ok) throw new Error("Failed to save achievement");
+      if (!res.ok) {
+        throw new Error(await readApiError(res, "Failed to save achievement"));
+      }
 
       const savedAchievement = await res.json();
 
       if (editingAchievement) {
-        setAchievements(
-          achievements.map((a) =>
+        setAchievements((prev) =>
+          prev.map((a) =>
             a.id === editingAchievement.id ? savedAchievement : a,
           ),
         );
         toast.success("Achievement updated successfully");
       } else {
-        setAchievements([savedAchievement, ...achievements]);
+        setAchievements((prev) => [savedAchievement, ...prev]);
         toast.success("Achievement added successfully");
       }
 
       setIsDialogOpen(false);
       resetForm();
-    } catch {
-      toast.error("Failed to save achievement");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to save achievement",
+      );
     } finally {
       setLoading(false);
     }
@@ -115,12 +127,18 @@ export function AchievementsTab({ initialAchievements }: AchievementsTabProps) {
       const res = await fetch(`/api/admin/achievements?id=${id}`, {
         method: "DELETE",
       });
-      if (!res.ok) throw new Error("Failed to delete");
+      if (!res.ok) {
+        throw new Error(
+          await readApiError(res, "Failed to delete achievement"),
+        );
+      }
 
-      setAchievements(achievements.filter((a) => a.id !== id));
+      setAchievements((prev) => prev.filter((a) => a.id !== id));
       toast.success("Achievement deleted successfully");
-    } catch {
-      toast.error("Failed to delete achievement");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to delete achievement",
+      );
     }
   };
 
@@ -132,7 +150,7 @@ export function AchievementsTab({ initialAchievements }: AchievementsTabProps) {
             Achievements & Certificates
           </h2>
           <p className="text-muted-foreground">
-            Manage your achievements and certificates here.
+            Shown on /journey/certificates.
           </p>
         </div>
         <Dialog
@@ -210,6 +228,10 @@ export function AchievementsTab({ initialAchievements }: AchievementsTabProps) {
           </DialogContent>
         </Dialog>
       </div>
+
+      {usingConfigFallback && achievements.length === 0 && (
+        <ConfigFallbackNotice collection="achievements" label="certificates" />
+      )}
 
       <div className="grid gap-4">
         {achievements.map((achievement) => (
