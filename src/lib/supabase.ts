@@ -3,8 +3,6 @@
  * All Supabase references have been replaced with MongoDB equivalents.
  * Types and helper functions are preserved so existing imports continue to work.
  */
-import SiteSetting from "@/lib/models/SiteSetting";
-import { connectToDatabase } from "@/lib/mongodb";
 
 // ============================================
 // PROJECTS TYPES
@@ -95,176 +93,18 @@ export function projectToDb(
 }
 
 // ============================================
-// SITE SETTINGS TYPES
+// SITE SETTINGS — moved to ./site-settings (re-exported for existing imports)
 // ============================================
 
-export interface HeroSettings {
-  name: string;
-  title: string;
-  avatar: string;
-  description: string;
-  resumeUrl: string;
-  contactUrl: string;
-  skills: Array<{ name: string; href: string }>;
-}
-
-export interface AboutSettings {
-  name: string;
-  description: string;
-  skills: string[];
-}
-
-export interface SocialLink {
-  name: string;
-  href: string;
-  icon:
-    | "linkedin"
-    | "github"
-    | "email"
-    | "twitter"
-    | "instagram"
-    | "youtube"
-    | "website";
-}
-
-export interface ContactSettings {
-  title: string;
-  description: string;
-  email: string;
-}
-
-export interface CTASettings {
-  profileImage: string;
-  preText: string;
-  linkText: string;
-  calLink: string;
-}
-
-export interface FooterSettings {
-  developer: string;
-  text: string;
-  copyright: string;
-}
-
-export interface SiteSettings {
-  hero: HeroSettings;
-  about: AboutSettings;
-  socialLinks: SocialLink[];
-  contact: ContactSettings;
-  cta: CTASettings;
-  footer: FooterSettings;
-}
-
-export const defaultSiteSettings: SiteSettings = {
-  hero: {
-    name: "Satyam",
-    title: "Full Stack Developer",
-    avatar:
-      "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
-    description:
-      "I am a <b>Full Stack Software Engineer</b> focused on designing and building scalable, production-ready systems.",
-    resumeUrl: "/assets/resume.pdf",
-    contactUrl: "/contact",
-    skills: [
-      { name: "React", href: "https://react.dev/" },
-      { name: "Next.js", href: "https://nextjs.org/" },
-      { name: "Node.js", href: "https://nodejs.org/" },
-      { name: "Express", href: "https://expressjs.com/" },
-      { name: "PostgreSQL", href: "https://www.postgresql.org/" },
-      { name: "MongoDB", href: "https://www.mongodb.com/" },
-    ],
-  },
-  about: {
-    name: "Satyam",
-    description:
-      "Hey, I'm Satyam. I'm a 3rd-year B.Tech Computer Science student and a Full-Stack Developer with strong Machine Learning expertise.",
-    skills: [
-      "React",
-      "TypeScript",
-      "Node.js",
-      "PostgreSQL",
-      "MongoDB",
-      "Next.js",
-    ],
-  },
-  socialLinks: [
-    {
-      name: "LinkedIn",
-      href: "https://www.linkedin.com/in/satym5512/",
-      icon: "linkedin",
-    },
-    {
-      name: "Github",
-      href: "https://github.com/satyamsingh5512",
-      icon: "github",
-    },
-    { name: "Email", href: "mailto:satyamsinghpx@gmail.com", icon: "email" },
-  ],
-  contact: {
-    title: "Contact",
-    description:
-      "Get in touch with me. I will get back to you as soon as possible.",
-    email: "satyamsinghpx@gmail.com",
-  },
-  cta: {
-    profileImage:
-      "https://res.cloudinary.com/dnuxivxnu/image/upload/v1771769099/portfolio/assets/q0j3puiqnaelv5wp3jhj.jpg",
-    preText: "Hey, you scrolled this far, let's talk.",
-    linkText: "Book a Free Call",
-    calLink: "satyamsinghpx/meeting",
-  },
-  footer: {
-    developer: "Satyam",
-    text: "Design & Developed by",
-    copyright: "All rights reserved.",
-  },
-};
-
-// ============================================
-// MONGODB-BACKED SITE SETTINGS
-// ============================================
-
-export async function getSiteSettings(): Promise<SiteSettings> {
-  try {
-    await connectToDatabase();
-    const rows = await SiteSetting.find({
-      key: {
-        $in: ["hero", "about", "socialLinks", "contact", "cta", "footer"],
-      },
-    }).lean();
-
-    const settings: SiteSettings = { ...defaultSiteSettings };
-    for (const row of rows) {
-      const key = row.key as keyof SiteSettings;
-      if (key in settings && row.value) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (settings as any)[key] = row.value;
-      }
-    }
-    return settings;
-  } catch (err) {
-    console.error("Failed to fetch site settings from MongoDB:", err);
-    return defaultSiteSettings;
-  }
-}
-
-export async function updateSiteSetting<K extends keyof SiteSettings>(
-  key: K,
-  value: SiteSettings[K],
-): Promise<boolean> {
-  try {
-    await connectToDatabase();
-    await SiteSetting.findOneAndUpdate(
-      { key },
-      { key, value },
-      { upsert: true, returnDocument: "after" },
-    );
-    return true;
-  } catch (err) {
-    console.error("Failed to update site setting in MongoDB:", err);
-    return false;
-  }
-}
+export type {
+  AboutSettings,
+  CTASettings,
+  ContactSettings,
+  FooterSettings,
+  HeroSettings,
+  SiteSettings,
+  SocialLink,
+} from "./site-settings";
 
 /**
  * @deprecated The project has been migrated to MongoDB.
