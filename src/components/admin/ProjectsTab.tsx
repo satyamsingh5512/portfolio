@@ -24,15 +24,23 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import type { ProjectRecord } from "@/lib/supabase";
 import { Edit, Github, Globe, Plus, Star, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+import { ConfigFallbackNotice, readApiError } from "./ConfigFallbackNotice";
 
 interface ProjectsTabProps {
   initialProjects: ProjectRecord[];
+  usingConfigFallback?: boolean;
 }
 
-export function ProjectsTab({ initialProjects }: ProjectsTabProps) {
+export function ProjectsTab({
+  initialProjects,
+  usingConfigFallback = false,
+}: ProjectsTabProps) {
   const [projects, setProjects] = useState<ProjectRecord[]>(initialProjects);
+  // Pick up fresh server data after router.refresh() (e.g. after an import).
+  useEffect(() => setProjects(initialProjects), [initialProjects]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<ProjectRecord | null>(
     null,
@@ -52,6 +60,8 @@ export function ProjectsTab({ initialProjects }: ProjectsTabProps) {
     "completed" | "in-progress" | "archived"
   >("completed");
   const [category, setCategory] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [orderIndex, setOrderIndex] = useState(0);
 
   const resetForm = () => {
@@ -65,6 +75,8 @@ export function ProjectsTab({ initialProjects }: ProjectsTabProps) {
     setFeatured(false);
     setStatus("completed");
     setCategory("");
+    setStartDate("");
+    setEndDate("");
     setOrderIndex(projects.length);
     setEditingProject(null);
   };
@@ -81,6 +93,8 @@ export function ProjectsTab({ initialProjects }: ProjectsTabProps) {
     setFeatured(project.featured);
     setStatus(project.status);
     setCategory(project.category || "");
+    setStartDate(project.startDate || "");
+    setEndDate(project.endDate || "");
     setOrderIndex(project.orderIndex);
     setIsDialogOpen(true);
   };
@@ -93,16 +107,19 @@ export function ProjectsTab({ initialProjects }: ProjectsTabProps) {
       title,
       shortDescription,
       description,
-      image: image || undefined,
-      githubUrl: githubUrl || undefined,
-      liveUrl: liveUrl || undefined,
+      // Empty strings (not undefined) so clearing a field clears it in the DB.
+      image: image.trim(),
+      githubUrl: githubUrl.trim(),
+      liveUrl: liveUrl.trim(),
       technologies: technologies
         .split(",")
         .map((t) => t.trim())
         .filter(Boolean),
       featured,
       status,
-      category: category || undefined,
+      category: category.trim(),
+      startDate: startDate.trim(),
+      endDate: endDate.trim(),
       orderIndex,
     };
 
@@ -118,24 +135,30 @@ export function ProjectsTab({ initialProjects }: ProjectsTabProps) {
         body: JSON.stringify(projectData),
       });
 
-      if (!res.ok) throw new Error("Failed to save project");
+      if (!res.ok) {
+        throw new Error(await readApiError(res, "Failed to save project"));
+      }
 
       const savedProject = await res.json();
 
       if (editingProject) {
-        setProjects(
-          projects.map((p) => (p.id === editingProject.id ? savedProject : p)),
+        setProjects((prev) =>
+          prev.map((p) => (p.id === editingProject.id ? savedProject : p)),
         );
         toast.success("Project updated successfully");
       } else {
-        setProjects([savedProject, ...projects]);
+        setProjects((prev) =>
+          [...prev, savedProject].sort((a, b) => a.orderIndex - b.orderIndex),
+        );
         toast.success("Project added successfully");
       }
 
       setIsDialogOpen(false);
       resetForm();
-    } catch {
-      toast.error("Failed to save project");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to save project",
+      );
     } finally {
       setLoading(false);
     }
@@ -148,12 +171,16 @@ export function ProjectsTab({ initialProjects }: ProjectsTabProps) {
       const res = await fetch(`/api/admin/projects?id=${id}`, {
         method: "DELETE",
       });
-      if (!res.ok) throw new Error("Failed to delete");
+      if (!res.ok) {
+        throw new Error(await readApiError(res, "Failed to delete project"));
+      }
 
-      setProjects(projects.filter((p) => p.id !== id));
+      setProjects((prev) => prev.filter((p) => p.id !== id));
       toast.success("Project deleted successfully");
-    } catch {
-      toast.error("Failed to delete project");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to delete project",
+      );
     }
   };
 
@@ -163,7 +190,8 @@ export function ProjectsTab({ initialProjects }: ProjectsTabProps) {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Projects</h2>
           <p className="text-muted-foreground">
-            Manage your portfolio projects here. Data is stored in Supabase.
+            Manage your portfolio projects. Featured projects appear on the
+            landing page; all projects appear on /projects.
           </p>
         </div>
         <Dialog
@@ -291,6 +319,27 @@ export function ProjectsTab({ initialProjects }: ProjectsTabProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
+                  <Label htmlFor="startDate">Start (timeline)</Label>
+                  <Input
+                    id="startDate"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    placeholder="Jan 2025"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="endDate">End (timeline)</Label>
+                  <Input
+                    id="endDate"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    placeholder="Mar 2025"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
                   <Label htmlFor="status">Status</Label>
                   <Select
                     value={status}
@@ -327,6 +376,10 @@ export function ProjectsTab({ initialProjects }: ProjectsTabProps) {
           </DialogContent>
         </Dialog>
       </div>
+
+      {usingConfigFallback && projects.length === 0 && (
+        <ConfigFallbackNotice collection="projects" label="projects" />
+      )}
 
       <div className="grid gap-4">
         {projects.map((project) => (
