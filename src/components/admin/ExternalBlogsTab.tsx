@@ -13,9 +13,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Blog } from "@/lib/blog-service";
-import { ExternalLink, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+import { readApiError } from "./ConfigFallbackNotice";
 
 interface ExternalBlogsTabProps {
   initialBlogs: Blog[];
@@ -23,34 +25,61 @@ interface ExternalBlogsTabProps {
 
 export function ExternalBlogsTab({ initialBlogs }: ExternalBlogsTabProps) {
   const [blogs, setBlogs] = useState<Blog[]>(initialBlogs);
+  useEffect(() => setBlogs(initialBlogs), [initialBlogs]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // New Blog Form State
+  // Form State
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
 
-  const handleAddBlog = async (e: React.FormEvent) => {
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setUrl("");
+    setEditingBlog(null);
+  };
+
+  const openEditDialog = (blog: Blog) => {
+    setEditingBlog(blog);
+    setTitle(blog.title);
+    setDescription(blog.description);
+    setUrl(blog.url);
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch("/api/blogs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description, url }),
-      });
+      const res = await fetch(
+        editingBlog ? `/api/blogs?id=${editingBlog.id}` : "/api/blogs",
+        {
+          method: editingBlog ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, description, url }),
+        },
+      );
 
-      if (!res.ok) throw new Error("Failed to add blog");
+      if (!res.ok) {
+        throw new Error(await readApiError(res, "Failed to save blog"));
+      }
 
-      const newBlog = await res.json();
-      setBlogs([newBlog, ...blogs]);
+      const saved: Blog = await res.json();
+      if (editingBlog) {
+        setBlogs((prev) => prev.map((b) => (b.id === saved.id ? saved : b)));
+        toast.success("External blog updated");
+      } else {
+        setBlogs((prev) => [saved, ...prev]);
+        toast.success("External blog added successfully");
+      }
       setIsDialogOpen(false);
       resetForm();
-      toast.success("External blog added successfully");
-    } catch {
-      toast.error("Failed to add blog");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save blog");
     } finally {
       setLoading(false);
     }
@@ -61,19 +90,15 @@ export function ExternalBlogsTab({ initialBlogs }: ExternalBlogsTabProps) {
 
     try {
       const res = await fetch(`/api/blogs?id=${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete");
+      if (!res.ok) {
+        throw new Error(await readApiError(res, "Failed to delete blog"));
+      }
 
-      setBlogs(blogs.filter((b) => b.id !== id));
+      setBlogs((prev) => prev.filter((b) => b.id !== id));
       toast.success("Blog deleted successfully");
-    } catch {
-      toast.error("Failed to delete blog");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete blog");
     }
-  };
-
-  const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setUrl("");
   };
 
   return (
@@ -82,10 +107,16 @@ export function ExternalBlogsTab({ initialBlogs }: ExternalBlogsTabProps) {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">External Blogs</h2>
           <p className="text-muted-foreground">
-            Manage your manually linked blogs here.
+            Links to posts published elsewhere, listed on /blog.
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog
+          open={isDialogOpen}
+          onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) resetForm();
+          }}
+        >
           <DialogTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
@@ -94,13 +125,15 @@ export function ExternalBlogsTab({ initialBlogs }: ExternalBlogsTabProps) {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add New External Blog</DialogTitle>
+              <DialogTitle>
+                {editingBlog ? "Edit External Blog" : "Add New External Blog"}
+              </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleAddBlog} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="ext-title">Title</Label>
                 <Input
-                  id="title"
+                  id="ext-title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Blog Title"
@@ -108,9 +141,11 @@ export function ExternalBlogsTab({ initialBlogs }: ExternalBlogsTabProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Starting Text / Description</Label>
+                <Label htmlFor="ext-description">
+                  Starting Text / Description
+                </Label>
                 <Textarea
-                  id="description"
+                  id="ext-description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Brief description or starting text..."
@@ -118,9 +153,9 @@ export function ExternalBlogsTab({ initialBlogs }: ExternalBlogsTabProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="url">External URL</Label>
+                <Label htmlFor="ext-url">External URL</Label>
                 <Input
-                  id="url"
+                  id="ext-url"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="https://medium.com/..."
@@ -129,7 +164,11 @@ export function ExternalBlogsTab({ initialBlogs }: ExternalBlogsTabProps) {
                 />
               </div>
               <Button type="submit" disabled={loading} className="w-full">
-                {loading ? "Adding..." : "Add Blog"}
+                {loading
+                  ? "Saving..."
+                  : editingBlog
+                    ? "Update Blog"
+                    : "Add Blog"}
               </Button>
             </form>
           </DialogContent>
@@ -140,7 +179,7 @@ export function ExternalBlogsTab({ initialBlogs }: ExternalBlogsTabProps) {
         {blogs.map((blog) => (
           <Card key={blog.id}>
             <CardContent className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-center">
-              <div>
+              <div className="min-w-0">
                 <h3 className="text-lg font-medium">{blog.title}</h3>
                 <p className="text-muted-foreground text-sm">
                   {blog.description}
@@ -149,19 +188,29 @@ export function ExternalBlogsTab({ initialBlogs }: ExternalBlogsTabProps) {
                   href={blog.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-1 flex items-center text-xs text-blue-500 hover:underline"
+                  className="mt-1 flex items-center text-xs break-all text-blue-500 hover:underline"
                 >
-                  {blog.url} <ExternalLink className="ml-1 h-3 w-3" />
+                  {blog.url} <ExternalLink className="ml-1 h-3 w-3 shrink-0" />
                 </a>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleDeleteBlog(blog.id)}
-                className="shrink-0"
-              >
-                <Trash2 className="text-destructive h-4 w-4" />
-              </Button>
+              <div className="flex shrink-0 gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Edit ${blog.title}`}
+                  onClick={() => openEditDialog(blog)}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Delete ${blog.title}`}
+                  onClick={() => handleDeleteBlog(blog.id)}
+                >
+                  <Trash2 className="text-destructive h-4 w-4" />
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}
