@@ -14,17 +14,19 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Blog } from "@/lib/blog-service";
 import type { ShortLinkData } from "@/lib/short-links";
-import type { ProjectRecord, SiteSettings } from "@/lib/supabase";
+import type { SiteSettings } from "@/lib/site-settings";
+import type { ProjectRecord } from "@/lib/supabase";
 import { Edit, Eye, FileText, LogOut, Plus, Trash2 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { Link } from "next-view-transitions";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import React from "react";
 import { toast } from "sonner";
 
 import { AchievementData, AchievementsTab } from "./AchievementsTab";
 import { BlogShortLinkButton } from "./BlogShortLinkButton";
+import { readApiError } from "./ConfigFallbackNotice";
 import { ExperienceData, ExperiencesTab } from "./ExperiencesTab";
 import { ExternalBlogsTab } from "./ExternalBlogsTab";
 import { ProjectsTab } from "./ProjectsTab";
@@ -45,6 +47,12 @@ export interface AdminBlogPost {
 }
 
 interface AdminDashboardProps {
+  /** True for collections where the public site shows src/config entries. */
+  configFallback: {
+    experiences: boolean;
+    achievements: boolean;
+    projects: boolean;
+  };
   posts: AdminBlogPost[];
   externalBlogs: Blog[];
   projects: ProjectRecord[];
@@ -156,6 +164,7 @@ const PostCard = React.memo(
 PostCard.displayName = "PostCard";
 
 export function AdminDashboard({
+  configFallback,
   posts,
   externalBlogs,
   projects,
@@ -169,6 +178,9 @@ export function AdminDashboard({
   const router = useRouter();
   const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
   const [links, setLinks] = useState<ShortLinkData[]>(shortLinks);
+  // Keep in sync with the server after router.refresh() (e.g. a blog rename
+  // moves its short link).
+  useEffect(() => setLinks(shortLinks), [shortLinks]);
 
   /** blog slug -> short code, so each post card knows if it already has one. */
   const blogCodeBySlug = useMemo(() => {
@@ -204,9 +216,12 @@ export function AdminDashboard({
         const res = await fetch(`/api/blog/${slug}`, { method: "DELETE" });
         if (res.ok) {
           toast.success("Post deleted successfully");
+          setLinks((prev) =>
+            prev.filter((l) => !(l.kind === "blog" && l.blogSlug === slug)),
+          );
           router.refresh();
         } else {
-          toast.error("Failed to delete post");
+          toast.error(await readApiError(res, "Failed to delete post"));
         }
       } catch {
         toast.error("Something went wrong");
@@ -259,15 +274,24 @@ export function AdminDashboard({
           </TabsContent>
 
           <TabsContent value="projects">
-            <ProjectsTab initialProjects={projects} />
+            <ProjectsTab
+              initialProjects={projects}
+              usingConfigFallback={configFallback.projects}
+            />
           </TabsContent>
 
           <TabsContent value="experiences">
-            <ExperiencesTab initialExperiences={experiences} />
+            <ExperiencesTab
+              initialExperiences={experiences}
+              usingConfigFallback={configFallback.experiences}
+            />
           </TabsContent>
 
           <TabsContent value="achievements">
-            <AchievementsTab initialAchievements={achievements} />
+            <AchievementsTab
+              initialAchievements={achievements}
+              usingConfigFallback={configFallback.achievements}
+            />
           </TabsContent>
 
           <TabsContent value="short-links">
