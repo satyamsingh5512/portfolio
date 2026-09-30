@@ -1,6 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import BlogPostModel from "@/lib/models/BlogPost";
 import { connectToDatabase } from "@/lib/mongodb";
+import { revalidatePublicSite } from "@/lib/revalidate";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -69,6 +70,12 @@ export async function POST(request: NextRequest) {
     }
 
     const slug = rawSlug ? slugify(rawSlug) : slugify(title);
+    if (!slug) {
+      return NextResponse.json(
+        { error: "Could not derive a URL slug from the title" },
+        { status: 400 },
+      );
+    }
 
     // Extract plain text for accurate reading-time calculation
     const plainText: string =
@@ -101,6 +108,7 @@ export async function POST(request: NextRequest) {
       author: resolvedAuthor,
     });
 
+    revalidatePublicSite();
     return NextResponse.json({ slug: post.slug }, { status: 201 });
   } catch (error) {
     console.error("POST /api/blog error:", error);
@@ -109,6 +117,9 @@ export async function POST(request: NextRequest) {
     const message = raw.includes("E11000")
       ? `A post with that slug already exists. Please use a different title or slug.`
       : raw || "Failed to create post";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json(
+      { error: message },
+      { status: raw.includes("E11000") ? 409 : 500 },
+    );
   }
 }
