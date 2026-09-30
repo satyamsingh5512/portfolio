@@ -7,6 +7,7 @@ import SearchPalette from "@/components/common/SearchPalette";
 import SmoothScroll from "@/components/common/SmoothScroll";
 import StructuredData from "@/components/common/StructuredData";
 import { ThemeProvider } from "@/components/common/ThemeProviders";
+import { Toaster } from "@/components/ui/sonner";
 import { generateMetadata as getMetadata } from "@/config/Meta";
 import { bricolageGrotesque, geistMono, geistSans } from "@/config/fonts";
 import { Analytics } from "@vercel/analytics/next";
@@ -40,6 +41,8 @@ export default function RootLayout({
               <LazyComponents />
               <Footer />
               <SearchPalette />
+              {/* Renders toast() feedback (admin saves, contact form). */}
+              <Toaster richColors closeButton />
               <GoogleAnalytics />
               <UmamiAnalytics />
               <Analytics />
