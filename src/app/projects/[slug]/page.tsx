@@ -6,6 +6,7 @@ import ArrowLeft from "@/components/svgs/ArrowLeft";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { siteConfig } from "@/config/Meta";
+import { getSiteProjectBySlug } from "@/lib/content";
 import PortfolioViewModel from "@/lib/models/PortfolioView";
 import { connectToDatabase } from "@/lib/mongodb";
 import {
@@ -14,6 +15,8 @@ import {
   getProjectNavigation,
   getRelatedProjectCaseStudies,
 } from "@/lib/project";
+import type { ProjectRecord } from "@/lib/supabase";
+import type { ProjectCaseStudy } from "@/types/project";
 import { Metadata } from "next";
 import { Link } from "next-view-transitions";
 import { notFound } from "next/navigation";
@@ -22,6 +25,67 @@ interface ProjectCaseStudyPageProps {
   params: Promise<{
     slug: string;
   }>;
+}
+
+/** Admin text is plain prose; keep MDX from treating `{`/`<` as JSX. */
+function escapeMdx(text: string): string {
+  return text.replace(/([{}<>])/g, "\\$1");
+}
+
+function caseStudyFromProject(project: ProjectRecord, slug: string) {
+  const timeline =
+    [project.startDate, project.endDate].filter(Boolean).join(" – ") ||
+    String(new Date(project.createdAt).getFullYear());
+
+  return {
+    slug,
+    frontmatter: {
+      title: project.title,
+      description: project.shortDescription,
+      image: project.image ?? "",
+      technologies: project.technologies,
+      github: project.githubUrl ?? "",
+      live: project.liveUrl ?? "",
+      timeline,
+      role: project.category || "Developer",
+      status: project.status,
+      featured: project.featured,
+      isPublished: true,
+    },
+    content: escapeMdx(project.description),
+  } satisfies ProjectCaseStudy;
+}
+
+/**
+ * A hand-written MDX case study keeps its body, but the fields editable in
+ * /admin → Projects (title, links, image, status…) come from MongoDB so edits
+ * show up here too. Projects that only exist in the DB render from the DB.
+ */
+async function resolveCaseStudy(
+  slug: string,
+): Promise<ProjectCaseStudy | null> {
+  const caseStudy = getProjectCaseStudyBySlug(slug);
+  const project = await getSiteProjectBySlug(slug);
+  if (!project) return caseStudy;
+  if (!caseStudy) return caseStudyFromProject(project, slug);
+
+  return {
+    ...caseStudy,
+    frontmatter: {
+      ...caseStudy.frontmatter,
+      title: project.title,
+      description: project.shortDescription,
+      image: project.image || caseStudy.frontmatter.image,
+      technologies:
+        project.technologies.length > 0
+          ? project.technologies
+          : caseStudy.frontmatter.technologies,
+      github: project.githubUrl ?? "",
+      live: project.liveUrl ?? "",
+      status: project.status,
+      featured: project.featured,
+    },
+  };
 }
 
 // Generate static paths for all project case studies
@@ -38,7 +102,7 @@ export async function generateMetadata({
   params,
 }: ProjectCaseStudyPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const caseStudy = await getProjectCaseStudyBySlug(slug);
+  const caseStudy = await resolveCaseStudy(slug);
 
   if (!caseStudy || !caseStudy.frontmatter.isPublished) {
     return {
@@ -65,13 +129,13 @@ export async function generateMetadata({
       url: `${siteConfig.url}/projects/${slug}`,
       title: `${title} - Project Case Study`,
       description,
-      images: [image],
+      images: image ? [image] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: `${title} - Project Case Study`,
       description,
-      images: [image],
+      images: image ? [image] : undefined,
     },
     alternates: {
       canonical: `${siteConfig.url}/projects/${slug}`,
@@ -83,7 +147,7 @@ export default async function ProjectCaseStudyPage({
   params,
 }: ProjectCaseStudyPageProps) {
   const { slug } = await params;
-  const caseStudy = await getProjectCaseStudyBySlug(slug);
+  const caseStudy = await resolveCaseStudy(slug);
 
   if (!caseStudy || !caseStudy.frontmatter.isPublished) {
     notFound();
