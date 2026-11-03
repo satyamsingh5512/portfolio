@@ -1,4 +1,5 @@
 import { authOptions } from "@/lib/auth";
+import { resolveContentHtml } from "@/lib/markdown-to-html";
 import BlogPostModel from "@/lib/models/BlogPost";
 import { connectToDatabase } from "@/lib/mongodb";
 import { revalidatePublicSite } from "@/lib/revalidate";
@@ -98,7 +99,7 @@ export async function POST(request: NextRequest) {
       slug,
       description: description ?? "",
       content: content ?? {},
-      contentHTML: contentHTML ?? "",
+      contentHTML: (await resolveContentHtml(content, contentHTML)) ?? "",
       image: image ?? "",
       metaImage: metaImage ?? "",
       tags: tags ?? [],
