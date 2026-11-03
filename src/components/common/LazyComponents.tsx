@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
 
-import ChatLauncher from "./ChatLauncher";
+import ChatLauncher from './ChatLauncher';
 
-const OnekoCat = dynamic(() => import("@/components/common/OnekoCat"), {
+const OnekoCat = dynamic(() => import('@/components/common/OnekoCat'), {
   ssr: false,
 });
 
@@ -15,25 +15,25 @@ const OnekoCat = dynamic(() => import("@/components/common/OnekoCat"), {
  * The chat launcher renders immediately but defers its heavy chunk until the
  * widget is opened.
  */
-export default function LazyComponents() {
+export default function LazyComponents({ ownerName }: { ownerName?: string }) {
   const [showCat, setShowCat] = useState(false);
 
   useEffect(() => {
     const onPointerMove = (event: PointerEvent) => {
-      if (event.pointerType === "mouse") setShowCat(true);
+      if (event.pointerType === 'mouse') setShowCat(true);
     };
 
-    window.addEventListener("pointermove", onPointerMove, {
+    window.addEventListener('pointermove', onPointerMove, {
       once: true,
       passive: true,
     });
-    return () => window.removeEventListener("pointermove", onPointerMove);
+    return () => window.removeEventListener('pointermove', onPointerMove);
   }, []);
 
   return (
     <>
       {showCat ? <OnekoCat /> : null}
-      <ChatLauncher />
+      <ChatLauncher ownerName={ownerName} />
     </>
   );
 }
