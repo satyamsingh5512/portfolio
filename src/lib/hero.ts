@@ -60,3 +60,20 @@ export const parseBoldText = (text: string) => {
     };
   });
 };
+
+const SKILL_REF = /\{skills:(\d+)\}/g;
+
+/** Indices of `skills` that the template places inline via `{skills:N}`. */
+export const referencedSkillIndices = (template: string): Set<number> =>
+  new Set(Array.from(template.matchAll(SKILL_REF), (m) => Number(m[1])));
+
+/**
+ * Keeps `{skills:N}` references pointing at the same skills after the skill at
+ * `removed` is deleted: its own reference is dropped and later ones shift down.
+ */
+export const removeSkillReference = (template: string, removed: number) =>
+  template.replace(SKILL_REF, (match, n: string) => {
+    const index = Number(n);
+    if (index === removed) return "";
+    return index > removed ? `{skills:${index - 1}}` : match;
+  });
