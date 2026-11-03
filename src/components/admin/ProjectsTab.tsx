@@ -143,7 +143,9 @@ export function ProjectsTab({
 
       if (editingProject) {
         setProjects((prev) =>
-          prev.map((p) => (p.id === editingProject.id ? savedProject : p)),
+          prev
+            .map((p) => (p.id === editingProject.id ? savedProject : p))
+            .sort((a, b) => a.orderIndex - b.orderIndex),
         );
         toast.success("Project updated successfully");
       } else {
