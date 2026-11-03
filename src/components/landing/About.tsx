@@ -98,7 +98,7 @@ export default async function About() {
           </FadeIn>
           <div className="mt-3 flex flex-wrap justify-center gap-3 sm:mt-4 md:justify-start">
             {about.skills.map((skill, index) => (
-              <Hint key={skill} label={skill} srOnlyLabel>
+              <Hint key={`${skill}-${index}`} label={skill} srOnlyLabel>
                 <FadeIn
                   delay={0.05 * index + 0.7}
                   direction="none"
