@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { MessageCircle } from "lucide-react";
-import dynamic from "next/dynamic";
-import { useState } from "react";
+import { MessageCircle } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { useState } from 'react';
 
-const ChatBubble = dynamic(() => import("@/components/common/ChatBubble"), {
+const ChatBubble = dynamic(() => import('@/components/common/ChatBubble'), {
   ssr: false,
 });
 
@@ -13,10 +13,10 @@ const ChatBubble = dynamic(() => import("@/components/common/ChatBubble"), {
  * Rendering a plain button up front keeps the widget visible from the first
  * paint while the actual chat is only fetched when someone opens it.
  */
-export default function ChatLauncher() {
+export default function ChatLauncher({ ownerName }: { ownerName?: string }) {
   const [opened, setOpened] = useState(false);
 
-  if (opened) return <ChatBubble defaultOpen />;
+  if (opened) return <ChatBubble defaultOpen ownerName={ownerName} />;
 
   return (
     <button
