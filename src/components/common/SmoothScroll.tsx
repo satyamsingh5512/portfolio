@@ -36,7 +36,15 @@ export default function SmoothScroll({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  if (!enabled) return <>{children}</>;
-
-  return <ReactLenis root>{children}</ReactLenis>;
+  // Lenis is rendered as a sibling, never as a wrapper. Wrapping `children`
+  // only once enabled changed the element type above the whole app, so React
+  // unmounted and remounted every page on the first scroll (blank flash,
+  // replayed animations, lost state). In `root` mode Lenis drives the window
+  // and shares its instance via a global store, so it needs no children.
+  return (
+    <>
+      {children}
+      {enabled ? <ReactLenis root /> : null}
+    </>
+  );
 }
