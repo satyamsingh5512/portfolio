@@ -25,6 +25,7 @@ import ReactIcon from "./ReactIcon";
 import Sanity from "./Sanity";
 import Shadcn from "./Shadcn";
 import SocketIo from "./SocketIo";
+import Spring from "./Spring";
 import TailwindCss from "./TailwindCss";
 import ThreeJs from "./ThreeJs";
 import TypeScript from "./TypeScript";
@@ -53,6 +54,12 @@ const technologyIconMap: Record<string, React.ReactNode> = {
   "nest.js": <NestJs />,
   bun: <Bun />,
 
+  // Java ecosystem
+  spring: <Spring />,
+  "spring boot": <Spring />,
+  springboot: <Spring />,
+  "spring-boot": <Spring />,
+  "spring framework": <Spring />,
   // Styling
   css: <CSS />,
   css3: <CSS />,
@@ -90,34 +97,49 @@ const technologyIconMap: Record<string, React.ReactNode> = {
   motion: <Motion />,
   "framer-motion": <Motion />,
   mdx: <MDXIcon />,
-
-  // Additional common technologies (fallback to closest match)
-  python: <TypeScript />, // Using TypeScript icon as placeholder
-  "c++": <NodeJs />, // Using Node as placeholder for compiled languages
-  cpp: <NodeJs />,
-  lua: <JavaScript />, // Using JS as placeholder
-  sdl2: <NodeJs />,
-  arduino: <NodeJs />,
-  pygame: <ReactIcon />,
-  ai: <Vercel />,
-  docker: <Vercel />,
-  fastapi: <ExpressJs />,
-  pytorch: <NodeJs />,
-  sqlite: <MongoDB />,
-  electron: <NodeJs />,
-  "electron.js": <NodeJs />,
-  jspdf: <JavaScript />,
-  "hc-sr04": <NodeJs />,
-  "servo motor": <NodeJs />,
-  linux: <Vercel />,
 };
+
+/**
+ * Shown for names with no dedicated icon (e.g. a skill just added in /admin):
+ * the first letter in a rounded box, so it never impersonates another
+ * technology's logo.
+ */
+function MonogramIcon({ name }: { name: string }) {
+  const letter = name.trim().charAt(0).toUpperCase() || "?";
+  return (
+    <svg viewBox="0 0 128 128" aria-hidden="true">
+      <rect
+        x="6"
+        y="6"
+        width="116"
+        height="116"
+        rx="24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="10"
+      />
+      <text
+        x="64"
+        y="66"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize="72"
+        fontWeight="700"
+        fill="currentColor"
+        fontFamily="ui-sans-serif, system-ui, sans-serif"
+      >
+        {letter}
+      </text>
+    </svg>
+  );
+}
 
 /**
  * Get the icon component for a technology name
  */
 export function getTechnologyIcon(name: string): React.ReactNode {
   const normalizedName = name.toLowerCase().trim();
-  return technologyIconMap[normalizedName] || <TypeScript />; // Default to TypeScript icon
+  return technologyIconMap[normalizedName] ?? <MonogramIcon name={name} />;
 }
 
 /**
