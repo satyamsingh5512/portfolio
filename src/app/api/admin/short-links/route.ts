@@ -278,7 +278,13 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await ShortLinkModel.findByIdAndDelete(objectId);
+    const deleted = await ShortLinkModel.findByIdAndDelete(objectId);
+    if (!deleted) {
+      return NextResponse.json(
+        { error: "Short link not found" },
+        { status: 404 },
+      );
+    }
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Failed to delete short link:", err);
