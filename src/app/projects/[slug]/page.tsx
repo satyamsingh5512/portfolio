@@ -84,6 +84,11 @@ async function resolveCaseStudy(
       live: project.liveUrl ?? "",
       status: project.status,
       featured: project.featured,
+      // Dates and category edited in /admin override the MDX frontmatter.
+      timeline:
+        [project.startDate, project.endDate].filter(Boolean).join(" – ") ||
+        caseStudy.frontmatter.timeline,
+      role: project.category || caseStudy.frontmatter.role,
     },
   };
 }
