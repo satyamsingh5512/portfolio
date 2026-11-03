@@ -29,10 +29,10 @@ interface Message {
   isStreaming?: boolean;
 }
 
-const initialMessages: Message[] = [
+const makeInitialMessages = (ownerName: string): Message[] => [
   {
     id: 1,
-    text: `Hello! I'm ${heroConfig.name}'s Portfolio Assistant. How can I help you?`,
+    text: `Hello! I'm ${ownerName}'s Portfolio Assistant. How can I help you?`,
     sender: "bot",
     timestamp: new Date().toLocaleTimeString([], {
       hour: "2-digit",
@@ -78,9 +78,12 @@ function getQuickResponse(message: string): string | null {
   return null;
 }
 
-const ChatBubble: React.FC<{ defaultOpen?: boolean }> = ({
+/** `ownerName` comes from /admin → Site Settings → Hero. */
+const ChatBubble: React.FC<{ defaultOpen?: boolean; ownerName?: string }> = ({
   defaultOpen = false,
+  ownerName = heroConfig.name,
 }) => {
+  const [initialMessages] = useState(() => makeInitialMessages(ownerName));
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -328,7 +331,7 @@ const ChatBubble: React.FC<{ defaultOpen?: boolean }> = ({
           </Avatar>
           <div>
             <h3 className="text-sm font-semibold">
-              {heroConfig.name}&apos;s Portfolio Assistant
+              {ownerName}&apos;s Portfolio Assistant
             </h3>
             <div className="text-muted-foreground text-xs">
               <div className="flex items-center gap-1">
