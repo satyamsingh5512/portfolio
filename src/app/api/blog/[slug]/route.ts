@@ -1,4 +1,5 @@
 import { authOptions } from "@/lib/auth";
+import { resolveContentHtml } from "@/lib/markdown-to-html";
 import BlogPostModel from "@/lib/models/BlogPost";
 import ShortLinkModel from "@/lib/models/ShortLink";
 import { connectToDatabase } from "@/lib/mongodb";
@@ -90,18 +91,33 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     if (body.slug !== undefined && !nextSlug) {
       return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
     }
+    if (
+      body.title !== undefined &&
+      (typeof body.title !== "string" || !body.title.trim())
+    ) {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    }
+
+    // Patch semantics: only fields present in the body are written. A field
+    // that wasn't sent keeps its stored value, instead of being reset to a
+    // default (which used to unpublish the post and wipe tags/images).
+    const has = (key: string) => body[key] !== undefined;
+    const contentHTML =
+      has("content") || has("contentHTML")
+        ? await resolveContentHtml(body.content, body.contentHTML)
+        : undefined;
 
     const updateFields: Record<string, unknown> = {
-      title: body.title,
+      title: typeof body.title === "string" ? body.title : undefined,
       slug: nextSlug,
-      description: body.description ?? "",
+      description: has("description") ? String(body.description) : undefined,
       content: body.content,
-      contentHTML: body.contentHTML ?? "",
-      image: body.image ?? "",
-      metaImage: body.metaImage ?? "",
-      tags: body.tags ?? [],
-      isPublished: body.isPublished ?? false,
-      isFeatured: body.isFeatured ?? false,
+      contentHTML,
+      image: has("image") ? String(body.image) : undefined,
+      metaImage: has("metaImage") ? String(body.metaImage) : undefined,
+      tags: Array.isArray(body.tags) ? body.tags.map(String) : undefined,
+      isPublished: has("isPublished") ? Boolean(body.isPublished) : undefined,
+      isFeatured: has("isFeatured") ? Boolean(body.isFeatured) : undefined,
       ...(readingTime !== undefined ? { readingTime } : {}),
       ...(updateAuthor ? { author: updateAuthor } : {}),
     };
@@ -114,7 +130,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const updated = await BlogPostModel.findOneAndUpdate(
       { slug },
       { $set: updateFields },
-      { returnDocument: "after", runValidators: false },
+      { returnDocument: "after", runValidators: true },
     ).lean();
 
     if (!updated) {
