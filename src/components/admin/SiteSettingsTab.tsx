@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { removeSkillReference } from "@/lib/hero";
 import type {
   AboutSettings,
   CTASettings,
@@ -50,6 +51,9 @@ interface SiteSettingsTabProps {
 
 export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
   const [settings, setSettings] = useState<SiteSettings>(initialSettings);
+  const [aboutSkillsText, setAboutSkillsText] = useState(
+    initialSettings.about.skills.join(", "),
+  );
   const [saving, setSaving] = useState<string | null>(null);
 
   const saveSection = async (key: keyof SiteSettings) => {
@@ -67,10 +71,17 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
         ),
       };
     } else if (key === "hero") {
-      payload = {
-        ...settings.hero,
-        skills: settings.hero.skills.filter((s) => s.name.trim()),
-      };
+      // Drop blank skill rows, shifting {skills:N} references to match.
+      let description = settings.hero.description;
+      const skills = settings.hero.skills.filter((s, index, all) => {
+        if (s.name.trim()) return true;
+        const removedBefore = all
+          .slice(0, index)
+          .filter((prev) => !prev.name.trim()).length;
+        description = removeSkillReference(description, index - removedBefore);
+        return false;
+      });
+      payload = { ...settings.hero, skills, description };
     } else if (key === "socialLinks") {
       payload = settings.socialLinks.filter(
         (l) => l.name.trim() || l.href.trim(),
@@ -112,7 +123,10 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
   };
 
   const removeHeroSkill = (index: number) => {
-    updateHero({ skills: settings.hero.skills.filter((_, i) => i !== index) });
+    updateHero({
+      skills: settings.hero.skills.filter((_, i) => i !== index),
+      description: removeSkillReference(settings.hero.description, index),
+    });
   };
 
   const updateHeroSkill = (
@@ -257,7 +271,8 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
                 <p className="text-muted-foreground text-xs">
                   Use <code>&lt;b&gt;bold&lt;/b&gt;</code> for emphasis and{" "}
                   <code>{"{skills:0}"}</code>, <code>{"{skills:1}"}</code>… to
-                  inline a skill chip from the list below (0-based).
+                  inline a skill chip from the list below (0-based). Skills you
+                  don&apos;t reference are listed after the text.
                 </p>
                 <Textarea
                   id="hero-description"
@@ -392,15 +407,18 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
                 </Label>
                 <Input
                   id="about-skills"
-                  value={settings.about.skills.join(", ")}
-                  onChange={(e) =>
+                  value={aboutSkillsText}
+                  onChange={(e) => {
+                    // Keep the raw text so commas and spaces can be typed;
+                    // only the parsed list is saved.
+                    setAboutSkillsText(e.target.value);
                     updateAbout({
                       skills: e.target.value
                         .split(",")
                         .map((s) => s.trim())
                         .filter(Boolean),
-                    })
-                  }
+                    });
+                  }}
                   placeholder="React, TypeScript, Node.js"
                 />
                 <div className="mt-2 flex flex-wrap gap-2">
