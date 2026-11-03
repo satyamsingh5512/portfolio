@@ -21,7 +21,8 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      role: 'admin' | 'author';
+      /** Unset when the email is no longer in ALLOWED_ADMIN_EMAILS. */
+      role?: 'admin' | 'author';
     } & DefaultSession['user'];
   }
 
@@ -34,6 +35,6 @@ declare module 'next-auth' {
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
-    role: 'admin' | 'author';
+    role?: 'admin' | 'author';
   }
 }
