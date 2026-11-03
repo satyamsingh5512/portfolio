@@ -5,11 +5,17 @@ import Appwrite from "./Appwrite";
 import BootStrap from "./BootStrap";
 import Bun from "./Bun";
 import CSS from "./CSS";
+import Docker from "./Docker";
 import ExpressJs from "./ExpressJs";
 import Figma from "./Figma";
 import GithubIcon from "./Github";
+import Go from "./Go";
+import Grafana from "./Grafana";
 import Html from "./Html";
+import Java from "./Java";
 import JavaScript from "./JavaScript";
+import Kafka from "./Kafka";
+import Kubernetes from "./Kubernetes";
 import MDXIcon from "./MDXIcon";
 import MongoDB from "./MongoDB";
 import Motion from "./Motion";
@@ -21,7 +27,9 @@ import NodeJs from "./NodeJs";
 import PostgreSQL from "./PostgreSQL";
 import Postman from "./Postman";
 import Prisma from "./Prisma";
+import Prometheus from "./Prometheus";
 import ReactIcon from "./ReactIcon";
+import Redis from "./Redis";
 import Sanity from "./Sanity";
 import Shadcn from "./Shadcn";
 import SocketIo from "./SocketIo";
@@ -55,11 +63,17 @@ const technologyIconMap: Record<string, React.ReactNode> = {
   bun: <Bun />,
 
   // Java ecosystem
+  java: <Java />,
+  openjdk: <Java />,
   spring: <Spring />,
   "spring boot": <Spring />,
   springboot: <Spring />,
   "spring-boot": <Spring />,
   "spring framework": <Spring />,
+
+  // Other languages
+  go: <Go />,
+  golang: <Go />,
   // Styling
   css: <CSS />,
   css3: <CSS />,
@@ -77,6 +91,18 @@ const technologyIconMap: Record<string, React.ReactNode> = {
   postgresql: <PostgreSQL />,
   postgres: <PostgreSQL />,
   prisma: <Prisma />,
+  redis: <Redis />,
+
+  // Messaging
+  kafka: <Kafka />,
+  "apache kafka": <Kafka />,
+
+  // Infrastructure & observability
+  docker: <Docker />,
+  kubernetes: <Kubernetes />,
+  k8s: <Kubernetes />,
+  prometheus: <Prometheus />,
+  grafana: <Grafana />,
 
   // Cloud & Deployment
   aws: <AWS />,
