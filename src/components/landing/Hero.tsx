@@ -4,7 +4,7 @@ import Mail from "@/components/svgs/Mail";
 import Website from "@/components/svgs/Website";
 import X from "@/components/svgs/X";
 import { getTechnologyIcon } from "@/components/technologies/TechnologyMapper";
-import { parseTemplate } from "@/lib/hero";
+import { parseTemplate, referencedSkillIndices } from "@/lib/hero";
 import { canOptimizeImage } from "@/lib/image";
 import { type SocialLink, getSiteSettings } from "@/lib/site-settings";
 import { Link } from "next-view-transitions";
@@ -41,6 +41,10 @@ export default async function Hero() {
   const { name, title, avatar, skills, description, resumeUrl, contactUrl } =
     hero;
   const parts = parseTemplate(description, skills);
+  // Skills not placed inline with {skills:N} are still listed, after the text,
+  // so adding a skill in /admin always makes it visible.
+  const referenced = referencedSkillIndices(description);
+  const extraSkills = skills.filter((_, index) => !referenced.has(index));
 
   const renderedDescription = parts.map((part) => {
     if (part.type === "skill" && "skill" in part && part.skill) {
@@ -99,6 +103,22 @@ export default async function Hero() {
         >
           {renderedDescription}
         </div>
+        {extraSkills.length > 0 && (
+          <div
+            className="animate-rise-in mt-2 flex flex-wrap items-center gap-2"
+            style={{ animationDelay: "120ms" }}
+          >
+            {extraSkills.map((skill, index) => (
+              <Skill
+                key={`${skill.name}-${index}`}
+                name={skill.name}
+                href={skill.href}
+              >
+                {getTechnologyIcon(skill.name)}
+              </Skill>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Buttons */}
