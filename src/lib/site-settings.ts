@@ -101,15 +101,19 @@ export const SITE_SETTING_KEYS = [
 
 /** Names of the icons rendered in the About "Skills" row before the DB existed. */
 const DEFAULT_ABOUT_SKILLS = [
-  "React",
-  "Bun",
-  "JavaScript",
-  "TypeScript",
-  "MongoDB",
-  "Next.js",
+  "Java",
+  "Spring Boot",
+  "Go",
   "Node.js",
+  "Express",
   "PostgreSQL",
-  "Prisma",
+  "MongoDB",
+  "Redis",
+  "Kafka",
+  "Docker",
+  "Kubernetes",
+  "Prometheus",
+  "Grafana",
 ];
 
 const SOCIAL_ICON_BY_NAME: Record<string, SocialLink["icon"]> = {

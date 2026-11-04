@@ -3,19 +3,24 @@ import React from "react";
 import AWS from "./AWS";
 import Appwrite from "./Appwrite";
 import BootStrap from "./BootStrap";
+import {
+  Docker,
+  Go,
+  Grafana,
+  Java,
+  Kafka,
+  Kubernetes,
+  Prometheus,
+  Redis,
+  Spring,
+} from "./BrandIcons";
 import Bun from "./Bun";
 import CSS from "./CSS";
-import Docker from "./Docker";
 import ExpressJs from "./ExpressJs";
 import Figma from "./Figma";
 import GithubIcon from "./Github";
-import Go from "./Go";
-import Grafana from "./Grafana";
 import Html from "./Html";
-import Java from "./Java";
 import JavaScript from "./JavaScript";
-import Kafka from "./Kafka";
-import Kubernetes from "./Kubernetes";
 import MDXIcon from "./MDXIcon";
 import MongoDB from "./MongoDB";
 import Motion from "./Motion";
@@ -27,13 +32,10 @@ import NodeJs from "./NodeJs";
 import PostgreSQL from "./PostgreSQL";
 import Postman from "./Postman";
 import Prisma from "./Prisma";
-import Prometheus from "./Prometheus";
 import ReactIcon from "./ReactIcon";
-import Redis from "./Redis";
 import Sanity from "./Sanity";
 import Shadcn from "./Shadcn";
 import SocketIo from "./SocketIo";
-import Spring from "./Spring";
 import TailwindCss from "./TailwindCss";
 import ThreeJs from "./ThreeJs";
 import TypeScript from "./TypeScript";
