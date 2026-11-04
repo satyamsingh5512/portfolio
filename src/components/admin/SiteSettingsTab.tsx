@@ -285,17 +285,6 @@ export function SiteSettingsTab({ initialSettings }: SiteSettingsTabProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="hero-resume">
-                    Resume URL (optional — shows a Resume button)
-                  </Label>
-                  <Input
-                    id="hero-resume"
-                    value={settings.hero.resumeUrl}
-                    onChange={(e) => updateHero({ resumeUrl: e.target.value })}
-                    placeholder="/assets/resume.pdf"
-                  />
-                </div>
-                <div className="space-y-2">
                   <Label htmlFor="hero-contact">
                     &quot;Get in touch&quot; button link
                   </Label>

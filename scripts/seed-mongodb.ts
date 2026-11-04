@@ -178,7 +178,6 @@ const siteSettingsDocs = [
       avatar: "/assets/satyam-avatar.png",
       description:
         "I am a <b>Full Stack Software Engineer</b> focused on designing and building scalable, production-ready systems that perform reliably under real-world constraints.",
-      resumeUrl: "/assets/resume.pdf",
       contactUrl: "/contact",
       skills: [
         { name: "React", href: "https://react.dev/" },

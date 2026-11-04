@@ -83,7 +83,7 @@ const nextConfig: NextConfig = {
         // Fingerprint-free static assets in /public: immutable enough that a
         // long TTL is safe, and it satisfies the efficient-cache-policy audit.
         source:
-          "/:dir(assets|meta|company|project|skills|blog|setup|oneko|fonts)/:path*",
+          "/:dir(assets|meta|company|project|skills|blog|setup|fonts)/:path*",
         headers: [
           {
             key: "Cache-Control",

@@ -23,8 +23,6 @@ export interface HeroSettings {
    * from `skills` as a linked chip with its icon.
    */
   description: string;
-  /** Shows a "Resume" button in the hero when set. */
-  resumeUrl: string;
   /** Target of the "Get in touch" button. */
   contactUrl: string;
   skills: Array<{ name: string; href: string }>;
@@ -128,7 +126,6 @@ export const defaultSiteSettings: SiteSettings = {
     title: heroConfig.title,
     avatar: heroConfig.avatar,
     description: heroConfig.description.template,
-    resumeUrl: "",
     contactUrl: heroConfig.buttons[0]?.href ?? "/contact",
     skills: heroConfig.skills.map(({ name, href }) => ({ name, href })),
   },

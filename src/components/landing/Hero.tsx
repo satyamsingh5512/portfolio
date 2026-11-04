@@ -13,7 +13,6 @@ import React from "react";
 
 import Container from "../common/Container";
 import Skill from "../common/Skill";
-import CV from "../svgs/CV";
 import Chat from "../svgs/Chat";
 import { Button } from "../ui/button";
 import { Hint } from "../ui/hint";
@@ -38,8 +37,7 @@ const socialIcons: Record<SocialLink["icon"], React.ReactNode> = {
  */
 export default async function Hero() {
   const { hero, socialLinks } = await getSiteSettings();
-  const { name, title, avatar, skills, description, resumeUrl, contactUrl } =
-    hero;
+  const { name, title, avatar, skills, description, contactUrl } = hero;
   const parts = parseTemplate(description, skills);
   // Skills not placed inline with {skills:N} are still listed, after the text,
   // so adding a skill in /admin always makes it visible.
@@ -126,19 +124,6 @@ export default async function Hero() {
         className="animate-rise-in mt-6 flex flex-wrap gap-3 sm:mt-8 sm:gap-4"
         style={{ animationDelay: "160ms" }}
       >
-        {resumeUrl && (
-          <Button
-            asChild
-            variant="outline"
-            size="default"
-            className="min-h-11 text-sm sm:text-base"
-          >
-            <Link href={resumeUrl} target="_blank" prefetch={false}>
-              <CV />
-              Resume
-            </Link>
-          </Button>
-        )}
         <Button
           asChild
           variant="default"

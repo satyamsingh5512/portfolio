@@ -25,7 +25,6 @@ const valueSchemas = {
     title: text(200),
     avatar: link,
     description: text(3000),
-    resumeUrl: link,
     contactUrl: link,
     skills: z.array(z.object({ name: text(60).min(1), href: link })).max(30),
   }),
